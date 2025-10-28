@@ -1,0 +1,21 @@
+{
+  "extends": "@nesvel/typescript-config/base",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "declaration": true,
+    "emitDeclarationOnly": false,
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["./*"],
+      "@types/*": ["./types/*"],
+      "@utils/*": ["./utils/*"],
+      "@tests/*": ["../__tests__/*", "../test/*"],
+      "@examples/*": ["../__examples__/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["dist", "node_modules", "**/*.spec.ts", "**/*.test.ts"]
+}
