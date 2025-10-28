@@ -1,0 +1,53 @@
+{
+  // Suppress unknown at-rule warnings for Tailwind CSS directives
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
+  "less.lint.unknownAtRules": "ignore",
+
+  // Associate CSS files with Tailwind CSS language mode
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+
+  // Enable autocomplete in string literals (for className props)
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+
+  // Tailwind CSS IntelliSense configuration
+  "tailwindCSS.experimental.classRegex": [
+    // Support for cva() from class-variance-authority
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    // Support for cn() utility function
+    ["cn\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+  ],
+
+  // Include Tailwind suggestions in files
+  "tailwindCSS.includeLanguages": {
+    "typescript": "javascript",
+    "typescriptreact": "javascript"
+  },
+
+  // TypeScript settings
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+
+  // Format on save
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // File exclusions for better performance
+  "files.exclude": {
+    "**/.turbo": true,
+    "**/node_modules": true
+  },
+
+  "search.exclude": {
+    "**/.turbo": true,
+    "**/node_modules": true,
+    "**/bun.lockb": true,
+    "**/.next": true,
+    "**/dist": true,
+    "**/build": true
+  }
+}

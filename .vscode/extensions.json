@@ -1,0 +1,30 @@
+{
+  "recommendations": [
+    // Tailwind CSS IntelliSense
+    "bradlc.vscode-tailwindcss",
+    
+    // Prettier for code formatting
+    "esbenp.prettier-vscode",
+    
+    // ESLint for linting
+    "dbaeumer.vscode-eslint",
+    
+    // PostCSS language support
+    "csstools.postcss",
+    
+    // TypeScript and JavaScript support
+    "ms-vscode.vscode-typescript-next",
+    
+    // Auto rename paired tags
+    "formulahendry.auto-rename-tag",
+    
+    // Path autocomplete
+    "christian-kohler.path-intellisense",
+    
+    // Better comments
+    "aaron-bond.better-comments",
+    
+    // Error Lens (inline errors)
+    "usernamehw.errorlens"
+  ]
+}

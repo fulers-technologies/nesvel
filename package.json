@@ -1,24 +1,276 @@
 {
   "name": "nesvel",
+  "version": "1.0.0",
   "private": true,
+  "type": "module",
+  "description": "Nesvel monorepo with Next.js and NestJS",
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/nesvel.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/nesvel/issues"
+  },
+  "homepage": "https://github.com/yourusername/nesvel#readme",
+  "keywords": [
+    "monorepo",
+    "turborepo",
+    "nextjs",
+    "nestjs",
+    "bun",
+    "typescript"
+  ],
   "scripts": {
     "build": "turbo run build",
+    "build:watch": "turbo run build:watch",
     "dev": "turbo run dev",
+    "start": "turbo run start",
+    "start:dev": "turbo run start:dev",
+    "start:debug": "turbo run start:debug",
+    "start:prod": "turbo run start:prod",
+    "typecheck": "turbo run typecheck",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types"
+    "lint:fix": "turbo run lint:fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
+    "test:cov": "turbo run test:cov",
+    "test:coverage": "turbo run test:coverage",
+    "test:e2e": "turbo run test:e2e",
+    "test:debug": "turbo run test:debug",
+    "clean": "turbo run clean && rm -rf node_modules .turbo",
+    "clean:dist": "find . -name 'dist' -type d -not -path '*/node_modules/*' -exec rm -rf {} + 2>/dev/null || true",
+    "clean:cache": "rm -rf .turbo node_modules/.cache",
+    "commit": "git-cz",
+    "prepare": "husky",
+    "turbo:login": "turbo login",
+    "turbo:link": "turbo link",
+    "turbo:unlink": "turbo unlink"
   },
   "devDependencies": {
-    "prettier": "^3.6.2",
-    "turbo": "^2.5.8",
-    "typescript": "5.9.2"
+    "@commitlint/cli": "catalog:gitHooks",
+    "@commitlint/config-conventional": "catalog:gitHooks",
+    "@commitlint/cz-commitlint": "catalog:gitHooks",
+    "@commitlint/types": "catalog:gitHooks",
+    "commitizen": "catalog:gitHooks",
+    "husky": "catalog:gitHooks",
+    "lint-staged": "catalog:gitHooks",
+    "prettier": "catalog:lint",
+    "turbo": "catalog:build",
+    "typescript": "catalog:typescript"
   },
+  "dependencies": {
+    "nestjs-pino": "^4.4.1",
+    "pino": "^10.1.0",
+    "pino-http": "^11.0.0",
+    "pino-pretty": "^13.1.2"
+  },
+  "packageManager": "bun@1.3.1",
   "engines": {
-    "node": ">=18"
+    "node": ">=20",
+    "npm": ">=10"
   },
-  "packageManager": "bun@1.2.22",
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "trustedDependencies": [
+    "@nestjs/core",
+    "esbuild",
+    "sharp"
+  ],
+  "catalogs": {
+    "typescript": {
+      "typescript": "5.9.3"
+    },
+    "types": {
+      "@types/node": "^24.9.1",
+      "@types/react": "^19.1.0",
+      "@types/react-dom": "^19.1.1",
+      "@types/express": "^5.0.0",
+      "@types/jest": "^30.0.0",
+      "@types/supertest": "^6.0.3",
+      "@types/bcrypt": "^5.0.2",
+      "@types/passport-jwt": "^4.0.1",
+      "@types/passport-local": "^1.0.38",
+      "@types/cookie-parser": "^1.4.7"
+    },
+    "react": {
+      "react": "^19.2.0",
+      "react-dom": "^19.1.0",
+      "react-hook-form": "^7.54.2"
+    },
+    "nextjs": {
+      "next": "^16.0.0"
+    },
+    "nestjs": {
+      "@nestjs/common": "^11.1.7",
+      "@nestjs/core": "^11.1.7",
+      "@nestjs/platform-express": "^11.1.7",
+      "reflect-metadata": "^0.2.2",
+      "rxjs": "^7.8.2"
+    },
+    "nestjsCli": {
+      "@nestjs/cli": "^11.0.10",
+      "@nestjs/schematics": "^11.0.9",
+      "@nestjs/testing": "^11.1.7"
+    },
+    "nestjsModules": {
+      "@nestjs/config": "^4.0.2",
+      "@nestjs/cache-manager": "^3.0.0",
+      "@nestjs/swagger": "^8.0.7",
+      "@nestjs/mapped-types": "^2.0.5",
+      "@nestjs/throttler": "^6.2.1",
+      "@nestjs/schedule": "^4.1.1",
+      "@nestjs/event-emitter": "^2.1.0",
+      "@nestjs/serve-static": "^4.0.2",
+      "cache-manager": "^7.0.4"
+    },
+    "nestjsAuth": {
+      "@nestjs/jwt": "^10.2.0",
+      "@nestjs/passport": "^10.0.3",
+      "passport": "^0.7.0",
+      "passport-jwt": "^4.0.1",
+      "passport-local": "^1.0.0",
+      "bcrypt": "^5.1.1",
+      "cookie-parser": "^1.4.7"
+    },
+    "nestjsDatabase": {
+      "@nestjs/typeorm": "^10.0.2",
+      "typeorm": "^0.3.20",
+      "pg": "^8.13.1",
+      "mysql2": "^3.11.5",
+      "mongodb": "^6.12.0"
+    },
+    "validation": {
+      "class-validator": "^0.14.1",
+      "class-transformer": "^0.5.1",
+      "zod": "^3.24.1"
+    },
+    "ui": {
+      "@radix-ui/react-accordion": "^1.2.2",
+      "@radix-ui/react-alert-dialog": "^1.1.4",
+      "@radix-ui/react-aspect-ratio": "^1.1.1",
+      "@radix-ui/react-avatar": "^1.1.2",
+      "@radix-ui/react-checkbox": "^1.1.3",
+      "@radix-ui/react-collapsible": "^1.1.2",
+      "@radix-ui/react-context-menu": "^2.2.4",
+      "@radix-ui/react-dialog": "^1.1.4",
+      "@radix-ui/react-dropdown-menu": "^2.1.4",
+      "@radix-ui/react-hover-card": "^1.1.4",
+      "@radix-ui/react-label": "^2.1.1",
+      "@radix-ui/react-menubar": "^1.1.4",
+      "@radix-ui/react-navigation-menu": "^1.2.3",
+      "@radix-ui/react-popover": "^1.1.4",
+      "@radix-ui/react-progress": "^1.1.1",
+      "@radix-ui/react-radio-group": "^1.2.2",
+      "@radix-ui/react-scroll-area": "^1.2.2",
+      "@radix-ui/react-select": "^2.1.4",
+      "@radix-ui/react-separator": "^1.1.1",
+      "@radix-ui/react-slider": "^1.2.1",
+      "@radix-ui/react-slot": "^1.1.1",
+      "@radix-ui/react-switch": "^1.1.2",
+      "@radix-ui/react-tabs": "^1.1.2",
+      "@radix-ui/react-toast": "^1.2.4",
+      "@radix-ui/react-toggle": "^1.1.1",
+      "@radix-ui/react-toggle-group": "^1.1.1",
+      "@radix-ui/react-tooltip": "^1.1.6",
+      "class-variance-authority": "^0.7.1",
+      "clsx": "^2.1.1",
+      "tailwind-merge": "^2.6.0",
+      "lucide-react": "^0.468.0",
+      "cmdk": "^1.0.4",
+      "vaul": "^1.0.2",
+      "embla-carousel-react": "^8.5.2",
+      "react-day-picker": "^9.4.4",
+      "date-fns": "^4.1.0",
+      "recharts": "^2.15.0",
+      "sonner": "^1.7.3"
+    },
+    "uiStyles": {
+      "tailwindcss": "^3.4.17",
+      "tailwindcss-animate": "^1.0.7",
+      "autoprefixer": "^10.4.20",
+      "postcss": "^8.4.49",
+      "@tailwindcss/typography": "^0.5.16",
+      "@tailwindcss/forms": "^0.5.10",
+      "@tailwindcss/container-queries": "^0.1.1"
+    },
+    "stateManagement": {
+      "zustand": "^5.0.3",
+      "jotai": "^2.10.6",
+      "immer": "^10.1.1"
+    },
+    "dataFetching": {
+      "@tanstack/react-query": "^5.64.2",
+      "axios": "^1.7.9",
+      "ky": "^1.7.3",
+      "swr": "^2.3.1"
+    },
+    "utils": {
+      "dotenv": "^16.4.7",
+      "dayjs": "^1.11.13",
+      "lodash": "^4.17.21",
+      "@types/lodash": "^4.17.13",
+      "uuid": "^11.0.3",
+      "@types/uuid": "^10.0.0",
+      "nanoid": "^5.0.9"
+    },
+    "logging": {
+      "nestjs-pino": "^4.4.1",
+      "pino": "^10.1.0",
+      "pino-http": "^11.0.0",
+      "pino-pretty": "^13.1.2"
+    },
+    "testing": {
+      "jest": "^30.2.0",
+      "ts-jest": "^29.4.5",
+      "@types/jest": "^30.0.0",
+      "@testing-library/react": "^16.1.0",
+      "@testing-library/jest-dom": "^6.6.3",
+      "@testing-library/user-event": "^14.5.2",
+      "vitest": "^2.1.8"
+    },
+    "testingUtils": {
+      "supertest": "^7.1.4",
+      "@types/supertest": "^6.0.3"
+    },
+    "tsBuild": {
+      "tsup": "^8.3.5",
+      "ts-loader": "^9.5.4",
+      "ts-node": "^10.9.2",
+      "tsconfig-paths": "^4.2.0",
+      "source-map-support": "^0.5.21"
+    },
+    "lint": {
+      "eslint": "^9.38.0",
+      "@eslint/js": "^9.38.0",
+      "@eslint/eslintrc": "^3.3.1",
+      "typescript-eslint": "^8.46.2",
+      "eslint-config-next": "^16.0.0",
+      "eslint-config-prettier": "^10.1.8",
+      "eslint-plugin-prettier": "^5.5.4",
+      "eslint-plugin-react-hooks": "^5.1.0",
+      "eslint-plugin-react": "^7.37.2",
+      "prettier": "^3.6.2",
+      "prettier-plugin-tailwindcss": "^0.6.9",
+      "globals": "^16.4.0"
+    },
+    "gitHooks": {
+      "husky": "^9.1.7",
+      "lint-staged": "^15.2.11",
+      "commitizen": "^4.3.1",
+      "@commitlint/cli": "^19.6.2",
+      "@commitlint/config-conventional": "^19.6.2",
+      "@commitlint/cz-commitlint": "^19.6.2",
+      "@commitlint/types": "^19.6.2"
+    },
+    "build": {
+      "turbo": "^2.5.8",
+      "tsx": "^4.20.6"
+    }
+  }
 }

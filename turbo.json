@@ -1,21 +1,187 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
+  "globalDependencies": [
+    "tsconfig.json",
+    "jest.config.ts",
+    "eslint.config.ts",
+    ".prettierrc.json"
+  ],
+  "globalEnv": [
+    "NODE_ENV",
+    "PORT",
+    "DATABASE_URL",
+    "REDIS_URL",
+    "JWT_SECRET",
+    "API_KEY"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
-    },
-    "lint": {
-      "dependsOn": ["^lint"]
-    },
-    "check-types": {
-      "dependsOn": ["^check-types"]
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env*",
+        "src/**",
+        "tsconfig.json",
+        "tsconfig.*.json",
+        "tsup.config.ts",
+        "nest-cli.json"
+      ],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**", "build/**"],
+      "outputLogs": "new-only"
     },
     "dev": {
+      "dependsOn": ["^build"],
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "outputs": []
+    },
+    "start": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "outputs": []
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "src/**",
+        "test/**",
+        "tsconfig.json",
+        "tsconfig.*.json"
+      ],
+      "outputs": [],
+      "outputLogs": "new-only"
+    },
+    "lint": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "src/**",
+        "test/**",
+        "eslint.config.ts",
+        "eslint.config.js",
+        ".eslintrc*"
+      ],
+      "outputs": [],
+      "outputLogs": "new-only"
+    },
+    "lint:fix": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "outputs": []
+    },
+    "format": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "src/**",
+        "test/**",
+        ".prettierrc.json",
+        ".prettierignore"
+      ],
+      "outputs": [],
+      "outputLogs": "new-only"
+    },
+    "format:check": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "src/**",
+        "test/**",
+        ".prettierrc.json",
+        ".prettierignore"
+      ],
+      "outputs": [],
+      "outputLogs": "new-only"
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "src/**",
+        "test/**",
+        "__tests__/**",
+        "jest.config.ts",
+        "jest.config.js"
+      ],
+      "outputs": ["coverage/**"],
+      "outputLogs": "new-only"
+    },
+    "test:watch": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "persistent": true,
+      "outputs": []
+    },
+    "test:cov": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "src/**",
+        "test/**",
+        "__tests__/**",
+        "jest.config.ts",
+        "jest.config.js"
+      ],
+      "outputs": ["coverage/**"],
+      "outputLogs": "new-only"
+    },
+    "test:coverage": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "src/**",
+        "test/**",
+        "__tests__/**",
+        "jest.config.ts",
+        "jest.config.js"
+      ],
+      "outputs": ["coverage/**"],
+      "outputLogs": "new-only"
+    },
+    "test:e2e": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "src/**",
+        "test/**",
+        "jest.config.ts",
+        "jest-e2e.config.ts"
+      ],
+      "outputs": ["coverage/**"],
+      "outputLogs": "new-only"
+    },
+    "test:debug": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "persistent": true,
+      "outputs": []
+    },
+    "start:dev": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "persistent": true,
+      "outputs": []
+    },
+    "start:debug": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "persistent": true,
+      "outputs": []
+    },
+    "start:prod": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "outputs": []
+    },
+    "build:watch": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "persistent": true,
+      "outputs": ["dist/**"]
+    },
+    "clean": {
+      "cache": false,
+      "outputs": []
     }
   }
 }
