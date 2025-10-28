@@ -1,0 +1,167 @@
+/**
+ * Global Styles for @nesvel/ui
+ *
+ * This file defines @layer base {
+  /**
+   * Light Theme Variables (Default)
+   *
+   * HSL color format: hue saturation lightness
+   * Example: --primary: 222.2 47.4% 11.2% = hsl(222.2, 47.4%, 11.2%)
+   *
+   * Color Categories:
+   * - Layout: background, foreground, border
+   * - Components: card, popover
+   * - Semantic: primary, secondary, destructive, muted, accent
+   * - Forms: input, ring
+   * - Other: radius
+   */
+:root {
+  /* Base colors for page background and text */
+  --background: 0 0% 100%;
+  /* Pure white */
+  --foreground: 222.2 84% 4.9%;
+  /* Nearly black with blue tint */
+
+  /* Card component colors */
+  --card: 0 0% 100%;
+  /* White background */
+  --card-foreground: 222.2 84% 4.9%;
+  /* Dark text */
+
+  /* Popover component colors */
+  --popover: 0 0% 100%;
+  /* White background */
+  --popover-foreground: 222.2 84% 4.9%;
+  /* Dark text */
+
+  /* Primary action colors (buttons, links) */
+  --primary: 222.2 47.4% 11.2%;
+  /* Dark blue */
+  --primary-foreground: 210 40% 98%;
+  /* Almost white */
+
+  /* Secondary/subtle action colors */
+  --secondary: 210 40% 96.1%;
+  /* Light gray-blue */
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  /* Dark blue */
+
+  /* Muted/disabled state colors */
+  --muted: 210 40% 96.1%;
+  /* Light gray */
+  --muted-foreground: 215.4 16.3% 46.9%;
+  /* Medium gray */
+
+  /* Accent/highlight colors */
+  --accent: 210 40% 96.1%;
+  /* Light gray-blue */
+  --accent-foreground: 222.2 47.4% 11.2%;
+  /* Dark blue */
+
+  /* Destructive/error colors */
+  --destructive: 0 84.2% 60.2%;
+  /* Bright red */
+  --destructive-foreground: 210 40% 98%;
+  /* Almost white */
+
+  /* Form element colors */
+  --border: 214.3 31.8% 91.4%;
+  /* Light gray border */
+  --input: 214.3 31.8% 91.4%;
+  /* Light gray input background */
+  --ring: 222.2 84% 4.9%;
+  /* Focus ring color */
+
+  /* Border radius for rounded corners */
+  --radius: 0.5rem;
+  /* 8px */
+}
+
+/**
+   * Dark Theme Variables
+   *
+   * Applied when 'dark' class is present on <html> or parent element.
+   * Color values are inverted for dark mode readability.
+   *
+   * Usage: <html class="dark">
+   */
+.dark {
+  /* Base colors - inverted for dark mode */
+  --background: 222.2 84% 4.9%;
+  /* Very dark blue */
+  --foreground: 210 40% 98%;
+  /* Almost white */
+
+  /* Card component colors */
+  --card: 222.2 84% 4.9%;
+  /* Dark blue background */
+  --card-foreground: 210 40% 98%;
+  /* Light text */
+
+  /* Popover component colors */
+  --popover: 222.2 84% 4.9%;
+  /* Dark blue background */
+  --popover-foreground: 210 40% 98%;
+  /* Light text */
+
+  /* Primary action colors */
+  --primary: 210 40% 98%;
+  /* Light blue */
+  --primary-foreground: 222.2 47.4% 11.2%;
+  /* Dark blue */
+
+  /* Secondary/subtle action colors */
+  --secondary: 217.2 32.6% 17.5%;
+  /* Dark gray-blue */
+  --secondary-foreground: 210 40% 98%;
+  /* Light text */
+
+  /* Muted/disabled state colors */
+  --muted: 217.2 32.6% 17.5%;
+  /* Dark gray */
+  --muted-foreground: 215 20.2% 65.1%;
+  /* Light gray */
+
+  /* Accent/highlight colors */
+  --accent: 217.2 32.6% 17.5%;
+  /* Dark gray-blue */
+  --accent-foreground: 210 40% 98%;
+  /* Light text */
+
+  /* Destructive/error colors */
+  --destructive: 0 62.8% 30.6%;
+  /* Dark red */
+  --destructive-foreground: 210 40% 98%;
+  /* Light text */
+
+  /* Form element colors */
+  --border: 217.2 32.6% 17.5%;
+  /* Dark border */
+  --input: 217.2 32.6% 17.5%;
+  /* Dark input background */
+  --ring: 212.7 26.8% 83.9%;
+  /* Light focus ring */
+}
+
+/* ============================================
+   BASE ELEMENT STYLES
+   ============================================ */
+
+@layer base {
+
+  /**
+   * Universal selector
+   * Ensures all elements use the theme border color
+   */
+  * {
+    @apply border-border;
+  }
+
+  /**
+   * Body element
+   * Sets default background and text colors from theme
+   */
+  body {
+    @apply bg-background text-foreground;
+  }
+}
