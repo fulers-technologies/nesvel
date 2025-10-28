@@ -1,0 +1,6 @@
+# Run lint-staged to lint and format staged files
+
+# Using TypeScript config with Node.js --experimental-strip-types
+
+export NODE_OPTIONS="--experimental-strip-types"
+bunx lint-staged --config lint-staged.config.ts
