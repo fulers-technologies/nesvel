@@ -18,7 +18,7 @@ For standard TypeScript libraries:
 
 ```typescript
 import { defineConfig } from 'tsup';
-import { basePreset } from '@nesvel/tsup-config';
+import { preset as basePreset } from '@nesvel/tsup-config';
 
 export default defineConfig(basePreset);
 ```
@@ -73,7 +73,7 @@ You can override any preset option:
 
 ```typescript
 import { defineConfig } from 'tsup';
-import { basePreset } from '@nesvel/tsup-config';
+import { preset as basePreset } from '@nesvel/tsup-config';
 
 export default defineConfig({
   ...basePreset,

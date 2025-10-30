@@ -3,7 +3,7 @@
  */
 
 // Base preset for standard TypeScript libraries
-export { basePreset } from './base';
+export { preset as basePreset } from './base';
 
 // NestJS library preset (decorators, metadata, no bundling)
 export { preset as nestLibPreset } from './nest-lib';

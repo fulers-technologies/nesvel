@@ -1,6 +1,6 @@
 import type { Options } from 'tsup';
 
-import { basePreset } from './base';
+import { preset as basePreset } from './base';
 
 /**
  * React Library Preset Configuration

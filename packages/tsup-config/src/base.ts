@@ -30,7 +30,7 @@ import { loadPackageJson } from './utils/load-package-json';
  * @example
  * ```typescript
  * import { defineConfig } from 'tsup';
- * import { basePreset } from '@nesvel/tsup-config';
+ * import { preset as basePreset } from '@nesvel/tsup-config';
  *
  * export default defineConfig({
  *   ...basePreset,
@@ -38,7 +38,7 @@ import { loadPackageJson } from './utils/load-package-json';
  * });
  * ```
  */
-export const basePreset: Options = (() => {
+export const preset: Options = (() => {
   // Load package.json to extract metadata for banner and externals
   const pkg = loadPackageJson();
 

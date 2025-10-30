@@ -36,9 +36,9 @@
     "preset"
   ],
   "devDependencies": {
-    "@darraghor/eslint-plugin-nestjs-typed": "^6.2.1",
+    "@darraghor/eslint-plugin-nestjs-typed": "^6.9.3",
     "@eslint/js": "catalog:lint",
-    "@next/eslint-plugin-next": "^16.0.0",
+    "@next/eslint-plugin-next": "^16.0.1",
     "eslint": "catalog:lint",
     "eslint-config-prettier": "catalog:lint",
     "eslint-plugin-only-warn": "^1.1.0",

@@ -43,7 +43,7 @@ import { config as baseConfig } from './base.js';
  * ];
  * ```
  */
-export const nextJsConfig: Linter.Config[] = [
+export const config: Linter.Config[] = [
   // Inherit all base configuration rules
   // Includes TypeScript, Prettier, Turbo, and core ESLint rules
   ...baseConfig,

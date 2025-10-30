@@ -113,9 +113,7 @@ export function Macroable() {
               return macro.apply(proxy, parameters);
             }
 
-            throw new Error(
-              `Method ${method} does not exist on ${constructor.name}.`,
-            );
+            throw new Error(`Method ${method} does not exist on ${constructor.name}.`);
           },
           writable: false,
           enumerable: false,
@@ -151,8 +149,7 @@ export function Macroable() {
           has: (target: any, prop: string | symbol): boolean => {
             return (
               prop in target ||
-              (typeof prop === 'string' &&
-                (instanceMacros.has(prop) || staticMacros.has(prop)))
+              (typeof prop === 'string' && (instanceMacros.has(prop) || staticMacros.has(prop)))
             );
           },
         });
@@ -231,9 +228,7 @@ export function Macroable() {
       },
 
       has: (target: any, prop: string | symbol): boolean => {
-        return (
-          prop in target || (typeof prop === 'string' && staticMacros.has(prop))
-        );
+        return prop in target || (typeof prop === 'string' && staticMacros.has(prop));
       },
     });
 
