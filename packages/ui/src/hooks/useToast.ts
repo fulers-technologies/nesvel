@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { toast as sonnerToast } from "sonner"
+import { toast as sonnerToast } from 'sonner';
 
 /**
  * Type definition for toast options.
@@ -8,28 +8,28 @@ import { toast as sonnerToast } from "sonner"
  */
 type ToastOptions = {
   /** The title/message of the toast */
-  title?: string
+  title?: string;
   /** Additional description text */
-  description?: string
+  description?: string;
   /** Duration in milliseconds before the toast auto-dismisses */
-  duration?: number
+  duration?: number;
   /** Action button configuration */
   action?: {
-    label: string
-    onClick: (event: React.MouseEvent<HTMLButtonElement>) => void
-  }
+    label: string;
+    onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  };
   /** Cancel button configuration */
   cancel?: {
-    label: string
-    onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void
-  }
+    label: string;
+    onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  };
   /** Whether the toast can be dismissed by clicking */
-  dismissible?: boolean
+  dismissible?: boolean;
   /** Callback when toast is dismissed */
-  onDismiss?: () => void
+  onDismiss?: () => void;
   /** Callback when toast auto-closes */
-  onAutoClose?: () => void
-}
+  onAutoClose?: () => void;
+};
 
 /**
  * Custom hook that provides a convenient interface for displaying toast notifications.
@@ -49,7 +49,7 @@ type ToastOptions = {
  *     try {
  *       await saveData()
  *       toast.success("Data saved successfully!")
- *     } catch (error) {
+ *     } catch (error: Error | any) {
  *       toast.error("Failed to save data", {
  *         description: error.message
  *       })
@@ -96,8 +96,8 @@ export function useToast() {
       dismissible: options?.dismissible,
       onDismiss: options?.onDismiss,
       onAutoClose: options?.onAutoClose,
-    })
-  }
+    });
+  };
 
   /**
    * Display an error toast notification.
@@ -115,8 +115,8 @@ export function useToast() {
       dismissible: options?.dismissible,
       onDismiss: options?.onDismiss,
       onAutoClose: options?.onAutoClose,
-    })
-  }
+    });
+  };
 
   /**
    * Display an info toast notification.
@@ -134,8 +134,8 @@ export function useToast() {
       dismissible: options?.dismissible,
       onDismiss: options?.onDismiss,
       onAutoClose: options?.onAutoClose,
-    })
-  }
+    });
+  };
 
   /**
    * Display a warning toast notification.
@@ -153,8 +153,8 @@ export function useToast() {
       dismissible: options?.dismissible,
       onDismiss: options?.onDismiss,
       onAutoClose: options?.onAutoClose,
-    })
-  }
+    });
+  };
 
   /**
    * Display a loading toast notification.
@@ -169,8 +169,8 @@ export function useToast() {
       description: options?.description,
       duration: options?.duration,
       dismissible: options?.dismissible,
-    })
-  }
+    });
+  };
 
   /**
    * Display a promise-based toast that automatically updates based on promise state.
@@ -182,20 +182,20 @@ export function useToast() {
    * @param messages - Messages for each state (loading, success, error)
    * @returns The original promise (allows chaining)
    */
-  const promise = <T,>(
+  const promise = <T>(
     promiseOrFunction: Promise<T> | (() => Promise<T>),
     messages: {
-      loading: string
-      success: string | ((data: T) => string)
-      error: string | ((error: unknown) => string)
+      loading: string;
+      success: string | ((data: T) => string);
+      error: string | ((error: unknown) => string);
     }
   ) => {
     return sonnerToast.promise(promiseOrFunction, {
       loading: messages.loading,
       success: messages.success,
       error: messages.error,
-    })
-  }
+    });
+  };
 
   /**
    * Display a custom toast notification.
@@ -214,8 +214,8 @@ export function useToast() {
       dismissible: options?.dismissible,
       onDismiss: options?.onDismiss,
       onAutoClose: options?.onAutoClose,
-    })
-  }
+    });
+  };
 
   /**
    * Dismiss a specific toast by its ID.
@@ -223,8 +223,8 @@ export function useToast() {
    * @param toastId - The ID of the toast to dismiss (returned from toast methods)
    */
   const dismiss = (toastId?: string | number) => {
-    sonnerToast.dismiss(toastId)
-  }
+    sonnerToast.dismiss(toastId);
+  };
 
   return {
     success,
@@ -235,5 +235,5 @@ export function useToast() {
     promise,
     custom,
     dismiss,
-  }
+  };
 }

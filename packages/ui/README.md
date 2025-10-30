@@ -4,12 +4,13 @@ Shared UI component library built with shadcn/ui and Tailwind CSS.
 
 ## Installation
 
-This package is part of the monorepo and should be referenced using workspace protocol:
+This package is part of the monorepo and should be referenced using workspace
+protocol:
 
 ```json
 {
   "dependencies": {
-    "@repo/ui": "*"
+    "@repo/ui": "workspace:*"
   }
 }
 ```
@@ -19,22 +20,27 @@ This package is part of the monorepo and should be referenced using workspace pr
 ### Import Components
 
 ```tsx
-import { Button } from "@repo/ui/components/button"
-import { Card, CardHeader, CardTitle, CardContent } from "@repo/ui/components/card"
-import { Input } from "@repo/ui/components/input"
-import { Label } from "@repo/ui/components/label"
+import { Button } from '@repo/ui/components/button';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from '@repo/ui/components/card';
+import { Input } from '@repo/ui/components/input';
+import { Label } from '@repo/ui/components/label';
 ```
 
 Or use the index:
 
 ```tsx
-import { Button, Card, Input, Label } from "@repo/ui/components"
+import { Button, Card, Input, Label } from '@repo/ui/components';
 ```
 
 ### Import Utilities
 
 ```tsx
-import { cn } from "@repo/ui/lib/utils"
+import { cn } from '@repo/ui/lib/utils';
 ```
 
 ### Import Styles
@@ -43,7 +49,7 @@ In your Next.js app, import the global styles:
 
 ```tsx
 // app/layout.tsx
-import "@repo/ui/styles/globals.css"
+import '@repo/ui/styles/globals.css';
 ```
 
 ## Components
@@ -57,7 +63,8 @@ import "@repo/ui/styles/globals.css"
 <Button variant="ghost" size="sm">Small</Button>
 ```
 
-**Variants:** `default`, `destructive`, `outline`, `secondary`, `ghost`, `link`  
+**Variants:** `default`, `destructive`, `outline`, `secondary`, `ghost`,
+`link`  
 **Sizes:** `default`, `sm`, `lg`, `icon`
 
 ### Card
@@ -96,29 +103,31 @@ import "@repo/ui/styles/globals.css"
 
 ### Tailwind CSS
 
-The package includes its own `tailwind.config.ts` with shadcn/ui theme configuration.
+The package includes its own `tailwind.config.ts` with shadcn/ui theme
+configuration.
 
 To use these components in your app, extend the Tailwind config:
 
 ```ts
 // tailwind.config.ts
-import type { Config } from "tailwindcss"
-import uiConfig from "@repo/ui/tailwind.config"
+import type { Config } from 'tailwindcss';
+import uiConfig from '@repo/ui/tailwind.config';
 
 const config: Config = {
   ...uiConfig,
   content: [
-    "./src/**/*.{ts,tsx}",
-    "../../packages/ui/src/**/*.{ts,tsx}", // Include ui package
+    './src/**/*.{ts,tsx}',
+    '../../packages/ui/src/**/*.{ts,tsx}', // Include ui package
   ],
-}
+};
 
-export default config
+export default config;
 ```
 
 ### Path Aliases
 
-The package uses `@/` alias for internal imports. This is configured in `tsconfig.json`.
+The package uses `@/` alias for internal imports. This is configured in
+`tsconfig.json`.
 
 ## Adding New Components
 
@@ -129,6 +138,7 @@ The package uses `@/` alias for internal imports. This is configured in `tsconfi
 ## Styling
 
 Components use:
+
 - **Tailwind CSS** for styling
 - **CSS Variables** for theming
 - **class-variance-authority** for variants

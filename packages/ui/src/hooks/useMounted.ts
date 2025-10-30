@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { useEffect, useState } from "react"
+import { useEffect, useState } from 'react';
 
 /**
  * Custom hook that tracks whether a component has been mounted.
@@ -117,7 +117,7 @@ export function useMounted(): boolean {
    * This represents the "not yet mounted" state during SSR
    * and the initial client-side render.
    */
-  const [mounted, setMounted] = useState<boolean>(false)
+  const [mounted, setMounted] = useState<boolean>(false);
 
   useEffect(() => {
     /**
@@ -128,14 +128,14 @@ export function useMounted(): boolean {
      * The effect runs after the DOM has been updated and painted,
      * making it safe to access browser APIs and perform client-only logic.
      */
-    setMounted(true)
+    setMounted(true);
 
     /**
      * No cleanup needed - the mounted state should remain true
      * for the lifetime of the component. We don't reset it on unmount
      * because the component will be removed from the DOM anyway.
      */
-  }, []) // Empty dependency array - only run once after mount
+  }, []); // Empty dependency array - only run once after mount
 
-  return mounted
+  return mounted;
 }

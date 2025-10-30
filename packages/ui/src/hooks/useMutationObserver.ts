@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { useEffect, type RefObject } from "react"
+import { useEffect, type RefObject } from 'react';
 
 /**
  * Custom hook that observes DOM mutations using the MutationObserver API.
@@ -156,23 +156,23 @@ export function useMutationObserver(
     /**
      * Get the element to observe from the ref.
      */
-    const element = ref.current
+    const element = ref.current;
 
     /**
      * Early return if no element or if we're in SSR.
      * MutationObserver is only available in browser environments.
      */
-    if (!element || typeof window === "undefined") {
-      return
+    if (!element || typeof window === 'undefined') {
+      return;
     }
 
     /**
      * Check if MutationObserver is supported in the browser.
      * While widely supported, it's good practice to check.
      */
-    if (!("MutationObserver" in window)) {
-      console.warn("MutationObserver is not supported in this browser")
-      return
+    if (!('MutationObserver' in window)) {
+      console.warn('MutationObserver is not supported in this browser');
+      return;
     }
 
     /**
@@ -180,7 +180,7 @@ export function useMutationObserver(
      * The callback will be invoked whenever mutations matching the options
      * are detected on the observed element.
      */
-    const observer = new MutationObserver(callback)
+    const observer = new MutationObserver(callback);
 
     /**
      * Start observing the target element for mutations.
@@ -194,7 +194,7 @@ export function useMutationObserver(
      * - characterDataOldValue: Include previous text content in mutation record
      * - attributeFilter: Array of specific attribute names to watch
      */
-    observer.observe(element, options)
+    observer.observe(element, options);
 
     /**
      * Cleanup function to disconnect the observer.
@@ -207,7 +207,7 @@ export function useMutationObserver(
      * preventing memory leaks.
      */
     return () => {
-      observer.disconnect()
-    }
-  }, [ref, callback, options]) // Re-run if ref, callback, or options change
+      observer.disconnect();
+    };
+  }, [ref, callback, options]); // Re-run if ref, callback, or options change
 }

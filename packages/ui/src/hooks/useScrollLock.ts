@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { useEffect } from "react"
+import { useEffect } from 'react';
 
 /**
  * Custom hook to lock/unlock body scroll.
@@ -70,8 +70,8 @@ export function useScrollLock(isLocked: boolean = true): void {
      * Early return if we're not in a browser environment.
      * During SSR, document will be undefined.
      */
-    if (typeof document === "undefined") {
-      return
+    if (typeof document === 'undefined') {
+      return;
     }
 
     /**
@@ -79,34 +79,33 @@ export function useScrollLock(isLocked: boolean = true): void {
      * This allows conditional locking without unmounting.
      */
     if (!isLocked) {
-      return
+      return;
     }
 
     /**
      * Store the original body overflow style so we can restore it later.
      * This is important if the body already had overflow styling.
      */
-    const originalOverflow = document.body.style.overflow
+    const originalOverflow = document.body.style.overflow;
 
     /**
      * Store the original body padding-right to restore later.
      * We'll add padding to compensate for the hidden scrollbar.
      */
-    const originalPaddingRight = document.body.style.paddingRight
+    const originalPaddingRight = document.body.style.paddingRight;
 
     /**
      * Calculate the scrollbar width by comparing the window inner width
      * (viewport without scrollbar) with the document width (includes scrollbar).
      * This prevents layout shift when the scrollbar is hidden.
      */
-    const scrollbarWidth =
-      window.innerWidth - document.documentElement.clientWidth
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 
     /**
      * Lock the scroll by setting overflow to hidden.
      * This prevents the body from scrolling.
      */
-    document.body.style.overflow = "hidden"
+    document.body.style.overflow = 'hidden';
 
     /**
      * Add padding to the right side equal to the scrollbar width.
@@ -115,13 +114,9 @@ export function useScrollLock(isLocked: boolean = true): void {
      */
     if (scrollbarWidth > 0) {
       const currentPaddingRight =
-        parseInt(
-          window.getComputedStyle(document.body).paddingRight || "0",
-          10
-        ) || 0
+        parseInt(window.getComputedStyle(document.body).paddingRight || '0', 10) || 0;
 
-      document.body.style.paddingRight =
-        `${currentPaddingRight + scrollbarWidth}px`
+      document.body.style.paddingRight = `${currentPaddingRight + scrollbarWidth}px`;
     }
 
     /**
@@ -137,13 +132,13 @@ export function useScrollLock(isLocked: boolean = true): void {
        * If there was no overflow style, this sets it to an empty string,
        * which removes the inline style.
        */
-      document.body.style.overflow = originalOverflow
+      document.body.style.overflow = originalOverflow;
 
       /**
        * Restore the original padding-right.
        * This removes the padding we added to compensate for the scrollbar.
        */
-      document.body.style.paddingRight = originalPaddingRight
-    }
-  }, [isLocked]) // Re-run effect when isLocked changes
+      document.body.style.paddingRight = originalPaddingRight;
+    };
+  }, [isLocked]); // Re-run effect when isLocked changes
 }

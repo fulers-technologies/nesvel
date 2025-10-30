@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { useEffect, useState } from "react"
+import { useEffect, useState } from 'react';
 
 /**
  * Custom hook that detects if the user is on a macOS/Mac device.
@@ -69,15 +69,15 @@ export function useIsMac(): boolean {
    * This prevents hydration mismatches and layout shifts.
    * We assume Mac by default since it's common in development.
    */
-  const [isMac, setIsMac] = useState<boolean>(true)
+  const [isMac, setIsMac] = useState<boolean>(true);
 
   useEffect(() => {
     /**
      * Check if we're in a browser environment.
      * During SSR, navigator will be undefined.
      */
-    if (typeof navigator === "undefined") {
-      return
+    if (typeof navigator === 'undefined') {
+      return;
     }
 
     /**
@@ -90,10 +90,10 @@ export function useIsMac(): boolean {
      * We use toUpperCase() to handle case variations and
      * includes() to match any platform string containing "MAC".
      */
-    const isMacPlatform = navigator.platform.toUpperCase().includes("MAC")
+    const isMacPlatform = navigator.platform.toUpperCase().includes('MAC');
 
-    setIsMac(isMacPlatform)
-  }, []) // Empty dependency array - only run once on mount
+    setIsMac(isMacPlatform);
+  }, []); // Empty dependency array - only run once on mount
 
-  return isMac
+  return isMac;
 }

@@ -1,36 +1,10 @@
 /**
- * Custom React Hooks for the Nesvel UI Library
- *
- * This module exports a collection of reusable React hooks that provide
- * common functionality for building modern web applications. These hooks
- * cover various use cases including:
- *
- * - UI State Management (useToggle, useHover, useClickOutside)
- * - Data Persistence (useLocalStorage, useCopyToClipboard)
- * - Performance Optimization (useDebounce, usePrevious)
- * - Responsive Design (useMediaQuery, useWindowSize)
- * - User Interactions (useKeyPress, useScrollLock)
- * - Accessibility (useFocusTrap)
- * - Viewport Observations (useIntersectionObserver)
- * - Notifications (useToast)
- *
- * All hooks are designed to be:
- * - SSR-safe (work with server-side rendering)
- * - Type-safe (full TypeScript support)
- * - Well-documented (comprehensive JSDoc comments)
- * - Production-ready (tested and optimized)
- *
- * @module hooks
- * @packageDocumentation
- */
-
-/**
  * Hook for detecting clicks outside of a specified element.
  * Useful for closing dropdowns, modals, and popovers.
  *
  * @see {@link useClickOutside}
  */
-export { useClickOutside } from "./useClickOutside"
+export { useClickOutside } from './useClickOutside';
 
 /**
  * Hook for copying text to the clipboard with feedback.
@@ -38,7 +12,7 @@ export { useClickOutside } from "./useClickOutside"
  *
  * @see {@link useCopyToClipboard}
  */
-export { useCopyToClipboard } from "./useCopyToClipboard"
+export { useCopyToClipboard } from './useCopyToClipboard';
 
 /**
  * Hook for debouncing values to reduce unnecessary updates.
@@ -46,7 +20,7 @@ export { useCopyToClipboard } from "./useCopyToClipboard"
  *
  * @see {@link useDebounce}
  */
-export { useDebounce } from "./useDebounce"
+export { useDebounce } from './useDebounce';
 
 /**
  * Hook for trapping focus within an element for accessibility.
@@ -54,7 +28,7 @@ export { useDebounce } from "./useDebounce"
  *
  * @see {@link useFocusTrap}
  */
-export { useFocusTrap } from "./useFocusTrap"
+export { useFocusTrap } from './useFocusTrap';
 
 /**
  * Hook for detecting hover state on DOM elements.
@@ -62,7 +36,7 @@ export { useFocusTrap } from "./useFocusTrap"
  *
  * @see {@link useHover}
  */
-export { useHover } from "./useHover"
+export { useHover } from './useHover';
 
 /**
  * Hook for observing element visibility using Intersection Observer API.
@@ -70,7 +44,7 @@ export { useHover } from "./useHover"
  *
  * @see {@link useIntersectionObserver}
  */
-export { useIntersectionObserver } from "./useIntersectionObserver"
+export { useIntersectionObserver } from './useIntersectionObserver';
 
 /**
  * Hook for detecting keyboard key presses with modifier support.
@@ -78,7 +52,7 @@ export { useIntersectionObserver } from "./useIntersectionObserver"
  *
  * @see {@link useKeyPress}
  */
-export { useKeyPress } from "./useKeyPress"
+export { useKeyPress } from './useKeyPress';
 
 /**
  * Hook for persisting state in browser localStorage.
@@ -86,7 +60,7 @@ export { useKeyPress } from "./useKeyPress"
  *
  * @see {@link useLocalStorage}
  */
-export { useLocalStorage } from "./useLocalStorage"
+export { useLocalStorage } from './useLocalStorage';
 
 /**
  * Hook for responsive design using CSS media queries.
@@ -94,7 +68,7 @@ export { useLocalStorage } from "./useLocalStorage"
  *
  * @see {@link useMediaQuery}
  */
-export { useMediaQuery } from "./useMediaQuery"
+export { useMediaQuery } from './useMediaQuery';
 
 /**
  * Hook for accessing the previous value of state or props.
@@ -102,7 +76,7 @@ export { useMediaQuery } from "./useMediaQuery"
  *
  * @see {@link usePrevious}
  */
-export { usePrevious } from "./usePrevious"
+export { usePrevious } from './usePrevious';
 
 /**
  * Hook for locking/unlocking body scroll.
@@ -110,7 +84,7 @@ export { usePrevious } from "./usePrevious"
  *
  * @see {@link useScrollLock}
  */
-export { useScrollLock } from "./useScrollLock"
+export { useScrollLock } from './useScrollLock';
 
 /**
  * Hook for displaying toast notifications.
@@ -118,7 +92,7 @@ export { useScrollLock } from "./useScrollLock"
  *
  * @see {@link useToast}
  */
-export { useToast } from "./useToast"
+export { useToast } from './useToast';
 
 /**
  * Hook for managing boolean state with toggle functionality.
@@ -126,7 +100,7 @@ export { useToast } from "./useToast"
  *
  * @see {@link useToggle}
  */
-export { useToggle } from "./useToggle"
+export { useToggle } from './useToggle';
 
 /**
  * Hook for tracking browser window dimensions.
@@ -134,7 +108,7 @@ export { useToggle } from "./useToggle"
  *
  * @see {@link useWindowSize}
  */
-export { useWindowSize } from "./useWindowSize"
+export { useWindowSize } from './useWindowSize';
 
 /**
  * Hook for detecting if the user is on a macOS/Mac device.
@@ -142,7 +116,7 @@ export { useWindowSize } from "./useWindowSize"
  *
  * @see {@link useIsMac}
  */
-export { useIsMac } from "./useIsMac"
+export { useIsMac } from './useIsMac';
 
 /**
  * Hook for detecting if the viewport is mobile-sized.
@@ -150,7 +124,7 @@ export { useIsMac } from "./useIsMac"
  *
  * @see {@link useIsMobile}
  */
-export { useIsMobile } from "./useIsMobile"
+export { useIsMobile } from './useIsMobile';
 
 /**
  * Hook for detecting if a component has mounted.
@@ -158,7 +132,7 @@ export { useIsMobile } from "./useIsMobile"
  *
  * @see {@link useMounted}
  */
-export { useMounted } from "./useMounted"
+export { useMounted } from './useMounted';
 
 /**
  * Hook for observing DOM mutations using MutationObserver API.
@@ -166,4 +140,4 @@ export { useMounted } from "./useMounted"
  *
  * @see {@link useMutationObserver}
  */
-export { useMutationObserver } from "./useMutationObserver"
+export { useMutationObserver } from './useMutationObserver';

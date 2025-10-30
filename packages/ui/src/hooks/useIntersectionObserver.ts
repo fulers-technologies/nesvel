@@ -1,22 +1,22 @@
-"use client"
+'use client';
 
-import { useEffect, useRef, useState, type RefObject } from "react"
+import { useEffect, useRef, useState, type RefObject } from 'react';
 
 /**
  * Options for the Intersection Observer.
  */
 type IntersectionObserverOptions = {
   /** The element used as viewport for checking visibility (defaults to browser viewport) */
-  root?: Element | null
+  root?: Element | null;
   /** Margin around the root (e.g., "10px 20px 30px 40px") */
-  rootMargin?: string
+  rootMargin?: string;
   /** Threshold(s) at which to trigger (0.0 to 1.0, or array of thresholds) */
-  threshold?: number | number[]
+  threshold?: number | number[];
   /** Whether to only trigger once and then stop observing */
-  triggerOnce?: boolean
+  triggerOnce?: boolean;
   /** Initial value before first observation */
-  initialIsIntersecting?: boolean
-}
+  initialIsIntersecting?: boolean;
+};
 
 /**
  * Custom hook that uses the Intersection Observer API to detect element visibility.
@@ -122,27 +122,27 @@ export function useIntersectionObserver<T extends HTMLElement = HTMLElement>(
 ): [RefObject<T>, IntersectionObserverEntry | null] {
   const {
     root = null,
-    rootMargin = "0px",
+    rootMargin = '0px',
     threshold = 0,
     triggerOnce = false,
     initialIsIntersecting = false,
-  } = options
+  } = options;
 
   /**
    * Create a ref to attach to the element we want to observe.
    */
-  const ref = useRef<T>(null)
+  const ref = useRef<T>(null);
 
   /**
    * State to store the intersection observer entry.
    * This contains information about the element's visibility.
    */
-  const [entry, setEntry] = useState<IntersectionObserverEntry | null>(null)
+  const [entry, setEntry] = useState<IntersectionObserverEntry | null>(null);
 
   /**
    * Track whether we've already triggered (for triggerOnce mode).
    */
-  const hasTriggered = useRef<boolean>(false)
+  const hasTriggered = useRef<boolean>(false);
 
   /**
    * Set initial intersecting state if provided.
@@ -151,30 +151,30 @@ export function useIntersectionObserver<T extends HTMLElement = HTMLElement>(
     if (initialIsIntersecting && !entry) {
       setEntry({
         isIntersecting: true,
-      } as IntersectionObserverEntry)
+      } as IntersectionObserverEntry);
     }
-  }, [initialIsIntersecting, entry])
+  }, [initialIsIntersecting, entry]);
 
   useEffect(() => {
     /**
      * Get the element to observe from the ref.
      */
-    const element = ref.current
+    const element = ref.current;
 
     /**
      * Early return if no element or if we're in SSR.
      */
-    if (!element || typeof window === "undefined") {
-      return
+    if (!element || typeof window === 'undefined') {
+      return;
     }
 
     /**
      * Check if the browser supports Intersection Observer.
      * If not, we can't proceed with observation.
      */
-    if (!("IntersectionObserver" in window)) {
-      console.warn("IntersectionObserver is not supported in this browser")
-      return
+    if (!('IntersectionObserver' in window)) {
+      console.warn('IntersectionObserver is not supported in this browser');
+      return;
     }
 
     /**
@@ -182,7 +182,7 @@ export function useIntersectionObserver<T extends HTMLElement = HTMLElement>(
      * don't set up a new observer.
      */
     if (triggerOnce && hasTriggered.current) {
-      return
+      return;
     }
 
     /**
@@ -195,22 +195,22 @@ export function useIntersectionObserver<T extends HTMLElement = HTMLElement>(
       /**
        * We only observe one element, so we only care about the first entry.
        */
-      const [observerEntry] = entries
+      const [observerEntry] = entries;
 
       /**
        * Update the entry state with the new intersection information.
        */
-      setEntry(observerEntry)
+      setEntry(observerEntry);
 
       /**
        * If triggerOnce is enabled and the element is intersecting,
        * mark that we've triggered and disconnect the observer.
        */
       if (triggerOnce && observerEntry.isIntersecting) {
-        hasTriggered.current = true
-        observer.disconnect()
+        hasTriggered.current = true;
+        observer.disconnect();
       }
-    }
+    };
 
     /**
      * Create the Intersection Observer with our options.
@@ -221,14 +221,14 @@ export function useIntersectionObserver<T extends HTMLElement = HTMLElement>(
       root,
       rootMargin,
       threshold,
-    })
+    });
 
     /**
      * Start observing the element.
      * From this point on, handleIntersection will be called
      * whenever the element's visibility changes.
      */
-    observer.observe(element)
+    observer.observe(element);
 
     /**
      * Cleanup function to disconnect the observer.
@@ -238,9 +238,9 @@ export function useIntersectionObserver<T extends HTMLElement = HTMLElement>(
      * - Any of the options change
      */
     return () => {
-      observer.disconnect()
-    }
-  }, [root, rootMargin, threshold, triggerOnce]) // Re-run if options change
+      observer.disconnect();
+    };
+  }, [root, rootMargin, threshold, triggerOnce]); // Re-run if options change
 
-  return [ref, entry]
+  return [ref, entry];
 }

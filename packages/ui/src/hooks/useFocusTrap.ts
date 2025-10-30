@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { useEffect, useRef, type RefObject } from "react"
+import { useEffect, useRef, type RefObject } from 'react';
 
 /**
  * Custom hook that traps focus within a DOM element for accessibility.
@@ -71,29 +71,29 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>(
   /**
    * Create a ref to attach to the element that should trap focus.
    */
-  const ref = useRef<T>(null)
+  const ref = useRef<T>(null);
 
   /**
    * Store the element that was focused before the trap was activated.
    * We'll return focus to this element when the trap is deactivated.
    */
-  const previouslyFocusedElement = useRef<HTMLElement | null>(null)
+  const previouslyFocusedElement = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     /**
      * Early return if focus trap is not active.
      */
     if (!isActive) {
-      return
+      return;
     }
 
     /**
      * Get the container element from the ref.
      */
-    const container = ref.current
+    const container = ref.current;
 
     if (!container) {
-      return
+      return;
     }
 
     /**
@@ -101,7 +101,7 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>(
      * This is important for accessibility - users expect focus to return
      * to where it was before opening a modal/dialog.
      */
-    previouslyFocusedElement.current = document.activeElement as HTMLElement
+    previouslyFocusedElement.current = document.activeElement as HTMLElement;
 
     /**
      * Query string for all focusable elements.
@@ -114,35 +114,35 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>(
       'input:not([disabled])',
       'select:not([disabled])',
       '[tabindex]:not([tabindex="-1"])',
-    ].join(", ")
+    ].join(', ');
 
     /**
      * Get all focusable elements within the container.
      * These are the elements we'll cycle through when Tab is pressed.
      */
     const getFocusableElements = (): HTMLElement[] => {
-      return Array.from(
-        container.querySelectorAll<HTMLElement>(focusableSelector)
-      ).filter((element) => {
-        /**
-         * Filter out elements that are not visible or are inert.
-         * Hidden elements shouldn't be included in tab order.
-         */
-        return (
-          element.offsetParent !== null &&
-          !element.hasAttribute("inert") &&
-          window.getComputedStyle(element).visibility !== "hidden"
-        )
-      })
-    }
+      return Array.from(container.querySelectorAll<HTMLElement>(focusableSelector)).filter(
+        (element) => {
+          /**
+           * Filter out elements that are not visible or are inert.
+           * Hidden elements shouldn't be included in tab order.
+           */
+          return (
+            element.offsetParent !== null &&
+            !element.hasAttribute('inert') &&
+            window.getComputedStyle(element).visibility !== 'hidden'
+          );
+        }
+      );
+    };
 
     /**
      * Focus the first focusable element in the container.
      * This ensures keyboard users start at the beginning of the trapped area.
      */
-    const focusableElements = getFocusableElements()
+    const focusableElements = getFocusableElements();
     if (focusableElements.length > 0) {
-      focusableElements[0].focus()
+      focusableElements[0].focus();
     }
 
     /**
@@ -155,30 +155,30 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>(
       /**
        * Only handle Tab key presses.
        */
-      if (event.key !== "Tab") {
-        return
+      if (event.key !== 'Tab') {
+        return;
       }
 
       /**
        * Get the current list of focusable elements.
        * We query each time because the DOM may have changed.
        */
-      const focusableElements = getFocusableElements()
+      const focusableElements = getFocusableElements();
 
       if (focusableElements.length === 0) {
         /**
          * No focusable elements, prevent default tab behavior.
          */
-        event.preventDefault()
-        return
+        event.preventDefault();
+        return;
       }
 
       /**
        * Get the first and last focusable elements.
        * These are our boundaries for the focus trap.
        */
-      const firstElement = focusableElements[0]
-      const lastElement = focusableElements[focusableElements.length - 1]
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
 
       /**
        * Handle Shift+Tab (backwards tabbing).
@@ -189,8 +189,8 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>(
            * If we're at the first element and user presses Shift+Tab,
            * wrap around to the last element.
            */
-          event.preventDefault()
-          lastElement.focus()
+          event.preventDefault();
+          lastElement.focus();
         }
       } else {
         /**
@@ -201,23 +201,23 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>(
            * If we're at the last element and user presses Tab,
            * wrap around to the first element.
            */
-          event.preventDefault()
-          firstElement.focus()
+          event.preventDefault();
+          firstElement.focus();
         }
       }
-    }
+    };
 
     /**
      * Add the keydown event listener to the document.
      * We listen on document to catch all Tab key presses.
      */
-    document.addEventListener("keydown", handleKeyDown)
+    document.addEventListener('keydown', handleKeyDown);
 
     /**
      * Cleanup function to remove event listener and restore focus.
      */
     return () => {
-      document.removeEventListener("keydown", handleKeyDown)
+      document.removeEventListener('keydown', handleKeyDown);
 
       /**
        * Return focus to the element that was focused before the trap.
@@ -225,10 +225,10 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>(
        * to where they were before opening a modal/dialog.
        */
       if (previouslyFocusedElement.current) {
-        previouslyFocusedElement.current.focus()
+        previouslyFocusedElement.current.focus();
       }
-    }
-  }, [isActive]) // Re-run when isActive changes
+    };
+  }, [isActive]); // Re-run when isActive changes
 
-  return ref
+  return ref;
 }

@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef } from 'react';
 
 /**
  * Custom hook that returns the previous value of a state or prop.
@@ -106,7 +106,7 @@ export function usePrevious<T>(value: T): T | undefined {
    * Using a ref ensures the value persists across renders
    * without causing re-renders when it changes.
    */
-  const ref = useRef<T>()
+  const ref = useRef<T>();
 
   /**
    * Effect to update the previous value after each render.
@@ -123,8 +123,8 @@ export function usePrevious<T>(value: T): T | undefined {
      * Store the current value in the ref.
      * This value will be the "previous" value on the next render.
      */
-    ref.current = value
-  }, [value]) // Run this effect whenever value changes
+    ref.current = value;
+  }, [value]); // Run this effect whenever value changes
 
   /**
    * Return the previous value (what's currently in the ref).
@@ -133,5 +133,5 @@ export function usePrevious<T>(value: T): T | undefined {
    * stored anything yet. On subsequent renders, it will contain the value
    * from the previous render.
    */
-  return ref.current
+  return ref.current;
 }

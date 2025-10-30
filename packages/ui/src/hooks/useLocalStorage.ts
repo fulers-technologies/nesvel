@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { useEffect, useState } from "react"
+import { useEffect, useState } from 'react';
 
 /**
  * Custom hook for managing state that persists in localStorage.
@@ -82,8 +82,8 @@ export function useLocalStorage<T>(
      * During SSR, localStorage is not available.
      * Return the initial value to prevent hydration mismatches.
      */
-    if (typeof window === "undefined") {
-      return initialValue
+    if (typeof window === 'undefined') {
+      return initialValue;
     }
 
     try {
@@ -91,14 +91,14 @@ export function useLocalStorage<T>(
        * Attempt to retrieve the value from localStorage.
        * If it doesn't exist, localStorage.getItem returns null.
        */
-      const item = window.localStorage.getItem(key)
+      const item = window.localStorage.getItem(key);
 
       /**
        * Parse and return the stored value if it exists,
        * otherwise return the initial value.
        */
-      return item ? (JSON.parse(item) as T) : initialValue
-    } catch (error) {
+      return item ? (JSON.parse(item) as T) : initialValue;
+    } catch (error: Error | any) {
       /**
        * Handle errors that might occur during localStorage access:
        * - SecurityError: localStorage is disabled (private browsing)
@@ -107,10 +107,10 @@ export function useLocalStorage<T>(
        *
        * In all error cases, fall back to the initial value.
        */
-      console.error(`Error reading localStorage key "${key}":`, error)
-      return initialValue
+      console.error(`Error reading localStorage key "${key}":`, error);
+      return initialValue;
     }
-  })
+  });
 
   /**
    * Custom setter function that updates both state and localStorage.
@@ -124,21 +124,20 @@ export function useLocalStorage<T>(
        * Allow value to be a function (like useState).
        * This enables patterns like: setValue(prev => prev + 1)
        */
-      const valueToStore =
-        value instanceof Function ? value(storedValue) : value
+      const valueToStore = value instanceof Function ? value(storedValue) : value;
 
       /**
        * Update React state with the new value.
        * This will trigger a re-render with the new value.
        */
-      setStoredValue(valueToStore)
+      setStoredValue(valueToStore);
 
       /**
        * Save the value to localStorage if we're in a browser environment.
        * We serialize the value to JSON for storage.
        */
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem(key, JSON.stringify(valueToStore))
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(key, JSON.stringify(valueToStore));
 
         /**
          * Dispatch a custom storage event for cross-tab synchronization.
@@ -146,14 +145,14 @@ export function useLocalStorage<T>(
          * so we dispatch a custom event that our own listener can catch.
          */
         window.dispatchEvent(
-          new StorageEvent("storage", {
+          new StorageEvent('storage', {
             key,
             newValue: JSON.stringify(valueToStore),
             storageArea: window.localStorage,
           })
-        )
+        );
       }
-    } catch (error) {
+    } catch (error: Error | any) {
       /**
        * Handle errors that might occur during localStorage writes:
        * - QuotaExceededError: storage quota exceeded
@@ -161,16 +160,16 @@ export function useLocalStorage<T>(
        *
        * We log the error but don't throw to prevent breaking the app.
        */
-      console.error(`Error setting localStorage key "${key}":`, error)
+      console.error(`Error setting localStorage key "${key}":`, error);
     }
-  }
+  };
 
   useEffect(() => {
     /**
      * Early return if we're not in a browser environment.
      */
-    if (typeof window === "undefined") {
-      return
+    if (typeof window === 'undefined') {
+      return;
     }
 
     /**
@@ -187,7 +186,7 @@ export function useLocalStorage<T>(
        * so we need to filter for our specific key.
        */
       if (event.key !== key) {
-        return
+        return;
       }
 
       /**
@@ -195,8 +194,8 @@ export function useLocalStorage<T>(
        * reset to the initial value.
        */
       if (event.newValue === null) {
-        setStoredValue(initialValue)
-        return
+        setStoredValue(initialValue);
+        return;
       }
 
       try {
@@ -204,30 +203,30 @@ export function useLocalStorage<T>(
          * Parse the new value from JSON and update state.
          * This keeps all tabs/windows in sync.
          */
-        const newValue = JSON.parse(event.newValue) as T
-        setStoredValue(newValue)
-      } catch (error) {
+        const newValue = JSON.parse(event.newValue) as T;
+        setStoredValue(newValue);
+      } catch (error: Error | any) {
         /**
          * If parsing fails, log the error and keep the current value.
          */
-        console.error(`Error parsing storage event for key "${key}":`, error)
+        console.error(`Error parsing storage event for key "${key}":`, error);
       }
-    }
+    };
 
     /**
      * Listen for storage events to enable cross-tab synchronization.
      * This allows changes in one tab to be reflected in all other tabs.
      */
-    window.addEventListener("storage", handleStorageChange)
+    window.addEventListener('storage', handleStorageChange);
 
     /**
      * Cleanup: remove the event listener when the component unmounts
      * or when the key/initialValue changes.
      */
     return () => {
-      window.removeEventListener("storage", handleStorageChange)
-    }
-  }, [key, initialValue]) // Re-run if key or initialValue changes
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [key, initialValue]); // Re-run if key or initialValue changes
 
-  return [storedValue, setValue]
+  return [storedValue, setValue];
 }

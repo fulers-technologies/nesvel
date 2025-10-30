@@ -10,7 +10,7 @@
  * @see https://tailwindcss.com/docs/using-with-preprocessors
  */
 
-import type { Config } from 'postcss-load-config'
+import type { Config } from 'postcss-load-config';
 
 const config: Config = {
   plugins: {
@@ -27,6 +27,6 @@ const config: Config = {
      */
     autoprefixer: {},
   },
-}
+};
 
-export default config
+export default config;

@@ -1,18 +1,18 @@
-"use client"
+'use client';
 
-import { useState } from "react"
+import { useState } from 'react';
 
 /**
  * State returned by the useCopyToClipboard hook.
  */
 type CopyState = {
   /** The value that was copied (null if nothing has been copied yet) */
-  copiedValue: string | null
+  copiedValue: string | null;
   /** Whether the copy operation succeeded */
-  success: boolean
+  success: boolean;
   /** Error that occurred during copy (null if no error) */
-  error: Error | null
-}
+  error: Error | null;
+};
 
 /**
  * Custom hook for copying text to the clipboard with feedback.
@@ -66,10 +66,7 @@ type CopyState = {
  * - Requires HTTPS or localhost for clipboard access (browser security)
  * - Returns a promise that resolves to the success status
  */
-export function useCopyToClipboard(): [
-  CopyState,
-  (text: string) => Promise<boolean>
-] {
+export function useCopyToClipboard(): [CopyState, (text: string) => Promise<boolean>] {
   /**
    * State to track the copy operation results.
    * Includes the copied value, success status, and any error.
@@ -78,7 +75,7 @@ export function useCopyToClipboard(): [
     copiedValue: null,
     success: false,
     error: null,
-  })
+  });
 
   /**
    * Function to copy text to the clipboard.
@@ -94,13 +91,13 @@ export function useCopyToClipboard(): [
      * Check if we're in a browser environment.
      * During SSR, navigator will be undefined.
      */
-    if (typeof navigator === "undefined") {
+    if (typeof navigator === 'undefined') {
       setCopyState({
         copiedValue: null,
         success: false,
-        error: new Error("Navigator not available (SSR)"),
-      })
-      return false
+        error: new Error('Navigator not available (SSR)'),
+      });
+      return false;
     }
 
     try {
@@ -110,36 +107,36 @@ export function useCopyToClipboard(): [
        * Note: Requires HTTPS or localhost for security reasons.
        */
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(text)
+        await navigator.clipboard.writeText(text);
 
         // Update state to reflect successful copy
         setCopyState({
           copiedValue: text,
           success: true,
           error: null,
-        })
+        });
 
-        return true
+        return true;
       }
 
       /**
        * Fallback for older browsers that don't support Clipboard API.
        * Uses the deprecated document.execCommand method.
        */
-      const success = await copyWithExecCommand(text)
+      const success = await copyWithExecCommand(text);
 
       if (success) {
         setCopyState({
           copiedValue: text,
           success: true,
           error: null,
-        })
-        return true
+        });
+        return true;
       }
 
       // If fallback also failed
-      throw new Error("Both clipboard methods failed")
-    } catch (error) {
+      throw new Error('Both clipboard methods failed');
+    } catch (error: Error | any) {
       /**
        * Handle any errors that occurred during the copy operation.
        * This could be due to:
@@ -147,20 +144,19 @@ export function useCopyToClipboard(): [
        * - Insecure context (not HTTPS)
        * - Browser doesn't support clipboard access
        */
-      const errorMessage =
-        error instanceof Error ? error : new Error("Copy failed")
+      const errorMessage = error instanceof Error ? error : new Error('Copy failed');
 
       setCopyState({
         copiedValue: null,
         success: false,
         error: errorMessage,
-      })
+      });
 
-      return false
+      return false;
     }
-  }
+  };
 
-  return [copyState, copy]
+  return [copyState, copy];
 }
 
 /**
@@ -178,48 +174,48 @@ async function copyWithExecCommand(text: string): Promise<boolean> {
    * Create a temporary textarea element to hold the text.
    * We'll select this text and copy it using execCommand.
    */
-  const textArea = document.createElement("textarea")
+  const textArea = document.createElement('textarea');
 
   // Set the text content
-  textArea.value = text
+  textArea.value = text;
 
   /**
    * Style the textarea to be invisible but still functional.
    * We need it in the DOM for the selection and copy to work,
    * but we don't want users to see it.
    */
-  textArea.style.position = "fixed"
-  textArea.style.top = "-9999px"
-  textArea.style.left = "-9999px"
-  textArea.style.opacity = "0"
+  textArea.style.position = 'fixed';
+  textArea.style.top = '-9999px';
+  textArea.style.left = '-9999px';
+  textArea.style.opacity = '0';
 
   // Add to DOM
-  document.body.appendChild(textArea)
+  document.body.appendChild(textArea);
 
   try {
     /**
      * Select the text content.
      * We need to focus the element first, then select its content.
      */
-    textArea.focus()
-    textArea.select()
+    textArea.focus();
+    textArea.select();
 
     /**
      * Execute the copy command.
      * This is the deprecated API but works as a fallback.
      * Returns true if successful, false otherwise.
      */
-    const successful = document.execCommand("copy")
+    const successful = document.execCommand('copy');
 
-    return successful
-  } catch (error) {
-    console.error("Fallback copy failed:", error)
-    return false
+    return successful;
+  } catch (error: Error | any) {
+    console.error('Fallback copy failed:', error);
+    return false;
   } finally {
     /**
      * Always remove the temporary textarea from the DOM,
      * whether the copy succeeded or failed.
      */
-    document.body.removeChild(textArea)
+    document.body.removeChild(textArea);
   }
 }

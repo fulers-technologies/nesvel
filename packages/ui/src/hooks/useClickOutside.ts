@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { useEffect, useRef, type RefObject } from "react"
+import { useEffect, useRef, type RefObject } from 'react';
 
 /**
  * Custom hook that detects clicks outside of a specified element.
@@ -58,7 +58,7 @@ export function useClickOutside<T extends HTMLElement = HTMLElement>(
    * Create a ref to attach to the element we want to monitor.
    * This ref will be returned and should be attached to the target element.
    */
-  const ref = useRef<T>(null)
+  const ref = useRef<T>(null);
 
   useEffect(() => {
     /**
@@ -66,7 +66,7 @@ export function useClickOutside<T extends HTMLElement = HTMLElement>(
      * This allows conditional click-outside detection without unmounting.
      */
     if (!enabled) {
-      return
+      return;
     }
 
     /**
@@ -80,20 +80,20 @@ export function useClickOutside<T extends HTMLElement = HTMLElement>(
        * Get the actual DOM element from the ref.
        * If ref is not attached or element is not in DOM, do nothing.
        */
-      const element = ref.current
+      const element = ref.current;
 
       if (!element) {
-        return
+        return;
       }
 
       /**
        * Get the target of the event (where the user clicked/touched).
        * We need to check if this is a valid Node for the contains check.
        */
-      const target = event.target
+      const target = event.target;
 
       if (!(target instanceof Node)) {
-        return
+        return;
       }
 
       /**
@@ -101,15 +101,15 @@ export function useClickOutside<T extends HTMLElement = HTMLElement>(
        * If it did, we don't want to trigger the handler.
        */
       if (element.contains(target)) {
-        return
+        return;
       }
 
       /**
        * The click/touch was outside the element, so call the handler.
        * This is where you typically close your dropdown, modal, etc.
        */
-      handler(event)
-    }
+      handler(event);
+    };
 
     /**
      * Add event listeners for both mouse and touch events.
@@ -122,8 +122,8 @@ export function useClickOutside<T extends HTMLElement = HTMLElement>(
      * The 'true' parameter enables capture phase, ensuring we catch
      * the event before it bubbles up through the DOM.
      */
-    document.addEventListener("mousedown", listener, true)
-    document.addEventListener("touchstart", listener, true)
+    document.addEventListener('mousedown', listener, true);
+    document.addEventListener('touchstart', listener, true);
 
     /**
      * Cleanup function to remove event listeners.
@@ -133,10 +133,10 @@ export function useClickOutside<T extends HTMLElement = HTMLElement>(
      * - Effect is re-run for any reason
      */
     return () => {
-      document.removeEventListener("mousedown", listener, true)
-      document.removeEventListener("touchstart", listener, true)
-    }
-  }, [handler, enabled]) // Re-run effect if handler or enabled state changes
+      document.removeEventListener('mousedown', listener, true);
+      document.removeEventListener('touchstart', listener, true);
+    };
+  }, [handler, enabled]); // Re-run effect if handler or enabled state changes
 
-  return ref
+  return ref;
 }

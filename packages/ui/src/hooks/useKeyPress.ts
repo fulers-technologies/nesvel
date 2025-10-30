@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { useEffect, useState } from "react"
+import { useEffect, useState } from 'react';
 
 /**
  * Custom hook that detects when a specific key is pressed.
@@ -90,48 +90,39 @@ import { useEffect, useState } from "react"
  */
 type KeyPressOptions = {
   /** Require Ctrl/Cmd key to be pressed */
-  ctrlKey?: boolean
+  ctrlKey?: boolean;
   /** Require Alt/Option key to be pressed */
-  altKey?: boolean
+  altKey?: boolean;
   /** Require Shift key to be pressed */
-  shiftKey?: boolean
+  shiftKey?: boolean;
   /** Require Meta/Windows/Command key to be pressed */
-  metaKey?: boolean
+  metaKey?: boolean;
   /** Target element (defaults to document) */
-  target?: HTMLElement | Document | Window
-}
+  target?: HTMLElement | Document | Window;
+};
 
-export function useKeyPress(
-  targetKey: string,
-  options: KeyPressOptions = {}
-): boolean {
-  const {
-    ctrlKey = false,
-    altKey = false,
-    shiftKey = false,
-    metaKey = false,
-    target,
-  } = options
+export function useKeyPress(targetKey: string, options: KeyPressOptions = {}): boolean {
+  const { ctrlKey = false, altKey = false, shiftKey = false, metaKey = false, target } = options;
 
   /**
    * State to track whether the target key is currently pressed.
    * Initialized to false for SSR compatibility.
    */
-  const [keyPressed, setKeyPressed] = useState<boolean>(false)
+  const [keyPressed, setKeyPressed] = useState<boolean>(false);
 
   useEffect(() => {
     /**
      * Early return if we're not in a browser environment.
      */
-    if (typeof window === "undefined") {
-      return
+    if (typeof window === 'undefined') {
+      return;
     }
 
     /**
      * Determine the event target.
      * Defaults to window if no target is specified.
      */
-    const eventTarget = target || window
+    const eventTarget = target || window;
 
     /**
      * Handler for keydown events.
@@ -146,7 +137,7 @@ export function useKeyPress(
        * Key comparison is case-sensitive.
        */
       if (event.key !== targetKey) {
-        return
+        return;
       }
 
       /**
@@ -157,12 +148,12 @@ export function useKeyPress(
         event.ctrlKey === ctrlKey &&
         event.altKey === altKey &&
         event.shiftKey === shiftKey &&
-        event.metaKey === metaKey
+        event.metaKey === metaKey;
 
       if (modifiersMatch) {
-        setKeyPressed(true)
+        setKeyPressed(true);
       }
-    }
+    };
 
     /**
      * Handler for keyup events.
@@ -178,31 +169,31 @@ export function useKeyPress(
        */
       if (
         event.key === targetKey ||
-        (ctrlKey && event.key === "Control") ||
-        (altKey && event.key === "Alt") ||
-        (shiftKey && event.key === "Shift") ||
-        (metaKey && event.key === "Meta")
+        (ctrlKey && event.key === 'Control') ||
+        (altKey && event.key === 'Alt') ||
+        (shiftKey && event.key === 'Shift') ||
+        (metaKey && event.key === 'Meta')
       ) {
-        setKeyPressed(false)
+        setKeyPressed(false);
       }
-    }
+    };
 
     /**
      * Add event listeners for keydown and keyup.
      * These track the pressed state of the key.
      */
-    eventTarget.addEventListener("keydown", handleKeyDown as EventListener)
-    eventTarget.addEventListener("keyup", handleKeyUp as EventListener)
+    eventTarget.addEventListener('keydown', handleKeyDown as EventListener);
+    eventTarget.addEventListener('keyup', handleKeyUp as EventListener);
 
     /**
      * Cleanup function to remove event listeners.
      * Prevents memory leaks when component unmounts.
      */
     return () => {
-      eventTarget.removeEventListener("keydown", handleKeyDown as EventListener)
-      eventTarget.removeEventListener("keyup", handleKeyUp as EventListener)
-    }
-  }, [targetKey, ctrlKey, altKey, shiftKey, metaKey, target])
+      eventTarget.removeEventListener('keydown', handleKeyDown as EventListener);
+      eventTarget.removeEventListener('keyup', handleKeyUp as EventListener);
+    };
+  }, [targetKey, ctrlKey, altKey, shiftKey, metaKey, target]);
 
-  return keyPressed
+  return keyPressed;
 }

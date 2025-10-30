@@ -1,15 +1,22 @@
 import type { Linter } from 'eslint';
-import { config as nest } from '@nesvel/eslint-config/nestjs';
+import { config as base } from '@nesvel/eslint-config/base';
 
 /**
- * ESLint configuration array
+ * ESLint configuration array for @nesvel/ui package
  *
- * Inherits all NestJS-specific linting rules including:
- * - Message broker patterns
- * - Publish/subscribe decorator usage
- * - Event-driven architecture standards
- * - Message serialization conventions
+ * Extends base configuration with TypeScript parser options
+ * to resolve tsconfigRootDir for proper type-aware linting.
  */
-const config: Linter.Config[] = [...nest];
+const config: Linter.Config[] = [
+  ...base,
+  {
+    languageOptions: {
+      parserOptions: {
+        project: './tsconfig.json',
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
+];
 
 export default config;

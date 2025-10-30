@@ -1,20 +1,18 @@
 /**
  * Global Styles for @nesvel/ui
  *
- * This file defines @layer base {
-  /**
-   * Light Theme Variables (Default)
-   *
-   * HSL color format: hue saturation lightness
-   * Example: --primary: 222.2 47.4% 11.2% = hsl(222.2, 47.4%, 11.2%)
-   *
-   * Color Categories:
-   * - Layout: background, foreground, border
-   * - Components: card, popover
-   * - Semantic: primary, secondary, destructive, muted, accent
-   * - Forms: input, ring
-   * - Other: radius
-   */
+ * Light Theme Variables (Default)
+ *
+ * HSL color format: hue saturation lightness
+ * Example: --primary: 222.2 47.4% 11.2% = hsl(222.2, 47.4%, 11.2%)
+ *
+ * Color Categories:
+ * - Layout: background, foreground, border
+ * - Components: card, popover
+ * - Semantic: primary, secondary, destructive, muted, accent
+ * - Forms: input, ring
+ * - Other: radius
+ */
 :root {
   /* Base colors for page background and text */
   --background: 0 0% 100%;
@@ -147,21 +145,10 @@
    BASE ELEMENT STYLES
    ============================================ */
 
-@layer base {
+* {
+  @apply border-border;
+}
 
-  /**
-   * Universal selector
-   * Ensures all elements use the theme border color
-   */
-  * {
-    @apply border-border;
-  }
-
-  /**
-   * Body element
-   * Sets default background and text colors from theme
-   */
-  body {
-    @apply bg-background text-foreground;
-  }
+body {
+  @apply bg-background text-foreground;
 }

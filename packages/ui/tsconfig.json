@@ -1,10 +1,11 @@
 {
-  "extends": "@nesvel/typescript-config/react-library.json",
+  "extends": "@nesvel/typescript-config/react-internal",
   "compilerOptions": {
     "outDir": "dist",
-    "baseUrl": ".",
+    "rootDir": "./src",
+    "baseUrl": "./src",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./*"]
     }
   },
   "include": ["src"],

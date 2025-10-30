@@ -1,16 +1,16 @@
-"use client"
+'use client';
 
-import { useEffect, useState } from "react"
+import { useEffect, useState } from 'react';
 
 /**
  * Window size dimensions.
  */
 type WindowSize = {
   /** The width of the window in pixels */
-  width: number
+  width: number;
   /** The height of the window in pixels */
-  height: number
-}
+  height: number;
+};
 
 /**
  * Custom hook that tracks the browser window dimensions.
@@ -108,15 +108,15 @@ export function useWindowSize(): WindowSize {
   const [windowSize, setWindowSize] = useState<WindowSize>({
     width: 0,
     height: 0,
-  })
+  });
 
   useEffect(() => {
     /**
      * Early return if we're not in a browser environment.
      * During SSR, window will be undefined.
      */
-    if (typeof window === "undefined") {
-      return
+    if (typeof window === 'undefined') {
+      return;
     }
 
     /**
@@ -135,30 +135,30 @@ export function useWindowSize(): WindowSize {
          * window.innerHeight is the visible height of the window.
          */
         height: window.innerHeight,
-      })
-    }
+      });
+    };
 
     /**
      * Set initial window size.
      * This ensures we have the correct size immediately after mounting,
      * rather than waiting for a resize event.
      */
-    handleResize()
+    handleResize();
 
     /**
      * Add event listener for window resize events.
      * This ensures our state stays in sync with the actual window size.
      */
-    window.addEventListener("resize", handleResize)
+    window.addEventListener('resize', handleResize);
 
     /**
      * Cleanup function to remove the event listener.
      * This prevents memory leaks when the component unmounts.
      */
     return () => {
-      window.removeEventListener("resize", handleResize)
-    }
-  }, []) // Empty dependency array - only run on mount and unmount
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []); // Empty dependency array - only run on mount and unmount
 
-  return windowSize
+  return windowSize;
 }

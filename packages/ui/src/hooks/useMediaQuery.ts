@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { useEffect, useState } from "react"
+import { useEffect, useState } from 'react';
 
 /**
  * Custom hook to track media query matches in a React component.
@@ -41,15 +41,15 @@ export function useMediaQuery(query: string): boolean {
    * Initialize state with false for SSR compatibility.
    * This prevents hydration mismatches between server and client.
    */
-  const [matches, setMatches] = useState<boolean>(false)
+  const [matches, setMatches] = useState<boolean>(false);
 
   useEffect(() => {
     /**
      * Check if window is available (client-side only).
      * This guard prevents errors during server-side rendering.
      */
-    if (typeof window === "undefined") {
-      return
+    if (typeof window === 'undefined') {
+      return;
     }
 
     /**
@@ -57,7 +57,7 @@ export function useMediaQuery(query: string): boolean {
      * This object allows us to check the current match status
      * and listen for changes.
      */
-    const mediaQueryList = window.matchMedia(query)
+    const mediaQueryList = window.matchMedia(query);
 
     /**
      * Handler function that updates state when the media query match changes.
@@ -66,15 +66,15 @@ export function useMediaQuery(query: string): boolean {
      * @param event - MediaQueryListEvent containing the new match status
      */
     const handleChange = (event: MediaQueryListEvent) => {
-      setMatches(event.matches)
-    }
+      setMatches(event.matches);
+    };
 
     /**
      * Set the initial match status.
      * This ensures the state reflects the current media query status
      * on mount and after SSR hydration.
      */
-    setMatches(mediaQueryList.matches)
+    setMatches(mediaQueryList.matches);
 
     /**
      * Add event listener for media query changes.
@@ -82,10 +82,10 @@ export function useMediaQuery(query: string): boolean {
      * the deprecated addListener for older browser support.
      */
     if (mediaQueryList.addEventListener) {
-      mediaQueryList.addEventListener("change", handleChange)
+      mediaQueryList.addEventListener('change', handleChange);
     } else {
       // Fallback for older browsers (Safari < 14)
-      mediaQueryList.addListener(handleChange)
+      mediaQueryList.addListener(handleChange);
     }
 
     /**
@@ -94,13 +94,13 @@ export function useMediaQuery(query: string): boolean {
      */
     return () => {
       if (mediaQueryList.removeEventListener) {
-        mediaQueryList.removeEventListener("change", handleChange)
+        mediaQueryList.removeEventListener('change', handleChange);
       } else {
         // Fallback for older browsers (Safari < 14)
-        mediaQueryList.removeListener(handleChange)
+        mediaQueryList.removeListener(handleChange);
       }
-    }
-  }, [query]) // Re-run effect if query changes
+    };
+  }, [query]); // Re-run effect if query changes
 
-  return matches
+  return matches;
 }

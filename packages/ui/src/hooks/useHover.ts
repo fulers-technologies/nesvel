@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { useEffect, useRef, useState, type RefObject } from "react"
+import { useEffect, useRef, useState, type RefObject } from 'react';
 
 /**
  * Custom hook for tracking hover state on a DOM element.
@@ -69,29 +69,26 @@ import { useEffect, useRef, useState, type RefObject } from "react"
  * - Returns false if element is not yet mounted
  * - Works with any HTML element type via generics
  */
-export function useHover<T extends HTMLElement = HTMLElement>(): [
-  RefObject<T>,
-  boolean
-] {
+export function useHover<T extends HTMLElement = HTMLElement>(): [RefObject<T>, boolean] {
   /**
    * Create a ref to attach to the element we want to track hover on.
    */
-  const ref = useRef<T>(null)
+  const ref = useRef<T>(null);
 
   /**
    * State to track whether the element is currently hovered.
    */
-  const [isHovered, setIsHovered] = useState<boolean>(false)
+  const [isHovered, setIsHovered] = useState<boolean>(false);
 
   useEffect(() => {
     /**
      * Get the current element from the ref.
      * If the ref is not attached yet, we can't add listeners.
      */
-    const element = ref.current
+    const element = ref.current;
 
     if (!element) {
-      return
+      return;
     }
 
     /**
@@ -99,24 +96,24 @@ export function useHover<T extends HTMLElement = HTMLElement>(): [
      * Sets the hover state to true.
      */
     const handleMouseEnter = () => {
-      setIsHovered(true)
-    }
+      setIsHovered(true);
+    };
 
     /**
      * Handler for when the mouse leaves the element.
      * Sets the hover state to false.
      */
     const handleMouseLeave = () => {
-      setIsHovered(false)
-    }
+      setIsHovered(false);
+    };
 
     /**
      * Add event listeners to the element.
      * We use mouseenter/mouseleave instead of mouseover/mouseout
      * because they don't bubble and are easier to work with.
      */
-    element.addEventListener("mouseenter", handleMouseEnter)
-    element.addEventListener("mouseleave", handleMouseLeave)
+    element.addEventListener('mouseenter', handleMouseEnter);
+    element.addEventListener('mouseleave', handleMouseLeave);
 
     /**
      * Cleanup function to remove event listeners.
@@ -125,10 +122,10 @@ export function useHover<T extends HTMLElement = HTMLElement>(): [
      * - Ref changes to a different element
      */
     return () => {
-      element.removeEventListener("mouseenter", handleMouseEnter)
-      element.removeEventListener("mouseleave", handleMouseLeave)
-    }
-  }, []) // Empty dependency array - listeners only set up once
+      element.removeEventListener('mouseenter', handleMouseEnter);
+      element.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, []); // Empty dependency array - listeners only set up once
 
-  return [ref, isHovered]
+  return [ref, isHovered];
 }

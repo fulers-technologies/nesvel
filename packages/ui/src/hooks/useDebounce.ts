@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { useEffect, useState } from "react"
+import { useEffect, useState } from 'react';
 
 /**
  * Custom hook that debounces a value, delaying updates until after a specified delay.
@@ -91,7 +91,7 @@ export function useDebounce<T>(value: T, delay: number = 500): T {
    * State to store the debounced value.
    * Initialized with the current value to avoid undefined states.
    */
-  const [debouncedValue, setDebouncedValue] = useState<T>(value)
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   useEffect(() => {
     /**
@@ -103,8 +103,8 @@ export function useDebounce<T>(value: T, delay: number = 500): T {
      * input value has been stable for the full delay period.
      */
     const timer = setTimeout(() => {
-      setDebouncedValue(value)
-    }, delay)
+      setDebouncedValue(value);
+    }, delay);
 
     /**
      * Cleanup function that clears the timeout.
@@ -120,14 +120,14 @@ export function useDebounce<T>(value: T, delay: number = 500): T {
      * - We prevent memory leaks from orphaned timers
      */
     return () => {
-      clearTimeout(timer)
-    }
-  }, [value, delay]) // Re-run effect when value or delay changes
+      clearTimeout(timer);
+    };
+  }, [value, delay]); // Re-run effect when value or delay changes
 
   /**
    * Return the debounced value.
    * This will be the same as the input value initially,
    * then will update to new values after the delay period.
    */
-  return debouncedValue
+  return debouncedValue;
 }

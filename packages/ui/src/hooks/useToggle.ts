@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { useCallback, useState } from "react"
+import { useCallback, useState } from 'react';
 
 /**
  * Custom hook for managing boolean state with convenient toggle functionality.
@@ -70,49 +70,47 @@ import { useCallback, useState } from "react"
  * - setValue accepts a boolean or a function that receives the current value
  * - Perfect for managing any boolean UI state
  */
-export function useToggle(
-  initialValue: boolean = false
-): [
+export function useToggle(initialValue: boolean = false): [
   boolean,
   {
-    toggle: () => void
-    setTrue: () => void
-    setFalse: () => void
-    setValue: (value: boolean | ((prev: boolean) => boolean)) => void
-  }
+    toggle: () => void;
+    setTrue: () => void;
+    setFalse: () => void;
+    setValue: (value: boolean | ((prev: boolean) => boolean)) => void;
+  },
 ] {
   /**
    * State to track the current boolean value.
    */
-  const [value, setValue] = useState<boolean>(initialValue)
+  const [value, setValue] = useState<boolean>(initialValue);
 
   /**
    * Toggle the value between true and false.
    * Uses useCallback to ensure stable reference across renders.
    */
   const toggle = useCallback(() => {
-    setValue((prev) => !prev)
-  }, [])
+    setValue((prev) => !prev);
+  }, []);
 
   /**
    * Set the value to true.
    * Useful when you always want to enable something (e.g., opening a modal).
    */
   const setTrue = useCallback(() => {
-    setValue(true)
-  }, [])
+    setValue(true);
+  }, []);
 
   /**
    * Set the value to false.
    * Useful when you always want to disable something (e.g., closing a modal).
    */
   const setFalse = useCallback(() => {
-    setValue(false)
-  }, [])
+    setValue(false);
+  }, []);
 
   /**
    * Return the current value and all helper methods.
    * setValue is already memoized by useState, so we don't need to wrap it.
    */
-  return [value, { toggle, setTrue, setFalse, setValue }]
+  return [value, { toggle, setTrue, setFalse, setValue }];
 }

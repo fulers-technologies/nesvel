@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { useEffect, useState } from "react"
+import { useEffect, useState } from 'react';
 
 /**
  * Custom hook that detects if the viewport width is below the mobile breakpoint.
@@ -83,15 +83,15 @@ export function useIsMobile(mobileBreakpoint: number = 768): boolean {
    * Initialize state with undefined to detect initial mount.
    * This prevents hydration mismatches during SSR.
    */
-  const [isMobile, setIsMobile] = useState<boolean>(false)
+  const [isMobile, setIsMobile] = useState<boolean>(false);
 
   useEffect(() => {
     /**
      * Early return if we're not in a browser environment.
      * During SSR, window will be undefined.
      */
-    if (typeof window === "undefined") {
-      return
+    if (typeof window === 'undefined') {
+      return;
     }
 
     /**
@@ -100,9 +100,7 @@ export function useIsMobile(mobileBreakpoint: number = 768): boolean {
      * - Mobile: width < mobileBreakpoint
      * - Desktop: width >= mobileBreakpoint
      */
-    const mediaQueryList = window.matchMedia(
-      `(max-width: ${mobileBreakpoint - 1}px)`
-    )
+    const mediaQueryList = window.matchMedia(`(max-width: ${mobileBreakpoint - 1}px)`);
 
     /**
      * Handler function that updates the mobile state.
@@ -113,29 +111,29 @@ export function useIsMobile(mobileBreakpoint: number = 768): boolean {
        * Use window.innerWidth for the check to ensure consistency
        * with the media query and handle edge cases.
        */
-      setIsMobile(window.innerWidth < mobileBreakpoint)
-    }
+      setIsMobile(window.innerWidth < mobileBreakpoint);
+    };
 
     /**
      * Add event listener for media query changes.
      * Modern approach using addEventListener.
      */
-    mediaQueryList.addEventListener("change", handleChange)
+    mediaQueryList.addEventListener('change', handleChange);
 
     /**
      * Set the initial mobile state immediately.
      * This ensures the state is correct right after mounting.
      */
-    handleChange()
+    handleChange();
 
     /**
      * Cleanup function to remove the event listener.
      * This prevents memory leaks when the component unmounts.
      */
     return () => {
-      mediaQueryList.removeEventListener("change", handleChange)
-    }
-  }, [mobileBreakpoint]) // Re-run if breakpoint changes
+      mediaQueryList.removeEventListener('change', handleChange);
+    };
+  }, [mobileBreakpoint]); // Re-run if breakpoint changes
 
-  return isMobile
+  return isMobile;
 }
