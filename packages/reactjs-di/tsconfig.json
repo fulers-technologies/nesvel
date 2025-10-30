@@ -1,0 +1,29 @@
+{
+  "extends": "@nesvel/typescript-config/react-internal",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["./*"],
+      "@console/*": ["./console/*"],
+      "@decorators/*": ["./decorators/*"],
+      "@entities/*": ["./entities/*"],
+      "@exceptions/*": ["./exceptions/*"],
+      "@factories/*": ["./factories/*"],
+      "@interfaces/*": ["./interfaces/*"],
+      "@migrations/*": ["./migrations/*"],
+      "@mixins/*": ["./mixins/*"],
+      "@repositories/*": ["./repositories/*"],
+      "@seeders/*": ["./seeders/*"],
+      "@services/*": ["./services/*"],
+      "@subscribers/*": ["./subscribers/*"],
+      "@types/*": ["./types/*"],
+      "@utils/*": ["./utils/*"],
+      "@tests/*": ["../__tests__/*", "../test/*"],
+      "@examples/*": ["../__examples__/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
+}
