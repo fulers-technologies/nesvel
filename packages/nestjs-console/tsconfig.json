@@ -1,0 +1,20 @@
+{
+  "extends": "@nesvel/typescript-config/nest-lib",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"],
+      "@console/*": ["src/console/*"],
+      "@enums/*": ["src/enums/*"],
+      "@interfaces/*": ["src/interfaces/*"],
+      "@messages/*": ["src/messages/*"],
+      "@prompts/*": ["src/prompts/*"],
+      "@themes/*": ["src/themes/*"],
+      "@tests/*": ["__tests__/*", "test/*"],
+      "@examples/*": ["__examples__/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "__tests__", "__examples__"]
+}

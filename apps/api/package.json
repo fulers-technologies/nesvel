@@ -18,21 +18,29 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "orm": "NODE_ENV=development tsx --tsconfig ../../packages/nestjs-orm/tsconfig.json ../../packages/nestjs-orm/src/cli.ts"
   },
   "dependencies": {
-    "@nestjs/common": "^11.1.8",
-    "@nestjs/core": "^11.1.8",
-    "@nestjs/platform-express": "^11.1.8",
-    "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.2"
+    "@nestjs/cache-manager": "^3.0.1",
+    "@nestjs/common": "catalog:nestjs",
+    "@nestjs/core": "catalog:nestjs",
+    "@nestjs/platform-express": "catalog:nestjs",
+    "@nestjs/swagger": "catalog:nestjsModules",
+    "@nesvel/nestjs-i18n": "workspace:*",
+    "@nesvel/nestjs-orm": "workspace:*",
+    "@nesvel/nestjs-swagger": "workspace:*",
+    "class-transformer": "catalog:validation",
+    "class-validator": "catalog:validation",
+    "reflect-metadata": "catalog:nestjs",
+    "rxjs": "catalog:nestjs"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.38.0",
-    "@nestjs/cli": "^11.0.10",
-    "@nestjs/schematics": "^11.0.9",
-    "@nestjs/testing": "^11.1.8",
+    "@nestjs/cli": "catalog:nestjsCli",
+    "@nestjs/schematics": "catalog:nestjsCli",
+    "@nestjs/testing": "catalog:nestjsCli",
     "@types/express": "^5.0.5",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.9.2",

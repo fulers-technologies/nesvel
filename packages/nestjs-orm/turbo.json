@@ -1,0 +1,14 @@
+{
+  "extends": [
+    "//"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": [
+        "@nesvel/shared#build",
+        "@nesvel/nestjs-console#build",
+        "@nesvel/nestjs-pubsub#build"
+      ]
+    }
+  }
+}

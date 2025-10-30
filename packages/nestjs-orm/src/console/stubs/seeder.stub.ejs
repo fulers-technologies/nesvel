@@ -1,0 +1,24 @@
+import { Injectable } from '@nestjs/common';
+import { Seeder, EntityManager } from '@nesvel/nestjs-orm';
+import { <%= modelName %> } from '@/entities/<%= fileName %>';
+
+/**
+ * <%= name %> Seeder
+ *
+ * @description Seeds <%= modelName %> data
+ */
+@Injectable()
+@Seeder()
+export class <%= name %> {
+  constructor(private readonly em: EntityManager) {}
+
+  async run(): Promise<void> {
+    // Create seed data
+    const <%= variableName %> = this.em.create(<%= modelName %>, {
+      name: 'Sample <%= modelName %>',
+      // Add seed data here
+    });
+
+    await this.em.persistAndFlush(<%= variableName %>);
+  }
+}

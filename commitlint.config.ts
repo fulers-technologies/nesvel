@@ -43,7 +43,6 @@ const Configuration: UserConfig = {
         'nestjs-orm',
         'nestjs-cache',
         'nestjs-console',
-        'nestjs-pagination',
         'nestjs-pubsub',
         'nestjs-storage',
 

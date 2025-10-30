@@ -65,6 +65,7 @@
     "typescript": "catalog:typescript"
   },
   "dependencies": {
+    "nestjs-paginate": "^12.8.3",
     "nestjs-pino": "^4.4.1",
     "pino": "^10.1.0",
     "pino-http": "^11.0.0",

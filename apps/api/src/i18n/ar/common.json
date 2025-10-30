@@ -1,0 +1,25 @@
+{
+  "welcome": "مرحباً بك في Nesvel API",
+  "hello": "مرحباً، {name}!",
+  "goodbye": "وداعاً",
+  "errors": {
+    "notFound": "المورد غير موجود",
+    "unauthorized": "وصول غير مصرح به",
+    "forbidden": "الوصول محظور",
+    "badRequest": "طلب غير صحيح",
+    "internalError": "خطأ داخلي في الخادم"
+  },
+  "validation": {
+    "required": "هذا الحقل مطلوب",
+    "email": "عنوان بريد إلكتروني غير صالح",
+    "minLength": "الحد الأدنى للطول هو {min} حرفاً",
+    "maxLength": "الحد الأقصى للطول هو {max} حرفاً",
+    "invalid": "قيمة غير صالحة"
+  },
+  "messages": {
+    "created": "تم الإنشاء بنجاح",
+    "updated": "تم التحديث بنجاح",
+    "deleted": "تم الحذف بنجاح",
+    "saved": "تم الحفظ بنجاح"
+  }
+}

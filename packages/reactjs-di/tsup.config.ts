@@ -1,13 +1,13 @@
 import { defineConfig } from 'tsup';
-import { nestLibPreset } from '@nesvel/tsup-config';
+import { reactLibPreset } from '@nesvel/tsup-config';
 
 /**
- * Build configuration for @nesvel/nestjs-orm
+ * Build configuration for @nesvel/reactjs-di
  *
- * Uses the NestJS library preset which:
- * - Preserves decorators and metadata (required for NestJS)
- * - Uses TypeScript compiler for proper decorator handling
+ * Uses the React library preset which:
+ * - Bundles all code for easy consumption
+ * - Supports JSX/TSX with React external
  * - Outputs both ESM and CJS formats
  * - Generates TypeScript declarations
  */
-export default defineConfig(nestLibPreset);
+export default defineConfig(reactLibPreset);

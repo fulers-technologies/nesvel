@@ -249,7 +249,7 @@ Additional NestJS modules for features like caching, swagger, throttling, etc.
 
 - `@nestjs/config` - v4.0.2
 - `@nestjs/cache-manager` - v3.0.0
-- `@nestjs/swagger` - v8.0.7
+- `@nesvel/nestjs-swagger` - v8.0.7
 - `@nestjs/mapped-types` - v2.0.5
 - `@nestjs/throttler` - v6.2.1
 - `@nestjs/schedule` - v4.1.1

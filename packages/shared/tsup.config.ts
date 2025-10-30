@@ -1,5 +1,5 @@
 import { defineConfig } from 'tsup';
-import { preset as basePreset } from '@nesvel/tsup-config';
+import { basePreset } from '@nesvel/tsup-config';
 
 /**
  * Build configuration for @nesvel/shared
