@@ -1,6 +1,8 @@
 # 📚 Catalogs Reference
 
-This document provides a comprehensive reference for all available catalogs in the Nesvel monorepo. Use these catalogs to ensure consistent dependency versions across all apps and packages.
+This document provides a comprehensive reference for all available catalogs in
+the Nesvel monorepo. Use these catalogs to ensure consistent dependency versions
+across all apps and packages.
 
 ## 🎯 Usage
 
@@ -23,6 +25,7 @@ In your `package.json`, reference catalog versions like this:
 ## 📦 Core Catalogs
 
 ### `typescript`
+
 TypeScript compiler.
 
 ```json
@@ -30,11 +33,13 @@ TypeScript compiler.
 ```
 
 **Packages:**
+
 - `typescript` - v5.9.3
 
 ---
 
 ### `types`
+
 TypeScript type definitions for common packages.
 
 ```json
@@ -42,6 +47,7 @@ TypeScript type definitions for common packages.
 ```
 
 **Packages:**
+
 - `@types/node` - v24.9.1
 - `@types/react` - v19.1.0
 - `@types/react-dom` - v19.1.1
@@ -58,6 +64,7 @@ TypeScript type definitions for common packages.
 ## ⚛️ Frontend Catalogs
 
 ### `react`
+
 React core libraries and utilities.
 
 ```json
@@ -65,6 +72,7 @@ React core libraries and utilities.
 ```
 
 **Packages:**
+
 - `react` - v19.2.0
 - `react-dom` - v19.1.0
 - `react-hook-form` - v7.54.2
@@ -72,6 +80,7 @@ React core libraries and utilities.
 ---
 
 ### `nextjs`
+
 Next.js framework.
 
 ```json
@@ -79,11 +88,13 @@ Next.js framework.
 ```
 
 **Packages:**
+
 - `next` - v16.0.0
 
 ---
 
 ### `ui`
+
 shadcn/ui and Radix UI components for building modern UIs.
 
 ```json
@@ -92,6 +103,7 @@ shadcn/ui and Radix UI components for building modern UIs.
 ```
 
 **Packages (Radix UI):**
+
 - `@radix-ui/react-accordion`
 - `@radix-ui/react-alert-dialog`
 - `@radix-ui/react-aspect-ratio`
@@ -121,6 +133,7 @@ shadcn/ui and Radix UI components for building modern UIs.
 - `@radix-ui/react-tooltip`
 
 **Utilities:**
+
 - `class-variance-authority` - CVA for variant styles
 - `clsx` - Utility for constructing className strings
 - `tailwind-merge` - Merge Tailwind CSS classes
@@ -136,6 +149,7 @@ shadcn/ui and Radix UI components for building modern UIs.
 ---
 
 ### `uiStyles`
+
 Tailwind CSS and styling utilities.
 
 ```json
@@ -143,6 +157,7 @@ Tailwind CSS and styling utilities.
 ```
 
 **Packages:**
+
 - `tailwindcss` - v3.4.17
 - `tailwindcss-animate` - v1.0.7
 - `autoprefixer` - v10.4.20
@@ -154,6 +169,7 @@ Tailwind CSS and styling utilities.
 ---
 
 ### `stateManagement`
+
 State management libraries for React.
 
 ```json
@@ -161,6 +177,7 @@ State management libraries for React.
 ```
 
 **Packages:**
+
 - `zustand` - v5.0.3
 - `jotai` - v2.10.6
 - `immer` - v10.1.1
@@ -168,6 +185,7 @@ State management libraries for React.
 ---
 
 ### `dataFetching`
+
 Data fetching and HTTP client libraries.
 
 ```json
@@ -175,6 +193,7 @@ Data fetching and HTTP client libraries.
 ```
 
 **Packages:**
+
 - `@tanstack/react-query` - v5.64.2
 - `axios` - v1.7.9
 - `ky` - v1.7.3
@@ -185,6 +204,7 @@ Data fetching and HTTP client libraries.
 ## 🐦 Backend Catalogs
 
 ### `nestjs`
+
 Core NestJS packages.
 
 ```json
@@ -192,6 +212,7 @@ Core NestJS packages.
 ```
 
 **Packages:**
+
 - `@nestjs/common` - v11.1.7
 - `@nestjs/core` - v11.1.7
 - `@nestjs/platform-express` - v11.1.7
@@ -201,6 +222,7 @@ Core NestJS packages.
 ---
 
 ### `nestjsCli`
+
 NestJS CLI and development tools.
 
 ```json
@@ -208,6 +230,7 @@ NestJS CLI and development tools.
 ```
 
 **Packages:**
+
 - `@nestjs/cli` - v11.0.10
 - `@nestjs/schematics` - v11.0.9
 - `@nestjs/testing` - v11.1.7
@@ -215,6 +238,7 @@ NestJS CLI and development tools.
 ---
 
 ### `nestjsModules`
+
 Additional NestJS modules for features like caching, swagger, throttling, etc.
 
 ```json
@@ -222,6 +246,7 @@ Additional NestJS modules for features like caching, swagger, throttling, etc.
 ```
 
 **Packages:**
+
 - `@nestjs/config` - v4.0.2
 - `@nestjs/cache-manager` - v3.0.0
 - `@nestjs/swagger` - v8.0.7
@@ -235,6 +260,7 @@ Additional NestJS modules for features like caching, swagger, throttling, etc.
 ---
 
 ### `nestjsAuth`
+
 Authentication packages for NestJS (JWT, Passport, bcrypt).
 
 ```json
@@ -242,6 +268,7 @@ Authentication packages for NestJS (JWT, Passport, bcrypt).
 ```
 
 **Packages:**
+
 - `@nestjs/jwt` - v10.2.0
 - `@nestjs/passport` - v10.0.3
 - `passport` - v0.7.0
@@ -253,6 +280,7 @@ Authentication packages for NestJS (JWT, Passport, bcrypt).
 ---
 
 ### `nestjsDatabase`
+
 Database packages for NestJS (TypeORM, drivers).
 
 ```json
@@ -260,6 +288,7 @@ Database packages for NestJS (TypeORM, drivers).
 ```
 
 **Packages:**
+
 - `@nestjs/typeorm` - v10.0.2
 - `typeorm` - v0.3.20
 - `pg` - v8.13.1 (PostgreSQL)
@@ -269,6 +298,7 @@ Database packages for NestJS (TypeORM, drivers).
 ---
 
 ### `validation`
+
 Validation libraries for data validation.
 
 ```json
@@ -276,6 +306,7 @@ Validation libraries for data validation.
 ```
 
 **Packages:**
+
 - `class-validator` - v0.14.1
 - `class-transformer` - v0.5.1
 - `zod` - v3.24.1
@@ -283,6 +314,7 @@ Validation libraries for data validation.
 ---
 
 ### `logging`
+
 Logging libraries (Pino for NestJS).
 
 ```json
@@ -290,6 +322,7 @@ Logging libraries (Pino for NestJS).
 ```
 
 **Packages:**
+
 - `nestjs-pino` - v4.4.1
 - `pino` - v10.1.0
 - `pino-http` - v11.0.0
@@ -300,6 +333,7 @@ Logging libraries (Pino for NestJS).
 ## 🧪 Testing Catalogs
 
 ### `testing`
+
 Testing frameworks and utilities.
 
 ```json
@@ -307,6 +341,7 @@ Testing frameworks and utilities.
 ```
 
 **Packages:**
+
 - `jest` - v30.2.0
 - `ts-jest` - v29.4.5
 - `@types/jest` - v30.0.0
@@ -318,6 +353,7 @@ Testing frameworks and utilities.
 ---
 
 ### `testingUtils`
+
 Testing utilities for API testing.
 
 ```json
@@ -325,6 +361,7 @@ Testing utilities for API testing.
 ```
 
 **Packages:**
+
 - `supertest` - v7.1.4
 - `@types/supertest` - v6.0.3
 
@@ -333,6 +370,7 @@ Testing utilities for API testing.
 ## 🛠️ Build & Dev Tools Catalogs
 
 ### `tsBuild`
+
 TypeScript build tools.
 
 ```json
@@ -340,6 +378,7 @@ TypeScript build tools.
 ```
 
 **Packages:**
+
 - `tsup` - v8.3.5
 - `ts-loader` - v9.5.4
 - `ts-node` - v10.9.2
@@ -349,6 +388,7 @@ TypeScript build tools.
 ---
 
 ### `lint`
+
 Linting and formatting tools.
 
 ```json
@@ -356,6 +396,7 @@ Linting and formatting tools.
 ```
 
 **Packages:**
+
 - `eslint` - v9.38.0
 - `@eslint/js` - v9.38.0
 - `@eslint/eslintrc` - v3.3.1
@@ -372,6 +413,7 @@ Linting and formatting tools.
 ---
 
 ### `gitHooks`
+
 Git hooks and commit tools.
 
 ```json
@@ -379,6 +421,7 @@ Git hooks and commit tools.
 ```
 
 **Packages:**
+
 - `husky` - v9.1.7
 - `lint-staged` - v15.2.11
 - `commitizen` - v4.3.1
@@ -390,6 +433,7 @@ Git hooks and commit tools.
 ---
 
 ### `build`
+
 Build tools for the monorepo.
 
 ```json
@@ -397,6 +441,7 @@ Build tools for the monorepo.
 ```
 
 **Packages:**
+
 - `turbo` - v2.5.8
 - `tsx` - v4.20.6
 
@@ -405,6 +450,7 @@ Build tools for the monorepo.
 ## 🔧 Utility Catalogs
 
 ### `utils`
+
 General utility libraries.
 
 ```json
@@ -412,6 +458,7 @@ General utility libraries.
 ```
 
 **Packages:**
+
 - `dotenv` - v16.4.7
 - `dayjs` - v1.11.13
 - `lodash` - v4.17.21
@@ -481,4 +528,5 @@ To update all dependencies to their latest versions:
 bun update --latest
 ```
 
-To update a specific catalog, edit the version in the root `package.json` catalogs section.
+To update a specific catalog, edit the version in the root `package.json`
+catalogs section.
