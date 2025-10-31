@@ -14,7 +14,6 @@ export default async function handleRequest(
   responseStatusCode: number,
   responseHeaders: Headers,
   entryContext: EntryContext,
-  loadContext: AppLoadContext
 ) {
   const userAgent = request.headers.get('user-agent');
   const body = await renderToReadableStream(

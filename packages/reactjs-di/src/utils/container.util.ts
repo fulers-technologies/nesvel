@@ -78,6 +78,21 @@ export function initializeContainer(RootModule: any, options: ContainerOptions =
       });
     }
   } catch (error: Error | any) {
+    // Handle Inversiland double initialization gracefully
+    if (error.message === 'You are trying to run Inversiland twice.') {
+      // Try to get the container anyway - it might already exist
+      try {
+        rootContainer = getModuleContainer(RootModule);
+        initialized = true;
+        if (skipIfInitialized) {
+          console.warn('[DI] Inversiland already running - using existing container');
+          return;
+        }
+      } catch (getError) {
+        // If we can't get the container, fall through to original error
+      }
+    }
+    
     initialized = false;
     rootContainer = null;
     console.error('[DI] Failed to initialize container:', error);

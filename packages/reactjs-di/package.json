@@ -16,6 +16,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
+    },
+    "./DIRoutes": {
+      "types": "./dist/components/di-routes.d.ts",
+      "import": "./dist/components/di-routes.mjs",
+      "require": "./dist/components/di-routes.js"
     }
   },
   "scripts": {

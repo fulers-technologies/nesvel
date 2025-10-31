@@ -230,3 +230,9 @@ export {
   getMostUsedServices,
   generatePerformanceReport,
 } from './utils/performance.util';
+
+// ============================================================================
+// Components
+// ============================================================================
+
+export { DIRoutes } from './components';

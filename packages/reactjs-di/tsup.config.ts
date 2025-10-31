@@ -1,13 +1,17 @@
 import { defineConfig } from 'tsup';
-import { nestLibPreset } from '@nesvel/tsup-config';
+import { reactLibPreset } from '@nesvel/tsup-config';
 
 /**
- * Build configuration for @nesvel/nestjs-orm
+ * Build configuration for @nesvel/reactjs-di
  *
- * Uses the NestJS library preset which:
- * - Preserves decorators and metadata (required for NestJS)
- * - Uses TypeScript compiler for proper decorator handling
- * - Outputs both ESM and CJS formats
- * - Generates TypeScript declarations
+ * Uses the React library preset with multiple entry points:
+ * - Main index for all exports
+ * - Separate DIRoutes component for direct import
  */
-export default defineConfig(nestLibPreset);
+export default defineConfig({
+  ...reactLibPreset,
+  entry: {
+    index: 'src/index.ts',
+    'components/di-routes': 'src/components/di-routes.tsx',
+  },
+});
