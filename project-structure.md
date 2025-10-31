@@ -1,534 +1,231 @@
-# Project Structure - Clean Architecture
+# Final Clean Architecture Structure
 
-## 1. Cameras Module
+## Key Principles
 
-```bash
-src/cameras/
-├── CamerasModule.ts
-│
-├── application/
-│   ├── types/
-│   │   ├── GetCamerasPayload.ts
-│   │   └── GetCamerasResponse.ts
-│   └── useCases/
-│       ├── FindCameraUseCase.ts
-│       ├── GetCamerasUseCase.ts
-│       ├── CreateCameraUseCase.ts
-│       ├── UpdateCameraUseCase.ts
-│       └── DeleteCameraUseCase.ts
-│
-├── domain/
-│   ├── entities/
-│   │   └── CameraEntity.ts
-│   └── specifications/
-│       └── ICameraRepository.ts
-│
-├── infrastructure/
-│   ├── implementations/
-│   │   └── CameraRepository.ts
-│   └── models/
-│       ├── GetCamerasQuery.ts
-│       └── CameraDto.ts
-│
-└── presentation/
-    ├── components/
-    │   ├── CameraItem.tsx
-    │   ├── CameraForm.tsx
-    │   └── CameraList.tsx
-    ├── i18n/
-    │   └── en.ts
-    ├── pages/
-    │   ├── CameraPage.tsx
-    │   └── CamerasPage.tsx
-    ├── stores/
-    │   ├── FindCameraStore/
-    │   │   ├── FindCameraStore.ts
-    │   │   ├── FindCameraStoreContext.ts
-    │   │   ├── FindCameraStoreProvider.tsx
-    │   │   └── useFindCameraStore.ts
-    │   └── GetCamerasStore/
-    │       ├── GetCamerasStore.ts
-    │       ├── GetCamerasStoreContext.ts
-    │       ├── GetCamerasStoreProvider.tsx
-    │       └── useGetCamerasStore.ts
-    └── types/
-        ├── FindCameraStoreState.ts
-        └── GetCamerasStoreState.ts
-```
+### 1. **interfaces/ vs types/ Separation**
 
-## 2. Detections Module
+In the **presentation layer**, we now have TWO folders:
 
 ```bash
-src/detections/
-├── DetectionsModule.ts
-│
-├── application/
-│   ├── types/
-│   │   ├── GetDetectionsPayload.ts
-│   │   └── GetDetectionsResponse.ts
-│   └── useCases/
-│       ├── FindDetectionUseCase.ts
-│       ├── GetDetectionsUseCase.ts
-│       ├── CreateDetectionUseCase.ts
-│       └── AnalyzeDetectionUseCase.ts
-│
-├── domain/
-│   ├── entities/
-│   │   └── DetectionEntity.ts
-│   └── specifications/
-│       └── IDetectionRepository.ts
-│
-├── infrastructure/
-│   ├── implementations/
-│   │   └── DetectionRepository.ts
-│   └── models/
-│       ├── GetDetectionsQuery.ts
-│       └── DetectionDto.ts
-│
-└── presentation/
-    ├── components/
-    │   ├── DetectionItem.tsx
-    │   ├── DetectionDetails.tsx
-    │   └── DetectionList.tsx
-    ├── i18n/
-    │   └── en.ts
-    ├── pages/
-    │   ├── DetectionPage.tsx
-    │   └── DetectionsPage.tsx
-    ├── stores/
-    │   ├── FindDetectionStore/
-    │   │   ├── FindDetectionStore.ts
-    │   │   ├── FindDetectionStoreContext.ts
-    │   │   ├── FindDetectionStoreProvider.tsx
-    │   │   └── useFindDetectionStore.ts
-    │   └── GetDetectionsStore/
-    │       ├── GetDetectionsStore.ts
-    │       ├── GetDetectionsStoreContext.ts
-    │       ├── GetDetectionsStoreProvider.tsx
-    │       └── useGetDetectionsStore.ts
-    └── types/
-        ├── FindDetectionStoreState.ts
-        └── GetDetectionsStoreState.ts
+presentation/
+├── interfaces/          ← For `interface` definitions
+│   └── find-post-store-state.interface.ts
+└── types/              ← For `type` definitions  
+    └── get-posts-store-state.type.ts
 ```
 
-## 3. Alerts Module
+**When to use which:**
+
+- Use `interfaces/` when defining with `interface` keyword (extensible, can be implemented)
+- Use `types/` when defining with `type` keyword (type aliases, unions, etc.)
+
+### 2. **Complete Module Structure**
 
 ```bash
-src/alerts/
-├── AlertsModule.ts
-│
+module-name/
+├── {module-name}.module.ts
 ├── application/
-│   ├── types/
-│   │   ├── GetAlertsPayload.ts
-│   │   └── GetAlertsResponse.ts
-│   └── useCases/
-│       ├── FindAlertUseCase.ts
-│       ├── GetAlertsUseCase.ts
-│       ├── CreateAlertUseCase.ts
-│       ├── AcknowledgeAlertUseCase.ts
-│       └── ResolveAlertUseCase.ts
-│
+│   ├── interfaces/
+│   │   ├── search-{entity}-payload.interface.ts
+│   │   ├── search-{entity}-response.interface.ts
+│   │   ├── find-{entity}-payload.interface.ts
+│   │   ├── find-{entity}-response.interface.ts
+│   │   ├── get-{entity}-payload.interface.ts
+│   │   ├── get-{entity}-response.interface.ts
+│   │   ├── create-{entity}-payload.interface.ts
+│   │   ├── create-{entity}-response.interface.ts
+│   │   ├── update-{entity}-payload.interface.ts
+│   │   ├── update-{entity}-response.interface.ts
+│   │   ├── delete-{entity}-payload.interface.ts
+│   │   └── delete-{entity}-response.interface.ts
+│   └── use-cases/
+│       ├── search-{entity}.use-case.ts
+│       ├── find-{entity}.use-case.ts
+│       ├── get-{entity}.use-case.ts
+│       ├── create-{entity}.use-case.ts
+│       ├── update-{entity}.use-case.ts
+│       └── delete-{entity}.use-case.ts
 ├── domain/
 │   ├── entities/
-│   │   └── AlertEntity.ts
-│   └── specifications/
-│       └── IAlertRepository.ts
-│
+│   │   └── {entity}.entity.ts
+│   └── interfaces/
+│       └── {entity}-repository.interface.ts
 ├── infrastructure/
-│   ├── implementations/
-│   │   └── AlertRepository.ts
-│   └── models/
-│       ├── GetAlertsQuery.ts
-│       └── AlertDto.ts
-│
+│   ├── repositories/
+│   │   └── {entity}.repository.ts
+│   └── dtos/
+│       ├── get-{entity}.dto.ts
+│       └── {entity}.dto.ts
 └── presentation/
     ├── components/
-    │   ├── AlertItem.tsx
-    │   ├── AlertBadge.tsx
-    │   └── AlertList.tsx
+    │   ├── {entity}-item.component.tsx
+    │   ├── {entity}-form.component.tsx
+    │   └── {entity}-list.component.tsx
+    ├── pages/
+    │   ├── {entity}.page.tsx
+    │   └── {entity}-detail.page.tsx
     ├── i18n/
     │   └── en.ts
-    ├── pages/
-    │   ├── AlertPage.tsx
-    │   └── AlertsPage.tsx
     ├── stores/
-    │   ├── FindAlertStore/
-    │   │   ├── FindAlertStore.ts
-    │   │   ├── FindAlertStoreContext.ts
-    │   │   ├── FindAlertStoreProvider.tsx
-    │   │   └── useFindAlertStore.ts
-    │   └── GetAlertsStore/
-    │       ├── GetAlertsStore.ts
-    │       ├── GetAlertsStoreContext.ts
-    │       ├── GetAlertsStoreProvider.tsx
-    │       └── useGetAlertsStore.ts
-    └── types/
-        ├── FindAlertStoreState.ts
-        └── GetAlertsStoreState.ts
+    │   ├── search-{entity}-store/
+    │   │   ├── search-{entity}.store.ts
+    │   │   ├── search-{entity}-store.context.ts
+    │   │   ├── search-{entity}-store.provider.tsx
+    │   │   └── use-search-{entity}-store.ts
+    │   ├── find-{entity}-store/
+    │   ├── get-{entity}-store/
+    │   ├── create-{entity}-store/
+    │   ├── update-{entity}-store/
+    │   └── delete-{entity}-store/
+    ├── interfaces/           ← Store state INTERFACES
+    │   ├── search-{entity}-store-state.interface.ts
+    │   ├── find-{entity}-store-state.interface.ts
+    │   ├── get-{entity}-store-state.interface.ts
+    │   ├── create-{entity}-store-state.interface.ts
+    │   ├── update-{entity}-store-state.interface.ts
+    │   └── delete-{entity}-store-state.interface.ts
+    └── types/                ← Store state TYPES
+        ├── search-{entity}-store-state.type.ts
+        ├── find-{entity}-store-state.type.ts
+        ├── get-{entity}-store-state.type.ts
+        ├── create-{entity}-store-state.type.ts
+        ├── update-{entity}-store-state.type.ts
+        └── delete-{entity}-store-state.type.ts
 ```
 
-## 4. Metrics Module
+## Naming Conventions
+
+### Files
+
+- **Modules**: `{module-name}.module.ts`
+- **Entities**: `{entity-name}.entity.ts`
+- **Interfaces**: `{interface-name}.interface.ts`
+- **Repositories**: `{repository-name}.repository.ts`
+- **Use Cases**: `{action-name}.use-case.ts`
+- **DTOs**: `{dto-name}.dto.ts`
+- **Queries**: `{query-name}.query.ts`
+- **Components**: `{component-name}.component.tsx`
+- **Pages**: `{page-name}.page.tsx`
+- **Stores**: `{store-name}.store.ts`
+- **Store Contexts**: `{store-name}-store.context.ts`
+- **Store Providers**: `{store-name}-store.provider.tsx`
+- **Store Hooks**: `use-{store-name}-store.ts`
+- **Type Definitions**: `{type-name}.type.ts`
+
+### Folders
+
+- All lowercase **kebab-case**
+- Descriptive names: `use-cases/`, `interfaces/`, `repositories/`, `dtos/`, `types/`
+
+## Layer Responsibilities
+
+### Domain Layer
+
+- **Pure business logic** - no dependencies
+- **entities/**: Core business objects
+- **interfaces/**: Repository contracts (dependency inversion)
+
+### Application Layer
+
+- **Use cases** - orchestration of domain logic
+- **interfaces/**: API contract interfaces (payload/response)
+- Depends only on domain
+
+### Infrastructure Layer
+
+- **External concerns** - DB, APIs, frameworks
+- **repositories/**: Concrete implementations of domain interfaces
+- **dtos/**: Data transfer objects for persistence
+- Depends on domain (implements interfaces)
+
+### Presentation Layer
+
+- **UI components** - React components, pages
+- **interfaces/**: Store state interfaces (using `interface` keyword)
+- **types/**: Store state types (using `type` keyword)
+- **stores/**: MobX state management
+- Depends on application + infrastructure
+
+## Key Improvements
+
+1. ✅ **kebab-case everywhere** (consistent naming)
+2. ✅ **Descriptive suffixes** (`.entity.ts`, `.interface.ts`, `.use-case.ts`, etc.)
+3. ✅ **Clear folder names** (`interfaces/`, `repositories/`, `dtos/`, `use-cases/`)
+4. ✅ **Separation of concerns** (`presentation/interfaces/` vs `presentation/types/`)
+5. ✅ **Complete CRUD** operations (search, find, get, create, update, delete)
+6. ✅ **Store per use-case** (better isolation)
+7. ✅ **No Hungarian notation** (no `I` prefix)
+
+## Example: Post Module (Refactored)
 
 ```bash
-src/metrics/
-├── MetricsModule.ts
-│
+post/
+├── post.module.ts
 ├── application/
-│   ├── types/
-│   │   ├── GetMetricsPayload.ts
-│   │   └── GetMetricsResponse.ts
-│   └── useCases/
-│       ├── GetMetricsUseCase.ts
-│       ├── GetMetricByIdUseCase.ts
-│       ├── CalculateMetricsUseCase.ts
-│       └── ExportMetricsUseCase.ts
-│
+│   ├── interfaces/
+│   │   ├── search-post-payload.interface.ts
+│   │   ├── search-post-response.interface.ts
+│   │   ├── find-post-payload.interface.ts
+│   │   ├── find-post-response.interface.ts
+│   │   ├── get-post-payload.interface.ts
+│   │   ├── get-post-response.interface.ts
+│   │   ├── get-posts-payload.interface.ts
+│   │   ├── get-posts-response.interface.ts
+│   │   ├── create-post-payload.interface.ts
+│   │   ├── create-post-response.interface.ts
+│   │   ├── update-post-payload.interface.ts
+│   │   ├── update-post-response.interface.ts
+│   │   ├── delete-post-payload.interface.ts
+│   │   └── delete-post-response.interface.ts
+│   └── use-cases/
+│       ├── search-post.use-case.ts
+│       ├── find-post.use-case.ts
+│       ├── get-post.use-case.ts
+│       ├── get-posts.use-case.ts
+│       ├── create-post.use-case.ts
+│       ├── update-post.use-case.ts
+│       └── delete-post.use-case.ts
 ├── domain/
 │   ├── entities/
-│   │   └── MetricEntity.ts
-│   └── specifications/
-│       └── IMetricRepository.ts
-│
+│   │   └── post.entity.ts
+│   └── interfaces/
+│       └── post-repository.interface.ts
 ├── infrastructure/
-│   ├── implementations/
-│   │   └── MetricRepository.ts
-│   └── models/
-│       ├── GetMetricsQuery.ts
-│       └── MetricDto.ts
-│
+│   ├── repositories/
+│   │   └── post.repository.ts
+│   └── dtos/
+│       ├── get-posts.query.ts
+│       └── post.dto.ts
 └── presentation/
     ├── components/
-    │   ├── MetricCard.tsx
-    │   ├── MetricChart.tsx
-    │   └── MetricsDashboard.tsx
+    │   └── post-item.component.tsx
     ├── i18n/
     │   └── en.ts
+    ├── interfaces/
+    │   └── find-post-store-state.interface.ts
     ├── pages/
-    │   ├── MetricPage.tsx
-    │   └── MetricsPage.tsx
+    │   ├── post.page.tsx
+    │   └── posts.page.tsx
     ├── stores/
-    │   ├── GetMetricStore/
-    │   │   ├── GetMetricStore.ts
-    │   │   ├── GetMetricStoreContext.ts
-    │   │   ├── GetMetricStoreProvider.tsx
-    │   │   └── useGetMetricStore.ts
-    │   └── GetMetricsStore/
-    │       ├── GetMetricsStore.ts
-    │       ├── GetMetricsStoreContext.ts
-    │       ├── GetMetricsStoreProvider.tsx
-    │       └── useGetMetricsStore.ts
+    │   ├── find-post-store/
+    │   │   ├── find-post.store.ts
+    │   │   ├── find-post-store.context.ts
+    │   │   ├── find-post-store.provider.tsx
+    │   │   └── use-find-post-store.ts
+    │   └── get-posts-store/
+    │       ├── get-posts.store.ts
+    │       ├── get-posts-store.context.ts
+    │       ├── get-posts-store.provider.tsx
+    │       └── use-get-posts-store.ts
     └── types/
-        ├── GetMetricStoreState.ts
-        └── GetMetricsStoreState.ts
+        └── get-posts-store-state.type.ts
 ```
 
-## 5. Reports Module
+## Benefits
 
-```bash
-src/reports/
-├── ReportsModule.ts
-│
-├── application/
-│   ├── types/
-│   │   ├── GetReportsPayload.ts
-│   │   └── GetReportsResponse.ts
-│   └── useCases/
-│       ├── FindReportUseCase.ts
-│       ├── GetReportsUseCase.ts
-│       ├── GenerateReportUseCase.ts
-│       ├── ExportReportUseCase.ts
-│       └── ScheduleReportUseCase.ts
-│
-├── domain/
-│   ├── entities/
-│   │   └── ReportEntity.ts
-│   └── specifications/
-│       └── IReportRepository.ts
-│
-├── infrastructure/
-│   ├── implementations/
-│   │   └── ReportRepository.ts
-│   └── models/
-│       ├── GetReportsQuery.ts
-│       └── ReportDto.ts
-│
-└── presentation/
-    ├── components/
-    │   ├── ReportItem.tsx
-    │   ├── ReportForm.tsx
-    │   └── ReportViewer.tsx
-    ├── i18n/
-    │   └── en.ts
-    ├── pages/
-    │   ├── ReportPage.tsx
-    │   └── ReportsPage.tsx
-    ├── stores/
-    │   ├── FindReportStore/
-    │   │   ├── FindReportStore.ts
-    │   │   ├── FindReportStoreContext.ts
-    │   │   ├── FindReportStoreProvider.tsx
-    │   │   └── useFindReportStore.ts
-    │   └── GetReportsStore/
-    │       ├── GetReportsStore.ts
-    │       ├── GetReportsStoreContext.ts
-    │       ├── GetReportsStoreProvider.tsx
-    │       └── useGetReportsStore.ts
-    └── types/
-        ├── FindReportStoreState.ts
-        └── GetReportsStoreState.ts
-```
-
-## 6. Models Module
-
-```bash
-src/models/
-├── ModelsModule.ts
-│
-├── application/
-│   ├── types/
-│   │   ├── GetModelsPayload.ts
-│   │   └── GetModelsResponse.ts
-│   └── useCases/
-│       ├── FindModelUseCase.ts
-│       ├── GetModelsUseCase.ts
-│       ├── TrainModelUseCase.ts
-│       ├── DeployModelUseCase.ts
-│       └── ValidateModelUseCase.ts
-│
-├── domain/
-│   ├── entities/
-│   │   └── ModelEntity.ts
-│   └── specifications/
-│       └── IModelRepository.ts
-│
-├── infrastructure/
-│   ├── implementations/
-│   │   └── ModelRepository.ts
-│   └── models/
-│       ├── GetModelsQuery.ts
-│       └── ModelDto.ts
-│
-└── presentation/
-    ├── components/
-    │   ├── ModelItem.tsx
-    │   ├── ModelCard.tsx
-    │   └── ModelList.tsx
-    ├── i18n/
-    │   └── en.ts
-    ├── pages/
-    │   ├── ModelPage.tsx
-    │   └── ModelsPage.tsx
-    ├── stores/
-    │   ├── FindModelStore/
-    │   │   ├── FindModelStore.ts
-    │   │   ├── FindModelStoreContext.ts
-    │   │   ├── FindModelStoreProvider.tsx
-    │   │   └── useFindModelStore.ts
-    │   └── GetModelsStore/
-    │       ├── GetModelsStore.ts
-    │       ├── GetModelsStoreContext.ts
-    │       ├── GetModelsStoreProvider.tsx
-    │       └── useGetModelsStore.ts
-    └── types/
-        ├── FindModelStoreState.ts
-        └── GetModelsStoreState.ts
-```
-
-## 7. Rules Module
-
-```bash
-src/rules/
-├── RulesModule.ts
-│
-├── application/
-│   ├── types/
-│   │   ├── GetRulesPayload.ts
-│   │   └── GetRulesResponse.ts
-│   └── useCases/
-│       ├── FindRuleUseCase.ts
-│       ├── GetRulesUseCase.ts
-│       ├── CreateRuleUseCase.ts
-│       ├── UpdateRuleUseCase.ts
-│       ├── DeleteRuleUseCase.ts
-│       └── ValidateRuleUseCase.ts
-│
-├── domain/
-│   ├── entities/
-│   │   └── RuleEntity.ts
-│   └── specifications/
-│       └── IRuleRepository.ts
-│
-├── infrastructure/
-│   ├── implementations/
-│   │   └── RuleRepository.ts
-│   └── models/
-│       ├── GetRulesQuery.ts
-│       └── RuleDto.ts
-│
-└── presentation/
-    ├── components/
-    │   ├── RuleItem.tsx
-    │   ├── RuleForm.tsx
-    │   └── RuleBuilder.tsx
-    ├── i18n/
-    │   └── en.ts
-    ├── pages/
-    │   ├── RulePage.tsx
-    │   └── RulesPage.tsx
-    ├── stores/
-    │   ├── FindRuleStore/
-    │   │   ├── FindRuleStore.ts
-    │   │   ├── FindRuleStoreContext.ts
-    │   │   ├── FindRuleStoreProvider.tsx
-    │   │   └── useFindRuleStore.ts
-    │   └── GetRulesStore/
-    │       ├── GetRulesStore.ts
-    │       ├── GetRulesStoreContext.ts
-    │       ├── GetRulesStoreProvider.tsx
-    │       └── useGetRulesStore.ts
-    └── types/
-        ├── FindRuleStoreState.ts
-        └── GetRulesStoreState.ts
-```
-
-## 8. Employees Module
-
-```bash
-src/employees/
-├── EmployeesModule.ts
-│
-├── application/
-│   ├── types/
-│   │   ├── GetEmployeesPayload.ts
-│   │   └── GetEmployeesResponse.ts
-│   └── useCases/
-│       ├── FindEmployeeUseCase.ts
-│       ├── GetEmployeesUseCase.ts
-│       ├── CreateEmployeeUseCase.ts
-│       ├── UpdateEmployeeUseCase.ts
-│       └── DeleteEmployeeUseCase.ts
-│
-├── domain/
-│   ├── entities/
-│   │   └── EmployeeEntity.ts
-│   └── specifications/
-│       └── IEmployeeRepository.ts
-│
-├── infrastructure/
-│   ├── implementations/
-│   │   └── EmployeeRepository.ts
-│   └── models/
-│       ├── GetEmployeesQuery.ts
-│       └── EmployeeDto.ts
-│
-└── presentation/
-    ├── components/
-    │   ├── EmployeeItem.tsx
-    │   ├── EmployeeForm.tsx
-    │   └── EmployeeCard.tsx
-    ├── i18n/
-    │   └── en.ts
-    ├── pages/
-    │   ├── EmployeePage.tsx
-    │   └── EmployeesPage.tsx
-    ├── stores/
-    │   ├── FindEmployeeStore/
-    │   │   ├── FindEmployeeStore.ts
-    │   │   ├── FindEmployeeStoreContext.ts
-    │   │   ├── FindEmployeeStoreProvider.tsx
-    │   │   └── useFindEmployeeStore.ts
-    │   └── GetEmployeesStore/
-    │       ├── GetEmployeesStore.ts
-    │       ├── GetEmployeesStoreContext.ts
-    │       ├── GetEmployeesStoreProvider.tsx
-    │       └── useGetEmployeesStore.ts
-    └── types/
-        ├── FindEmployeeStoreState.ts
-        └── GetEmployeesStoreState.ts
-```
-
-## 9. Settings Module
-
-```bash
-src/settings/
-├── SettingsModule.ts
-│
-├── application/
-│   ├── types/
-│   │   ├── GetSettingsPayload.ts
-│   │   └── GetSettingsResponse.ts
-│   └── useCases/
-│       ├── GetSettingsUseCase.ts
-│       ├── UpdateSettingsUseCase.ts
-│       ├── ResetSettingsUseCase.ts
-│       └── ExportSettingsUseCase.ts
-│
-├── domain/
-│   ├── entities/
-│   │   └── SettingEntity.ts
-│   └── specifications/
-│       └── ISettingRepository.ts
-│
-├── infrastructure/
-│   ├── implementations/
-│   │   └── SettingRepository.ts
-│   └── models/
-│       ├── GetSettingsQuery.ts
-│       └── SettingDto.ts
-│
-└── presentation/
-    ├── components/
-    │   ├── SettingItem.tsx
-    │   ├── SettingForm.tsx
-    │   └── SettingsPanel.tsx
-    ├── i18n/
-    │   └── en.ts
-    ├── pages/
-    │   ├── SettingPage.tsx
-    │   └── SettingsPage.tsx
-    ├── stores/
-    │   ├── GetSettingStore/
-    │   │   ├── GetSettingStore.ts
-    │   │   ├── GetSettingStoreContext.ts
-    │   │   ├── GetSettingStoreProvider.tsx
-    │   │   └── useGetSettingStore.ts
-    │   └── GetSettingsStore/
-    │       ├── GetSettingsStore.ts
-    │       ├── GetSettingsStoreContext.ts
-    │       ├── GetSettingsStoreProvider.tsx
-    │       └── useGetSettingsStore.ts
-    └── types/
-        ├── GetSettingStoreState.ts
-        └── GetSettingsStoreState.ts
-```
-
-## Overview
-
-Each module follows the **Clean Architecture** pattern with four layers:
-
-### 1. **Domain Layer** (`domain/`)
-
-- **entities/**: Core business entities
-- **specifications/**: Interfaces for repositories (dependency inversion)
-
-### 2. **Application Layer** (`application/`)
-
-- **types/**: DTOs for payloads and responses
-- **useCases/**: Business logic implementations
-
-### 3. **Infrastructure Layer** (`infrastructure/`)
-
-- **implementations/**: Concrete implementations of repositories
-- **models/**: Data transfer objects and queries
-
-### 4. **Presentation Layer** (`presentation/`)
-
-- **components/**: React UI components
-- **i18n/**: Internationalization files
-- **pages/**: Page-level components
-- **stores/**: MobX state management stores
-- **types/**: TypeScript types for UI state
-
-### Module Entry Point
-
-Each module has a `{Module}Module.ts` file for dependency injection configuration.
+- 🎯 **Clarity**: File purpose is immediately obvious from name
+- 🔍 **Searchability**: Easy to find files with descriptive names
+- 📦 **Scalability**: Consistent structure across all modules
+- 🧪 **Testability**: Clear boundaries between layers
+- 🔄 **Maintainability**: Easy to understand and modify
+- 💪 **Type Safety**: Proper separation of interfaces and types
