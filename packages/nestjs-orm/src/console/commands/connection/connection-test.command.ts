@@ -13,7 +13,9 @@ import { Injectable, Logger } from '@nestjs/common';
 })
 export class ConnectionTestCommand extends CommandRunner {
   private readonly logger = new Logger(ConnectionTestCommand.name);
-  constructor(private readonly orm: MikroORM) { super(); }
+  constructor(private readonly orm: MikroORM) {
+    super();
+  }
 
   async run(): Promise<void> {
     try {

@@ -1,5 +1,3 @@
-import type { IMigrationContext } from '@/interfaces';
-
 /**
  * Rollbackable Interface
  *
@@ -14,18 +12,6 @@ export interface IRollbackable {
   /**
    * Rollback the migration (undo changes)
    * This method must be implemented by migrations that support rollback
-   *
-   * @param context - Migration context with database connection and utilities
    */
-  down(context: IMigrationContext): Promise<void>;
-}
-
-/**
- * Type guard to check if a migration implements rollback functionality
- *
- * @param migration - The migration instance to check
- * @returns True if migration implements IRollbackable interface
- */
-export function isRollbackable(migration: any): migration is IRollbackable {
-  return migration && typeof migration.down === 'function';
+  down(): Promise<void> | void;
 }

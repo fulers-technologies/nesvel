@@ -32,7 +32,7 @@ export class DbShowCommand extends CommandRunner {
       const connection = this.orm.em.getConnection();
 
       this.logger.log('='.repeat(60));
-      this.logger.log(`Driver: ${config.get('type')}`);
+      this.logger.log(`Driver: ${config.get('type' as any)}`);
       this.logger.log(`Database: ${config.get('dbName')}`);
       this.logger.log(`Host: ${config.get('host')}:${config.get('port')}`);
       this.logger.log('='.repeat(60));

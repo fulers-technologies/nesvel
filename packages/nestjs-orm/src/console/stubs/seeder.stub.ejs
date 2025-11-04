@@ -1,24 +1,67 @@
-import { Injectable } from '@nestjs/common';
-import { Seeder, EntityManager } from '@nesvel/nestjs-orm';
-import { <%= modelName %> } from '@/entities/<%= fileName %>';
+import { EntityManager } from '@mikro-orm/core';
+import { BaseSeeder } from '@nesvel/nestjs-orm';
+
+import { <%= modelName %> } from '@/entities/<%= fileName %>.entity';
+// import { <%= modelName %>Factory } from '@/factories/<%= fileName %>.factory'; // Uncomment if using factory
 
 /**
- * <%= name %> Seeder
+ * <%= className %>
  *
- * @description Seeds <%= modelName %> data
+ * Seeds <%= modelName %> data into the database.
+ *
+ * @see https://mikro-orm.io/docs/seeding#seeders
+ *
+ * @example
+ * ```bash
+ * # Run this specific seeder
+ * bun mikro-orm seeder:run --class=<%= className %>
+ *
+ * # Run all seeders
+ * bun mikro-orm seeder:run
+ * ```
  */
-@Injectable()
-@Seeder()
-export class <%= name %> {
-  constructor(private readonly em: EntityManager) {}
+export class <%= className %> extends BaseSeeder {
+  /**
+   * Run the database seeder
+   *
+   * @param em - MikroORM EntityManager for database operations
+   * @returns Promise that resolves when seeding is complete
+   */
+  async run(em: EntityManager): Promise<void> {
+    // TODO: Create seed data - Choose one of the following approaches:
 
-  async run(): Promise<void> {
-    // Create seed data
-    const <%= variableName %> = this.em.create(<%= modelName %>, {
-      name: 'Sample <%= modelName %>',
-      // Add seed data here
-    });
+    // ============================================================================
+    // Option 1: Using Factories (Recommended for bulk data)
+    // ============================================================================
+    // const <%= variableName %>Factory = <%= modelName %>Factory.make(em);
+    // const <%= variableName %>s = <%= variableName %>Factory.make(50);
+    // await em.persist(<%= variableName %>s).flush();
 
-    await this.em.persistAndFlush(<%= variableName %>);
+    // ============================================================================
+    // Option 2: Create entities directly (For specific/small datasets)
+    // ============================================================================
+    // Will get persisted automatically
+    // const <%= variableName %> = em.create(<%= modelName %>, {
+    //   name: this.faker.person.fullName(),
+    //   email: this.faker.internet.email(),
+    // });
+    // await em.flush();
+
+    // ============================================================================
+    // Option 3: Create multiple entities with loop
+    // ============================================================================
+    // const <%= variableName %>s = [];
+    // for (let i = 0; i < 10; i++) {
+    //   <%= variableName %>s.push(em.create(<%= modelName %>, {
+    //     name: this.faker.lorem.word(),
+    //     description: this.faker.lorem.sentence(),
+    //   }));
+    // }
+    // await em.persist(<%= variableName %>s).flush();
+
+    // ============================================================================
+    // Call other seeders (for dependencies)
+    // ============================================================================
+    // await this.call(em, [RelatedSeeder]);
   }
 }

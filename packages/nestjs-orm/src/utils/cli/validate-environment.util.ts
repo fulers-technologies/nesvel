@@ -68,7 +68,7 @@ export function validateEnvironment(): void {
  */
 export function validateNodeVersion(): void {
   const nodeVersion = process.versions.node;
-  const majorVersion = parseInt(nodeVersion.split('.')[0], 10);
+  const majorVersion = parseInt(nodeVersion.split('.')[0] ?? '0', 10);
 
   if (majorVersion < MINIMUM_NODE_VERSION) {
     throw new Error(

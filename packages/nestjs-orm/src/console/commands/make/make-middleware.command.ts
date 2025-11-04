@@ -73,10 +73,10 @@ export class MakeMiddlewareCommand extends BaseOrmMakeCommand {
 
     // Extract base name by removing 'Middleware' suffix if present
     const baseName = name.replace(/Middleware$/i, '');
-    
+
     // Convert to PascalCase for class name
     const className = this.toClassName(baseName);
-    
+
     // Create middleware class name (always ends with Middleware)
     const middlewareName = `${className}Middleware`;
 

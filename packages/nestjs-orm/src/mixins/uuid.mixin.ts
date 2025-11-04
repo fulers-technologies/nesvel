@@ -1,47 +1,8 @@
-import { PrimaryKey, BeforeCreate } from '@mikro-orm/core';
+import * as uuid from 'uuid';
 import { Constructor } from '@nesvel/shared';
+import { PrimaryKey, BeforeCreate } from '@mikro-orm/core';
+
 import { IHasUuid } from '@/interfaces/has-uuid.interface';
-
-// Use dynamic import to handle ESM/CommonJS compatibility
-let uuid: any;
-try {
-  uuid = require('uuid');
-} catch {
-  // Fallback for ESM environments - generate proper UUIDs for tests
-  uuid = {
-    v4: () => {
-      // Generate a proper UUID v4 format for tests
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        const r = (Math.random() * 16) | 0;
-        const v = c === 'x' ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-      });
-    },
-    validate: (str: string) =>
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(str),
-    version: (str: string) => {
-      if (typeof str === 'string' && str.length >= 15) {
-        return parseInt(str.charAt(14), 16);
-      }
-      return 4;
-    },
-  };
-}
-
-/**
- * UUID Mixin
- *
- * Adds UUID primary key functionality to entities.
- * Automatically generates UUIDs for new entities.
- *
- * @example
- * ```typescript
- * @Entity()
- * export class User extends HasUuid(BaseEntity) {
- *   // User-specific properties
- * }
- * ```
- */
 
 /**
  * UUID mixin function
@@ -49,7 +10,21 @@ try {
  * @param Base - The base class to extend
  * @returns Extended class with UUID functionality
  */
-export function HasUuid<TBase extends new (...args: any[]) => object>(Base: TBase) {
+export function HasUuid<TBase extends Constructor<object>>(Base: TBase) {
+  /**
+   * UUID Mixin
+   *
+   * Adds UUID primary key functionality to entities.
+   * Automatically generates UUIDs for new entities.
+   *
+   * @example
+   * ```typescript
+   * @Entity()
+   * export class User extends HasUuid(BaseEntity) {
+   *   // User-specific properties
+   * }
+   * ```
+   */
   abstract class UuidMixin extends Base implements IHasUuid {
     /**
      * UUID primary key

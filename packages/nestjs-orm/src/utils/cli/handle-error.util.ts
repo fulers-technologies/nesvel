@@ -33,11 +33,7 @@ import { Logger } from '@nestjs/common';
  * handleError(new Error('Failed'), 'Command Execution', customLogger);
  * ```
  */
-export function handleError(
-  error: Error | any,
-  context = 'CLI Execution',
-  logger?: Logger,
-): void {
+export function handleError(error: Error | any, context = 'CLI Execution', logger?: Logger): void {
   const log = logger || new Logger('NesvelORM-CLI');
 
   // Display error context

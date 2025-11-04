@@ -103,10 +103,10 @@ export class MakeSubscriberCommand extends BaseOrmMakeCommand {
 
     // Extract entity name by removing 'Subscriber' suffix if present
     const entityBaseName = name.replace(/Subscriber$/i, '');
-    
+
     // Convert entity name to PascalCase
     const entityName = this.toClassName(entityBaseName);
-    
+
     // Create subscriber class name (always ends with Subscriber)
     const className = `${entityName}Subscriber`;
 

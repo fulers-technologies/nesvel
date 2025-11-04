@@ -59,17 +59,15 @@ export class EntityListCommand extends CommandRunner {
 
       if (entityArray.length === 0) {
         this.logger.warn('⚠️  No entities found');
-        this.logger.log('Make sure your entities are properly registered in MikroORM configuration');
+        this.logger.log(
+          'Make sure your entities are properly registered in MikroORM configuration',
+        );
         return;
       }
 
       // Display header
       this.logger.log('='.repeat(80));
-      this.logger.log(
-        'Entity Name'.padEnd(30) +
-        'Table Name'.padEnd(30) +
-        'Properties'.padEnd(10)
-      );
+      this.logger.log('Entity Name'.padEnd(30) + 'Table Name'.padEnd(30) + 'Properties'.padEnd(10));
       this.logger.log('='.repeat(80));
 
       // Display each entity
@@ -77,18 +75,18 @@ export class EntityListCommand extends CommandRunner {
         const entityName = entity.className;
         const tableName = entity.tableName;
         const properties = entity.props || entity.properties || {};
-        const propertyCount = Array.isArray(properties) ? properties.length : Object.keys(properties).length;
+        const propertyCount = Array.isArray(properties)
+          ? properties.length
+          : Object.keys(properties).length;
 
         this.logger.log(
-          entityName.padEnd(30) +
-          tableName.padEnd(30) +
-          propertyCount.toString().padEnd(10)
+          entityName.padEnd(30) + tableName.padEnd(30) + propertyCount.toString().padEnd(10),
         );
       });
 
       this.logger.log('='.repeat(80));
       this.logger.log(`\n✅ Total entities: ${entityArray.length}`);
-      
+
       this.logger.log('\n💡 Use "entity:show <EntityName>" to see detailed information');
     } catch (error: any) {
       this.logger.error('❌ Failed to list entities:', error.message);

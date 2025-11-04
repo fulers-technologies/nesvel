@@ -16,53 +16,275 @@
  * export class MyEntity extends BaseEntity {
  *   @Property({ type: 'enum' })
  *   @Enum(() => <%= enumName %>)
- *   status: <%= enumName %> = <%= enumName %>.ACTIVE;
+ *   status: <%= enumName %> = <%= enumName %>.PLACEHOLDER;
  * }
+ *
+ * // Usage with static methods:
+ * const allValues = <%= enumName %>.getValues();  // Get all enum values
+ * const isValid = <%= enumName %>.isValid('active');  // Check if value is valid
+ * const label = <%= enumName %>.getLabel(<%= enumName %>.PLACEHOLDER);  // Get display label
+ * const found = <%= enumName %>.search('pend');  // Fuzzy search
+ * const parsed = <%= enumName %>.parse('ACTIVE');  // Case-insensitive parse
  * ```
  */
 export enum <%= enumName %> {
-  // TODO: Define enum values
-  // Example for status enum:
-  // ACTIVE = 'active',
-  // INACTIVE = 'inactive',
-  // PENDING = 'pending',
-  // SUSPENDED = 'suspended',
+  /**
+   * Placeholder value - replace with your actual enum values
+   *
+   * @example
+   * // For a status enum:
+   * // ACTIVE = 'active',
+   * // INACTIVE = 'inactive',
+   * // PENDING = 'pending',
+   * // COMPLETED = 'completed',
+   */
+  PLACEHOLDER = 'placeholder',
+}
+
+/**
+ * Get enum value labels for display
+ *
+ * Override this function to provide human-readable labels.
+ * By default, returns the enum value as a string.
+ *
+ * @param value - Enum value
+ * @returns Human-readable label
+ *
+ * @example
+ * ```typescript
+ * // Custom implementation:
+ * export namespace <%= enumName %> {
+ *   export function getLabel(value: <%= enumName %>): string {
+ *     const labels: Record<<%= enumName %>, string> = {
+ *       [<%= enumName %>.ACTIVE]: 'Active Status',
+ *       [<%= enumName %>.INACTIVE]: 'Inactive Status',
+ *     };
+ *     return labels[value] || value;
+ *   }
+ * }
+ *
+ * // Usage:
+ * const label = <%= enumName %>.getLabel(<%= enumName %>.ACTIVE);
+ * // Returns: 'Active Status'
+ * ```
+ */
+export function getLabel(value: <%= enumName %>): string {
+  // TODO: Implement custom labels
+  // Return the enum value as-is for now
+  return value;
 }
 
 /**
  * Get all enum values as an array
  *
  * @returns Array of all enum values
+ *
+ * @example
+ * ```typescript
+ * const values = <%= enumName %>.getValues();
+ * // Returns: ['value1', 'value2', ...]
+ * ```
  */
-export function get<%= enumName %>Values(): <%= enumName %>[] {
-  return Object.values(<%= enumName %>) as <%= enumName %>[];
+export function getValues(): <%= enumName %>[] {
+  return Object.values(<%= enumName %>).filter(
+    (value): value is <%= enumName %> => typeof value === 'string',
+  );
 }
 
 /**
- * Check if a value is a valid <%= enumName %>
+ * Check if a value is a valid enum member
  *
  * @param value - Value to check
  * @returns True if value is valid enum member
+ *
+ * @example
+ * ```typescript
+ * if (<%= enumName %>.isValid('value1')) {
+ *   // Value is valid
+ * }
+ * ```
  */
-export function isValid<%= enumName %>(value: any): value is <%= enumName %> {
-  return Object.values(<%= enumName %>).includes(value);
+export function isValid(value: unknown): value is <%= enumName %> {
+  return (
+    typeof value === 'string' && getValues().includes(value as <%= enumName %>)
+  );
 }
 
 /**
- * Get enum value labels for display
- * Override this function to provide human-readable labels
+ * Get all enum entries as key-value pairs
  *
- * @param value - Enum value
- * @returns Human-readable label
+ * Useful for generating select options, dropdowns, or mapping displays.
+ *
+ * @returns Array of objects with key and value properties
+ *
+ * @example
+ * ```typescript
+ * const options = <%= enumName %>.getEntries();
+ * // Returns: [{ key: 'KEY1', value: 'value1' }, { key: 'KEY2', value: 'value2' }]
+ *
+ * // Use in a select dropdown:
+ * <select>
+ *   {options.map(opt => (
+ *     <option key={opt.key} value={opt.value}>
+ *       {<%= enumName %>.getLabel(opt.value)}
+ *     </option>
+ *   ))}
+ * </select>
+ * ```
  */
-export function get<%= enumName %>Label(value: <%= enumName %>): string {
-  // TODO: Implement custom labels
-  // Example:
-  // const labels: Record<<%= enumName %>, string> = {
-  //   [<%= enumName %>.ACTIVE]: 'Active',
-  //   [<%= enumName %>.INACTIVE]: 'Inactive',
-  // };
-  // return labels[value] || value;
+export function getEntries(): Array<{ key: string; value: <%= enumName %> }> {
+  return Object.entries(<%= enumName %>)
+    .filter(([, value]) => typeof value === 'string')
+    .map(([key, value]) => ({ key, value: value as <%= enumName %> }));
+}
 
-  return value.toString();
+/**
+ * Get enum keys as an array
+ *
+ * Returns the enum member names (not their values).
+ *
+ * @returns Array of enum keys
+ *
+ * @example
+ * ```typescript
+ * const keys = <%= enumName %>.getKeys();
+ * // Returns: ['KEY1', 'KEY2', ...]
+ * ```
+ */
+export function getKeys(): string[] {
+  return Object.keys(<%= enumName %>).filter(
+    (key) => typeof <%= enumName %>[key as keyof typeof <%= enumName %>] === 'string',
+  );
+}
+
+/**
+ * Convert enum value to human-readable format
+ *
+ * Transforms enum values to title case.
+ * Useful for display purposes when custom labels aren't defined.
+ *
+ * @param value - Enum value to format
+ * @returns Formatted string
+ *
+ * @example
+ * ```typescript
+ * // <%= enumName %>.toDisplayString('my_value') => 'My Value'
+ * // <%= enumName %>.toDisplayString('my-value') => 'My Value'
+ * // <%= enumName %>.toDisplayString('myvalue') => 'Myvalue'
+ * ```
+ */
+export function toDisplayString(value: <%= enumName %>): string {
+  return value
+    .split(/[_-]/) // Split on underscore or hyphen
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+}
+
+/**
+ * Parse a string value to enum (case-insensitive)
+ *
+ * Safely converts string input to enum value, handling different cases.
+ * Returns undefined if the value is invalid.
+ *
+ * @param value - String value to parse
+ * @returns Enum value or undefined if invalid
+ *
+ * @example
+ * ```typescript
+ * <%= enumName %>.parse('VALUE1');   // Valid enum value
+ * <%= enumName %>.parse('value1');   // Valid (case-insensitive)
+ * <%= enumName %>.parse('VaLuE1');   // Valid (case-insensitive)
+ * <%= enumName %>.parse('invalid');  // Returns: undefined
+ * ```
+ */
+export function parse(
+  value: string | null | undefined,
+): <%= enumName %> | undefined {
+  if (!value) return undefined;
+
+  const normalized = value.toLowerCase();
+  const found = getValues().find(
+    (enumValue) => enumValue.toLowerCase() === normalized,
+  );
+
+  return found;
+}
+
+/**
+ * Parse with fallback default value
+ *
+ * Like parse(), but returns a default value instead of undefined.
+ *
+ * @param value - String value to parse
+ * @param defaultValue - Default enum value to return if parsing fails
+ * @returns Enum value or the provided default
+ *
+ * @example
+ * ```typescript
+ * // If 'invalid' is not a valid enum value, returns the default
+ * <%= enumName %>.parseOrDefault('invalid', <%= enumName %>.PLACEHOLDER);
+ * // If 'value1' is valid, returns that value
+ * <%= enumName %>.parseOrDefault('value1', <%= enumName %>.PLACEHOLDER);
+ * ```
+ */
+export function parseOrDefault(
+  value: string | null | undefined,
+  defaultValue: <%= enumName %>,
+): <%= enumName %> {
+  return parse(value) ?? defaultValue;
+}
+
+/**
+ * Get enum value from partial match
+ *
+ * Finds the first enum value that includes the search string (case-insensitive).
+ * Useful for fuzzy matching or search functionality.
+ *
+ * @param search - Search string
+ * @returns First matching enum value or undefined
+ *
+ * @example
+ * ```typescript
+ * <%= enumName %>.search('val');  // Finds first value containing 'val'
+ * <%= enumName %>.search('xyz');  // Returns: undefined if no match
+ * ```
+ */
+export function search(searchStr: string): <%= enumName %> | undefined {
+  if (!searchStr) return undefined;
+
+  const normalized = searchStr.toLowerCase();
+  return getValues().find((value) => value.toLowerCase().includes(normalized));
+}
+
+/**
+ * Assert that a value is a valid enum member
+ *
+ * Throws an error if the value is not valid.
+ * Useful for validating API inputs or user data.
+ *
+ * @param value - Value to assert
+ * @param message - Optional custom error message
+ * @returns The value if valid
+ * @throws Error if value is not a valid enum member
+ *
+ * @example
+ * ```typescript
+ * try {
+ *   <%= enumName %>.assertValid(userInput);
+ *   // Value is valid, type is narrowed
+ * } catch (error) {
+ *   console.error('Invalid value');
+ * }
+ * ```
+ */
+export function assertValid(
+  value: unknown,
+  message?: string,
+): asserts value is <%= enumName %> {
+  if (!isValid(value)) {
+    throw new Error(
+      message ||
+        `Invalid value: ${String(value)}. Valid values: ${getValues().join(', ')}`,
+    );
+  }
 }

@@ -33,14 +33,18 @@ export class MakeSeederCommand extends BaseOrmMakeCommand {
       throw new Error('Seeder name argument is required.');
     }
 
-    // Convert name to PascalCase for class name
-    const modelName = this.toClassName(name);
+    // Remove 'Seeder' suffix if already present to avoid duplication
+    const baseName = name.replace(/Seeder$/i, '');
+
+    // Convert name to PascalCase for class name (will have Seeder suffix added)
+    const modelName = this.toClassName(baseName);
+    const className = `${modelName}Seeder`;
 
     // Convert name to kebab-case for file name
-    const fileName = this.toFileName(name);
+    const fileName = this.toFileName(baseName);
 
     // Convert to camelCase for variable name
-    const variableName = this.toVariableName(name);
+    const variableName = this.toVariableName(baseName);
 
     // Generate file from EJS template
     await this.generateFromStub(
@@ -51,6 +55,7 @@ export class MakeSeederCommand extends BaseOrmMakeCommand {
         suffix: 'seeder',
       },
       {
+        className,
         modelName,
         fileName,
         variableName,

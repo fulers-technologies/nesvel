@@ -10,9 +10,3 @@
 
 // Base factory class for extending
 export * from './base.factory';
-
-// Factory manager for coordination
-export * from './factory.manager';
-
-// Re-export factory interfaces from interfaces folder for convenience
-export type { IFactory, IFactoryState, IFactoryRelationship, IFactoryConfig } from '../interfaces';

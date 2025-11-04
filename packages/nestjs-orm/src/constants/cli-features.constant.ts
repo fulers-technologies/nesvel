@@ -243,8 +243,6 @@ export function getFeatureFlags(): Record<string, boolean> {
  * }
  * ```
  */
-export function isFeatureEnabled(
-  featureName: keyof typeof CLI_FEATURES,
-): boolean {
+export function isFeatureEnabled(featureName: keyof typeof CLI_FEATURES): boolean {
   return CLI_FEATURES[featureName];
 }

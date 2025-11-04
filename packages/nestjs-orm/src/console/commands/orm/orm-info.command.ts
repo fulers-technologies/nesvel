@@ -30,7 +30,7 @@ export class OrmInfoCommand extends CommandRunner {
       const config = this.orm.config;
 
       this.logger.log('='.repeat(60));
-      this.logger.log(`Type: ${config.get('type')}`);
+      this.logger.log(`Type: ${config.get('type' as any)}`);
       this.logger.log(`Database: ${config.get('dbName')}`);
       this.logger.log(`Debug: ${config.get('debug')}`);
       this.logger.log(`Discovery: ${config.get('discovery')?.warnWhenNoEntities}`);

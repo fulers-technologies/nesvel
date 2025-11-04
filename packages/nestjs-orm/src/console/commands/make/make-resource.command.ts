@@ -58,21 +58,24 @@ export class MakeResourceCommand extends BaseOrmMakeCommand {
       await this.callSilent('make:service', [name, ...pathArgs]);
       await this.callSilent('make:controller', [name, ...pathArgs]);
       await this.callSilent('make:module', [name, ...pathArgs]);
+      await this.callSilent('make:dto', [`${modelName}`, ...pathArgs]);
       await this.callSilent('make:dto', [`Create${modelName}`, ...pathArgs]);
       await this.callSilent('make:dto', [`Update${modelName}`, ...pathArgs]);
 
       spin.succeed();
-      
+
       // Determine base path for output messages
       const basePath = this.customPath || 'src';
-      
+
       success(`\n✨ Complete resource generated for ${name}:`);
       success(`   - Entity: ${basePath}/entities/${fileName}.entity.ts`);
       success(`   - Repository: ${basePath}/repositories/${fileName}.repository.ts`);
       success(`   - Service: ${basePath}/services/${fileName}.service.ts`);
       success(`   - Controller: ${basePath}/controllers/${fileName}.controller.ts`);
       success(`   - Module: ${basePath}/modules/${fileName}.module.ts`);
-      success(`   - DTOs: ${basePath}/dtos/create-${fileName}.dto.ts, update-${fileName}.dto.ts`);
+      success(
+        `   - DTOs: ${basePath}/dtos/${fileName}.dto.ts, ${basePath}/dtos/create-${fileName}.dto.ts, update-${fileName}.dto.ts`,
+      );
     } catch (err: Error | any) {
       spin.fail();
       throw err;

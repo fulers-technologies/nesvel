@@ -3,7 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
 
 /**
- * Database Table Command  
+ * Database Table Command
  *
  * Shows detailed structure of a specific database table including columns,
  * types, indexes, and constraints.
@@ -36,14 +36,14 @@ export class DbTableCommand extends CommandRunner {
       this.logger.log(`Table Structure: ${tableName}\n`);
 
       const connection = this.orm.em.getConnection();
-      
+
       // Get table info (database-specific query)
       // This is a simplified version - should be adapted per database type
       const result = await connection.execute(
         `SELECT column_name, data_type, is_nullable 
          FROM information_schema.columns 
          WHERE table_name = ?`,
-        [tableName]
+        [tableName],
       );
 
       if (!result || result.length === 0) {
@@ -56,11 +56,7 @@ export class DbTableCommand extends CommandRunner {
       this.logger.log('='.repeat(80));
 
       result.forEach((row: any) => {
-        this.logger.log(
-          row.column_name.padEnd(30) +
-          row.data_type.padEnd(30) +
-          row.is_nullable
-        );
+        this.logger.log(row.column_name.padEnd(30) + row.data_type.padEnd(30) + row.is_nullable);
       });
 
       this.logger.log('='.repeat(80));

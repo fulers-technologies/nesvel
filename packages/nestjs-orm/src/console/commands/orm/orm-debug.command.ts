@@ -36,7 +36,7 @@ export class OrmDebugCommand extends CommandRunner {
       this.logger.log('='.repeat(80));
       this.logger.log('CONFIGURATION');
       this.logger.log('='.repeat(80));
-      this.logger.log(`Driver: ${config.get('type')}`);
+      this.logger.log(`Driver: ${config.get('type' as any)}`);
       this.logger.log(`Database: ${config.get('dbName')}`);
       this.logger.log(`Host: ${config.get('host')}:${config.get('port')}`);
       this.logger.log(`Debug Mode: ${config.get('debug')}`);
@@ -68,7 +68,8 @@ export class OrmDebugCommand extends CommandRunner {
       this.logger.log('\n' + '='.repeat(80));
       this.logger.log('PLATFORM');
       this.logger.log('='.repeat(80));
-      const platform = (this.orm as any).config.driver?.getPlatform?.() || (this.orm as any).em.getPlatform();
+      const platform =
+        (this.orm as any).config.driver?.getPlatform?.() || (this.orm as any).em.getPlatform();
       if (platform) {
         this.logger.log(`Name: ${platform.constructor.name}`);
         this.logger.log(`Supports Transactions: ${platform.supportsTransactions?.() ?? 'Unknown'}`);

@@ -1,3 +1,5 @@
+import { BaseException } from '@nesvel/shared';
+
 /**
  * Model Not Found Exception
  *
@@ -9,19 +11,19 @@
  * @example
  * ```typescript
  * // Single model not found
- * throw new ModelNotFoundException('User', [123]);
+ * throw ModelNotFoundException.make('User', [123]);
  *
  * // Multiple models not found
- * throw new ModelNotFoundException('Post', [1, 2, 3]);
+ * throw ModelNotFoundException.make('Post', [1, 2, 3]);
  *
  * // Model not found with custom query conditions
- * throw new ModelNotFoundException('User', [], { email: 'test@example.com' });
+ * throw ModelNotFoundException.make('User', [], { email: 'test@example.com' });
  * ```
  *
  * @author Nesvel
  * @since 1.0.0
  */
-export class ModelNotFoundException extends Error {
+export class ModelNotFoundException extends BaseException {
   /**
    * The name of the model/entity that was not found
    */
@@ -84,11 +86,6 @@ export class ModelNotFoundException extends Error {
     }
     if (context !== undefined) {
       this.context = context;
-    }
-
-    // Maintains proper stack trace for where our error was thrown (only available on V8)
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, ModelNotFoundException);
     }
   }
 

@@ -1,15 +1,4 @@
-/**
- * Available log levels
- *
- * @constant
- */
-export const LOG_LEVELS = {
-  ERROR: 'error',
-  WARN: 'warn',
-  LOG: 'log',
-  DEBUG: 'debug',
-  VERBOSE: 'verbose',
-} as const;
+import { LogLevel } from '@/enums/log-level.enum';
 
 /**
  * Configure CLI Logger
@@ -35,17 +24,17 @@ export const LOG_LEVELS = {
 export function configureLogger(): void {
   // Check for verbose flag
   if (process.argv.includes('--verbose') || process.env.VERBOSE === 'true') {
-    process.env.LOG_LEVEL = LOG_LEVELS.DEBUG;
+    process.env.LOG_LEVEL = LogLevel.DEBUG;
   }
 
   // Check for debug flag
   if (process.argv.includes('--debug') || process.env.DEBUG === 'true') {
-    process.env.LOG_LEVEL = LOG_LEVELS.VERBOSE;
+    process.env.LOG_LEVEL = LogLevel.VERBOSE;
   }
 
   // Check for quiet flag
   if (process.argv.includes('--quiet') || process.env.QUIET === 'true') {
-    process.env.LOG_LEVEL = LOG_LEVELS.ERROR;
+    process.env.LOG_LEVEL = LogLevel.ERROR;
   }
 
   // Disable colors in CI environments or when explicitly requested
@@ -59,14 +48,14 @@ export function configureLogger(): void {
     const nodeEnv = process.env.NODE_ENV || 'development';
     switch (nodeEnv) {
       case 'production':
-        process.env.LOG_LEVEL = LOG_LEVELS.WARN;
+        process.env.LOG_LEVEL = LogLevel.WARN;
         break;
       case 'test':
-        process.env.LOG_LEVEL = LOG_LEVELS.ERROR;
+        process.env.LOG_LEVEL = LogLevel.ERROR;
         break;
       case 'development':
       default:
-        process.env.LOG_LEVEL = LOG_LEVELS.LOG;
+        process.env.LOG_LEVEL = LogLevel.LOG;
         break;
     }
   }
@@ -86,7 +75,7 @@ export function configureLogger(): void {
  * ```
  */
 export function getLogLevel(): string {
-  return process.env.LOG_LEVEL || LOG_LEVELS.LOG;
+  return process.env.LOG_LEVEL || LogLevel.LOG;
 }
 
 /**
@@ -119,7 +108,7 @@ export function setLogLevel(level: string): void {
  */
 export function isVerbose(): boolean {
   const level = getLogLevel();
-  return level === LOG_LEVELS.DEBUG || level === LOG_LEVELS.VERBOSE;
+  return level === LogLevel.DEBUG || level === LogLevel.VERBOSE;
 }
 
 /**
@@ -139,16 +128,6 @@ export function shouldDisableColors(): boolean {
 }
 
 /**
- * Valid NestJS log levels
- */
-import { LogLevel } from '@/enums';
-
-/**
- * @deprecated Use LogLevel enum instead
- */
-export type LogLevelType = LogLevel;
-
-/**
  * Get logger options for NestJS
  *
  * Returns logger options suitable for NestJS CommandFactory or application bootstrap.
@@ -163,22 +142,22 @@ export type LogLevelType = LogLevel;
  * });
  * ```
  */
-export function getLoggerOptions(): LogLevelType[] {
+export function getLoggerOptions(): LogLevel[] {
   const level = getLogLevel();
 
   switch (level) {
-    case LOG_LEVELS.ERROR:
-      return ['error'];
-    case LOG_LEVELS.WARN:
-      return ['error', 'warn'];
-    case LOG_LEVELS.LOG:
-      return ['error', 'warn', 'log'];
-    case LOG_LEVELS.DEBUG:
-      return ['error', 'warn', 'log', 'debug'];
-    case LOG_LEVELS.VERBOSE:
-      return ['error', 'warn', 'log', 'debug', 'verbose'];
+    case LogLevel.ERROR:
+      return [LogLevel.ERROR];
+    case LogLevel.WARN:
+      return [LogLevel.ERROR, LogLevel.WARN];
+    case LogLevel.LOG:
+      return [LogLevel.ERROR, LogLevel.WARN, LogLevel.LOG];
+    case LogLevel.DEBUG:
+      return [LogLevel.ERROR, LogLevel.WARN, LogLevel.LOG, LogLevel.DEBUG];
+    case LogLevel.VERBOSE:
+      return [LogLevel.ERROR, LogLevel.WARN, LogLevel.LOG, LogLevel.DEBUG, LogLevel.VERBOSE];
     default:
-      return ['error', 'warn', 'log'];
+      return [LogLevel.ERROR, LogLevel.WARN, LogLevel.LOG];
   }
 }
 

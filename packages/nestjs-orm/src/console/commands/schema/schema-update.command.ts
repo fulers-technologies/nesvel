@@ -84,24 +84,24 @@ export class SchemaUpdateCommand extends CommandRunner {
 
       if (options?.dryRun) {
         this.logger.log('DRY RUN MODE - Showing SQL that would be executed:\n');
-        
+
         // Get the update SQL without executing
         const sql = await schemaGenerator.getUpdateSchemaSQL({
           safe: options?.safe ?? false,
           dropTables: options?.dropTables ?? true,
         });
-        
+
         if (!sql || sql.trim().length === 0) {
           this.logger.log('✅ Schema is up to date - no changes needed');
           return;
         }
-        
+
         this.logger.log('='.repeat(60));
         this.logger.log('UPDATE SCHEMA SQL:');
         this.logger.log('='.repeat(60));
         this.logger.log(sql);
         this.logger.log('='.repeat(60));
-        
+
         this.logger.log('\n✅ Dry run complete - no changes made');
         return;
       }

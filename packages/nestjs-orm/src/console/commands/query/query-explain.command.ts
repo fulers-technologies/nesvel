@@ -14,7 +14,9 @@ import { Injectable, Logger } from '@nestjs/common';
 })
 export class QueryExplainCommand extends CommandRunner {
   private readonly logger = new Logger(QueryExplainCommand.name);
-  constructor(private readonly orm: MikroORM) { super(); }
+  constructor(private readonly orm: MikroORM) {
+    super();
+  }
 
   async run(inputs: string[]): Promise<void> {
     try {
@@ -23,14 +25,14 @@ export class QueryExplainCommand extends CommandRunner {
 
       this.logger.log('Query Execution Plan:\n');
       const connection = this.orm.em.getConnection();
-      
+
       // Execute EXPLAIN (database-specific)
       const result = await connection.execute(`EXPLAIN ${query}`);
-      
+
       this.logger.log('='.repeat(80));
       this.logger.log(JSON.stringify(result, null, 2));
       this.logger.log('='.repeat(80));
-      
+
       this.logger.log('\n✅ Execution plan displayed');
     } catch (error: any) {
       this.logger.error('❌ Failed to explain query:', error.message);

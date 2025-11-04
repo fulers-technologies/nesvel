@@ -1,9 +1,5 @@
-import { Command, CommandRunner, Option } from 'nest-commander';
 import { Injectable, Logger } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
-import { EntityManager } from '@mikro-orm/core';
-import { FactoryManager } from '@/factories/factory.manager';
-import { ISeederContext } from '@/interfaces';
+import { Command, CommandRunner, Option } from 'nest-commander';
 
 /**
  * Database Seed Refresh Command
@@ -48,14 +44,6 @@ import { ISeederContext } from '@/interfaces';
 export class DbSeedRefreshCommand extends CommandRunner {
   private readonly logger = new Logger(DbSeedRefreshCommand.name);
 
-  constructor(
-    private readonly moduleRef: ModuleRef,
-    private readonly em: EntityManager,
-    private readonly factoryManager: FactoryManager,
-  ) {
-    super();
-  }
-
   /**
    * Execute the db:seed:refresh command
    *
@@ -83,117 +71,5 @@ export class DbSeedRefreshCommand extends CommandRunner {
    * // 4. await userSeeder.run();
    * ```
    */
-  async run(inputs: string[], options?: DbSeedRefreshOptions): Promise<void> {
-    try {
-      const environment = process.env.NODE_ENV || 'development';
-      
-      // Check production environment
-      if (environment === 'production' && !options?.force) {
-        this.logger.warn(
-          '⚠️  Seed refresh in production is disabled. Use --force to override.',
-        );
-        return;
-      }
-
-      this.logger.log(`Refreshing database seeders in ${environment} environment...\n`);
-
-      // Create seeder context
-      const context: ISeederContext = {
-        environment,
-        args: {},
-        verbose: options?.verbose ?? false,
-        force: options?.force ?? false,
-      };
-
-      // Step 1: Rollback all seeders
-      this.logger.log('Step 1/2: Rolling back seeders...');
-      await this.rollbackAllSeeders(context);
-      
-      // Step 2: Re-run all seeders
-      this.logger.log('\nStep 2/2: Re-running seeders...');
-      await this.runAllSeeders(context);
-
-      this.logger.log('\n✅ Database seed refresh completed successfully');
-    } catch (error: any) {
-      this.logger.error('❌ Seed refresh failed:', error.message);
-      throw error;
-    }
-  }
-
-  /**
-   * Rollback all seeders in the database
-   *
-   * Executes rollback methods for all seeders that have been run,
-   * in reverse order to maintain referential integrity.
-   *
-   * @param context - Seeder execution context
-   * @returns Promise that resolves when all rollbacks are complete
-   * @private
-   */
-  private async rollbackAllSeeders(context: ISeederContext): Promise<void> {
-    // TODO: Implement full seeder rollback
-    // This requires:
-    // 1. Discovering all seeders in DI container
-    // 2. Sorting by priority (reverse order)
-    // 3. Executing rollback methods
-    // 4. Tracking failures and continuing
-    
-    this.logger.warn(
-      '⚠️  Automatic seeder rollback not yet fully implemented.',
-    );
-    this.logger.log('Continuing with re-seeding...');
-  }
-
-  /**
-   * Run all seeders in the database
-   *
-   * Executes run methods for all registered seeders in correct
-   * priority order with dependency resolution.
-   *
-   * @param context - Seeder execution context
-   * @returns Promise that resolves when all seeders complete
-   * @private
-   */
-  private async runAllSeeders(context: ISeederContext): Promise<void> {
-    // TODO: Implement full seeder execution
-    // This requires:
-    // 1. Discovering all seeders in DI container
-    // 2. Resolving dependencies
-    // 3. Sorting by priority
-    // 4. Executing in order
-    // 5. Tracking execution state
-    
-    this.logger.warn(
-      '⚠️  Automatic seeder discovery not yet fully implemented.',
-    );
-    this.logger.log('Use db:seed --class=SeederName to run specific seeders.');
-  }
-
-  // @ts-ignore - nest-commander decorator signature mismatch
-  @Option({
-    flags: '--force',
-    description: 'Force the operation to run in production',
-  })
-  parseForce(): boolean {
-    return true;
-  }
-
-  // @ts-ignore - nest-commander decorator signature mismatch
-  @Option({
-    flags: '--verbose',
-    description: 'Enable verbose output',
-  })
-  parseVerbose(): boolean {
-    return true;
-  }
-}
-
-/**
- * Command options interface
- */
-interface DbSeedRefreshOptions {
-  /** Force execution in production */
-  force?: boolean;
-  /** Enable verbose logging */
-  verbose?: boolean;
+  async run(): Promise<void> {}
 }

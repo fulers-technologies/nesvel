@@ -40,11 +40,20 @@ export class MakeModelCommand extends BaseOrmMakeCommand {
       throw new Error('Model name argument is required.');
     }
 
+    // Convert name to PascalCase for class name
+    const modelName = this.toClassName(name);
+
     // Generate file from EJS template
-    await this.generateFromStub(name, {
-      stubName: 'model',
-      outputDir: 'src/entities',
-      suffix: 'entity',
-    });
+    await this.generateFromStub(
+      name,
+      {
+        stubName: 'model',
+        outputDir: 'src/entities',
+        suffix: 'entity',
+      },
+      {
+        modelName,
+      },
+    );
   }
 }

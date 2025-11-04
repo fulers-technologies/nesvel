@@ -12,6 +12,6 @@
 
 export * from './handle-error.util';
 export * from './display-banner.util';
+export * from './configure-logger.util';
 export * from './setup-error-handlers.util';
 export * from './validate-environment.util';
-export * from './configure-logger.util';

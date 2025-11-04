@@ -65,9 +65,7 @@ export class MigrateStatusCommand extends CommandRunner {
       }
 
       this.logger.log('');
-      this.logger.log(
-        `Summary: ${executed.length} executed, ${pending.length} pending`,
-      );
+      this.logger.log(`Summary: ${executed.length} executed, ${pending.length} pending`);
     } catch (error: any) {
       this.logger.error('❌ Failed to get migration status:', error.message);
       throw error;

@@ -13,19 +13,21 @@ import { Injectable, Logger } from '@nestjs/common';
 })
 export class ConnectionListCommand extends CommandRunner {
   private readonly logger = new Logger(ConnectionListCommand.name);
-  constructor(private readonly orm: MikroORM) { super(); }
+  constructor(private readonly orm: MikroORM) {
+    super();
+  }
 
   async run(): Promise<void> {
     this.logger.log('Database Connections:\n');
     const config = this.orm.config;
-    
+
     this.logger.log('='.repeat(60));
-    this.logger.log(`Type: ${config.get('type')}`);
+    this.logger.log(`Type: ${config.get('type' as any)}`);
     this.logger.log(`Database: ${config.get('dbName')}`);
     this.logger.log(`Host: ${config.get('host')}:${config.get('port')}`);
     this.logger.log(`User: ${config.get('user')}`);
     this.logger.log('='.repeat(60));
-    
+
     this.logger.log('\n✅ Connection list displayed');
   }
 }

@@ -35,8 +35,8 @@ export * from './enums';
 // Exception Handling
 export * from './exceptions';
 
-// Decorators for Factories and Seeders
-export * from './decorators';
+// Type Definitions
+export * from './types';
 
 // Event Subscribers
 export * from './subscribers';
@@ -69,7 +69,6 @@ export type {
   EntityDTO,
   Populate,
   ConnectionType,
-  LoadStrategy,
   IDatabaseDriver,
   Configuration,
   EventSubscriber,
@@ -82,6 +81,8 @@ export {
   Reference,
   Collection,
   QueryOrder,
+  UnderscoreNamingStrategy,
+  LoadStrategy,
 } from '@mikro-orm/core';
 
 // Re-export MikroORM decorators
@@ -111,8 +112,36 @@ export {
 } from '@mikro-orm/core';
 
 // Re-export NestJS integration
-export { MikroOrmModule as OrmModule, InjectRepository } from '@mikro-orm/nestjs';
+export {
+  MikroOrmModule as OrmModule,
+  InjectRepository,
+  type MikroOrmModuleOptions,
+  type MikroOrmModuleOptions as OrmModuleOptions,
+} from '@mikro-orm/nestjs';
 
-// Re-export pagination utilities
-export { Paginate } from 'nestjs-paginate';
-export type { PaginateQuery, Paginated } from 'nestjs-paginate';
+// Re-export pagination utilities from nestjs-paginate (excluding paginate function)
+export {
+  // Core types and classes
+  Paginated,
+  PaginationType,
+  PaginationLimit,
+  type PaginateConfig,
+  type PaginateQuery,
+
+  // Decorators
+  Paginate,
+  ApiOkPaginatedResponse,
+  ApiPaginationQuery,
+  PaginatedSwaggerDocs,
+
+  // Global config
+  updateGlobalConfig,
+  type NestjsPaginateGlobalConfig,
+
+  // Filter operators
+  FilterOperator,
+  FilterSuffix,
+} from 'nestjs-paginate';
+
+// Utility functions and helpers
+export * from './utils';

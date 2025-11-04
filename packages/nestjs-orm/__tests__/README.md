@@ -42,7 +42,7 @@ Factory pattern testing with Laravel-style features:
 Mixin functionality and integration testing:
 
 - `mixins.integration.spec.ts` - Tests all mixins individually and in
-  combination: HasTimestamps, HasSoftDeletes, HasUserStamps, HasUuid
+  combination: HasTimestamps, HasSoftDeletes, HasUserstamps, HasUuid
 
 ### 🗄️ **Repositories** (`/repositories`)
 

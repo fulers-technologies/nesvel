@@ -12,7 +12,9 @@ import { Injectable, Logger } from '@nestjs/common';
 })
 export class OrmSchemaToolCreateCommand extends CommandRunner {
   private readonly logger = new Logger(OrmSchemaToolCreateCommand.name);
-  constructor(private readonly orm: MikroORM) { super(); }
+  constructor(private readonly orm: MikroORM) {
+    super();
+  }
 
   async run(): Promise<void> {
     const schemaGenerator = this.orm.getSchemaGenerator();

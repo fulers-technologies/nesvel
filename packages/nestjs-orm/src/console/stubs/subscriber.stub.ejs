@@ -1,7 +1,8 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { PubSubService } from '@nesvel/nestjs-pubsub';
+import { Injectable } from '@nestjs/common';
 import { BaseSubscriber } from '@nesvel/nestjs-orm';
-import { <%= entityName %> } from '@/entities/<%= fileName %>';
+import { InjectPubSub, PubSubService } from '@nesvel/nestjs-pubsub';
+
+import { <%= entityName %> } from '@/entities/<%= fileName %>.entity';
 
 /**
  * <%= className %>
@@ -54,14 +55,14 @@ export class <%= className %> extends BaseSubscriber<<%= entityName %>> {
    *
    * @param pubsub - PubSub service for event publishing
    */
-  constructor(@Inject('PUBSUB_SERVICE') pubsub: PubSubService) {
+  constructor(@InjectPubSub() pubsub: PubSubService) {
     super(pubsub, {
       enabled: true, // Enable event publishing
-      includePerformanceMetrics: false, // Disable performance tracking
-      trackDetailedChanges: true, // Enable change tracking for updates
-      channelPattern: '{entityName}.{operation}', // Simple channel naming
       logEvents: false, // Disable logging to prevent spam
       publishLoadEvents: false, // Don't publish load events
+      trackDetailedChanges: true, // Enable change tracking for updates
+      includePerformanceMetrics: false, // Disable performance tracking
+      channelPattern: '{entityName}.{operation}', // Simple channel naming
     });
   }
 
@@ -77,68 +78,6 @@ export class <%= className %> extends BaseSubscriber<<%= entityName %>> {
     return [<%= entityName %>];
   }
 
-  // ============================================================================
-  // Custom Event Handlers (Optional Overrides)
-  // ============================================================================
-  //
-  // You can override BaseSubscriber methods to add custom logic AFTER the
-  // base event publishing happens. The base methods automatically publish
-  // events to PubSub, so you only need to override if you need additional
-  // custom behavior specific to this entity.
-  //
-  // Example: Override afterCreate to add custom logging or side effects
-  //
-  // async afterCreate(args: EventArgs<<%= entityName %>>): Promise<void> {
-  //   // Call parent to publish the event
-  //   await super.afterCreate(args);
-  //   
-  //   // Add custom logic here
-  //   const entity = args.entity;
-  //   this.logger.log(`Custom logic after creating <%= entityName %>: ${entity.id}`);
-  //   
-  //   // TODO: Add custom post-creation logic
-  //   // Examples:
-  //   // - Send custom notifications
-  //   // - Update external systems
-  //   // - Perform specific validations
-  //   // - Create derived data
-  // }
-  //
-  // Example: Override afterUpdate to react to specific field changes
-  //
-  // async afterUpdate(args: EventArgs<<%= entityName %>>): Promise<void> {
-  //   // Call parent to publish the event with change tracking
-  //   await super.afterUpdate(args);
-  //   
-  //   const entity = args.entity;
-  //   
-  //   // Access the __originalEntityData to check what changed
-  //   const originalData = (entity as any).__originalEntityData;
-  //   
-  //   // TODO: Add custom post-update logic
-  //   // Examples:
-  //   // - React to specific field changes
-  //   // - Send targeted notifications
-  //   // - Update search indexes
-  //   // - Cascade changes to related entities
-  // }
-  //
-  // Example: Override afterDelete to add cleanup logic
-  //
-  // async afterDelete(args: EventArgs<<%= entityName %>>): Promise<void> {
-  //   // Call parent to publish the event
-  //   await super.afterDelete(args);
-  //   
-  //   const entity = args.entity;
-  //   
-  //   // TODO: Add custom post-deletion logic
-  //   // Examples:
-  //   // - Clean up file storage
-  //   // - Remove from external services
-  //   // - Cascade delete to related data
-  //   // - Archive to backup system
-  // }
-  //
   // ============================================================================
   // Note: The BaseSubscriber already handles:
   // - Publishing events to PubSub on all lifecycle events

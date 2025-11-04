@@ -1,3 +1,5 @@
+import { BaseException } from '@nesvel/shared';
+
 /**
  * Validation Exception
  *
@@ -8,20 +10,20 @@
  * @example
  * ```typescript
  * // Single validation error
- * throw new ValidationException('email', 'Invalid email format');
+ * throw ValidationException.make('email', 'Invalid email format');
  *
  * // Multiple validation errors
  * const errors = new Map([
  *   ['email', 'Invalid email format'],
  *   ['password', 'Password must be at least 8 characters']
  * ]);
- * throw new ValidationException(errors);
+ * throw ValidationException.make(errors);
  * ```
  *
  * @author Nesvel
  * @since 1.0.0
  */
-export class ValidationException extends Error {
+export class ValidationException extends BaseException {
   /**
    * Map of field names to their validation error messages
    */
@@ -89,11 +91,6 @@ export class ValidationException extends Error {
 
     // Use type assertion to assign readonly property during construction
     (this as any).entity = entityName;
-
-    // Maintains proper stack trace for where our error was thrown (only available on V8)
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, ValidationException);
-    }
   }
 
   /**

@@ -1,15 +1,11 @@
-// MikroORM core imports for event subscriber functionality
-import { EventSubscriber, EventArgs, TransactionEventArgs } from '@mikro-orm/core';
-// NestJS core imports for dependency injection and logging
-import { Injectable, Logger, Inject } from '@nestjs/common';
-// PubSub service for event publishing to external systems
-import { PubSubService } from '@nesvel/nestjs-pubsub';
-// Base entity type for type safety
-import { BaseEntity } from '@/entities/base.entity';
-import { EntityEventPayload } from '@/interfaces/entity-event-payload.interface';
-import { SubscriberOptions } from '@/interfaces/subscriber-options.interface';
-import { EntityOperation } from '@/enums';
+import { Injectable, Logger } from '@nestjs/common';
+import { InjectPubSub, PubSubService } from '@nesvel/nestjs-pubsub';
+import { EntityName, EventArgs, EventSubscriber } from '@mikro-orm/core';
 
+import { BaseEntity } from '@/entities/base.entity';
+import { EntityOperation } from '@/enums/entity-operation.enum';
+import { EntityEventPayload } from '@/interfaces/entity-event-payload.interface';
+import type { SubscriberOptions } from '@/interfaces/subscriber-options.interface';
 
 /**
  * Abstract Base Entity Subscriber
@@ -51,7 +47,7 @@ import { EntityOperation } from '@/enums';
  * // Basic usage - subscribe to all entities
  * @Injectable()
  * export class AllEntitiesSubscriber extends BaseSubscriber {
- *   constructor(@Inject('PUBSUB_SERVICE') pubsub: PubSubService) {
+ *   constructor(@InjectPubSub() pubsub: PubSubService) {
  *     super(pubsub, {
  *       includePerformanceMetrics: true,
  *       channelPattern: 'app.{entityName}.{operation}'
@@ -62,7 +58,7 @@ import { EntityOperation } from '@/enums';
  * // Specific entity subscription
  * @Injectable()
  * export class UserSubscriber extends BaseSubscriber<User> {
- *   constructor(@Inject('PUBSUB_SERVICE') pubsub: PubSubService) {
+ *   constructor(@InjectPubSub() pubsub: PubSubService) {
  *     super(pubsub);
  *   }
  *
@@ -112,7 +108,9 @@ import { EntityOperation } from '@/enums';
  * @see {@link https://mikro-orm.io/docs/events} MikroORM Events Documentation
  */
 @Injectable()
-export abstract class BaseSubscriber<T extends BaseEntity = BaseEntity> {
+export abstract class BaseSubscriber<T extends BaseEntity = BaseEntity>
+  implements EventSubscriber<T>
+{
   /**
    * Logger instance for debugging and monitoring
    *
@@ -157,7 +155,7 @@ export abstract class BaseSubscriber<T extends BaseEntity = BaseEntity> {
    *
    * @example
    * ```typescript
-   * constructor(@Inject('PUBSUB_SERVICE') pubsub: PubSubService) {
+   * constructor(@InjectPubSub() pubsub: PubSubService) {
    *   super(pubsub, {
    *     enabled: true,
    *     includePerformanceMetrics: false,
@@ -166,19 +164,20 @@ export abstract class BaseSubscriber<T extends BaseEntity = BaseEntity> {
    * }
    * ```
    */
-  constructor(@Inject('PUBSUB_SERVICE') pubsub: PubSubService, options: SubscriberOptions = {}) {
+  constructor(@InjectPubSub() pubsub: PubSubService, options: SubscriberOptions = {}) {
     // Store the PubSub service for event publishing
     this.pubsub = pubsub;
 
     // Merge provided options with sensible defaults
     this.options = {
+      logEvents: false, // Disable to prevent log spam
       enabled: true, // Enable event publishing by default
-      includePerformanceMetrics: false, // Disable metrics to reduce overhead
+      publishLoadEvents: false, // Disable load events to prevent spam
       trackDetailedChanges: true, // Enable change tracking for auditing
+      includePerformanceMetrics: false, // Disable metrics to reduce overhead
       maxChangeTrackingSize: 1000, // Reasonable limit to prevent memory issues
       channelPattern: '{entityName}.{operation}', // Simple, predictable naming
-      logEvents: false, // Disable to prevent log spam
-      publishLoadEvents: false, // Disable load events to prevent spam
+
       ...options, // Override with provided options
     };
 
@@ -191,18 +190,23 @@ export abstract class BaseSubscriber<T extends BaseEntity = BaseEntity> {
   /**
    * Define which entities this subscriber should handle
    *
-   * Abstract method that must be implemented by concrete subscribers.
+   * Optional method that can be implemented by concrete subscribers.
    * Return undefined or empty array to subscribe to ALL entities, or return
    * an array of entity constructors to limit subscription to specific entities.
    *
    * The entity names are automatically extracted from class names and converted
    * to lowercase with 'Subscriber' suffix removed for channel naming.
    *
-   * @returns Array of entity constructors, undefined for all entities, or empty array
+   * **Return Type**: `EntityName<T>[] | undefined`
+   * - `undefined` - Subscribe to all entities (default behavior)
+   * - `[]` - Subscribe to all entities (equivalent to undefined)
+   * - `[Entity1, Entity2, ...]` - Subscribe only to specific entities
+   *
+   * @returns Array of entity constructors to subscribe to, or undefined to subscribe to all entities
    *
    * @example
    * ```typescript
-   * // Subscribe to all entities
+   * // Subscribe to all entities (method not implemented or returns undefined)
    * getSubscribedEntities() {
    *   return undefined; // or return [];
    * }
@@ -225,7 +229,7 @@ export abstract class BaseSubscriber<T extends BaseEntity = BaseEntity> {
    *
    * @see {@link extractEntityNameFromClassName} For automatic entity name extraction
    */
-  abstract getSubscribedEntities(): any[] | undefined;
+  abstract getSubscribedEntities?(): EntityName<T>[];
 
   /**
    * Extract entity name from subscriber class name
@@ -249,15 +253,11 @@ export abstract class BaseSubscriber<T extends BaseEntity = BaseEntity> {
    */
   protected extractEntityNameFromClassName(className: string): string {
     return className
+      .replace(/Events$/, '') // Remove 'Events' suffix
       .replace(/Subscriber$/, '') // Remove 'Subscriber' suffix
       .replace(/EventSubscriber$/, '') // Remove 'EventSubscriber' suffix
-      .replace(/Events$/, '') // Remove 'Events' suffix
       .toLowerCase(); // Convert to lowercase for consistency
   }
-
-  //============================================================================
-  // MikroORM EventSubscriber Interface Implementation
-  //============================================================================
 
   /**
    * Handle after entity insertion (MikroORM EventSubscriber method)
@@ -334,10 +334,6 @@ export abstract class BaseSubscriber<T extends BaseEntity = BaseEntity> {
       description: 'Entity has been loaded from database',
     });
   }
-
-  //============================================================================
-  // Core Event Handling Logic
-  //============================================================================
 
   /**
    * Central event handling method for all entity operations
@@ -497,10 +493,6 @@ export abstract class BaseSubscriber<T extends BaseEntity = BaseEntity> {
       };
     }
   }
-
-  //============================================================================
-  // Utility Methods
-  //============================================================================
 
   /**
    * Extract entity name from entity instance
@@ -834,10 +826,6 @@ export abstract class BaseSubscriber<T extends BaseEntity = BaseEntity> {
     // - Send alerts for critical failures
   }
 
-  //============================================================================
-  // Public Configuration Methods
-  //============================================================================
-
   /**
    * Enable event publishing
    *
@@ -975,7 +963,7 @@ export abstract class BaseSubscriber<T extends BaseEntity = BaseEntity> {
       memoryUsage: NodeJS.MemoryUsage;
     };
   } {
-    const subscribedEntities = this.getSubscribedEntities();
+    const subscribedEntities = this.getSubscribedEntities?.();
 
     return {
       className: this.constructor.name,

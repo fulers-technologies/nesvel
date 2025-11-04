@@ -1,21 +1,7 @@
-import { Property, BeforeCreate, BeforeUpdate } from '@mikro-orm/core';
 import { Constructor } from '@nesvel/shared';
-import { IHasTimestamps } from '@/interfaces/has-timestamps.interface';
+import { Property, BeforeCreate, BeforeUpdate } from '@mikro-orm/core';
 
-/**
- * Timestamps Mixin
- *
- * Adds createdAt and updatedAt timestamp functionality to entities.
- * Similar to Laravel's timestamps() method in migrations.
- *
- * @example
- * ```typescript
- * @Entity()
- * export class User extends HasTimestamps(BaseEntity) {
- *   // User-specific properties
- * }
- * ```
- */
+import { IHasTimestamps } from '@/interfaces/has-timestamps.interface';
 
 /**
  * Timestamps mixin function
@@ -24,6 +10,20 @@ import { IHasTimestamps } from '@/interfaces/has-timestamps.interface';
  * @returns Extended class with timestamps functionality
  */
 export function HasTimestamps<TBase extends Constructor<object>>(Base: TBase) {
+  /**
+   * Timestamps Mixin
+   *
+   * Adds createdAt and updatedAt timestamp functionality to entities.
+   * Similar to Laravel's timestamps() method in migrations.
+   *
+   * @example
+   * ```typescript
+   * @Entity()
+   * export class User extends HasTimestamps(BaseEntity) {
+   *   // User-specific properties
+   * }
+   * ```
+   */
   abstract class TimestampsMixin extends Base implements IHasTimestamps {
     /**
      * The date and time when the entity was created

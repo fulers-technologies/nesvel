@@ -80,7 +80,7 @@ user.softDelete(); // Sets deletedAt to current time
 user.restore(); // Clears deletedAt
 ```
 
-### 3. HasUserStamps
+### 3. HasUserstamps
 
 Tracks which user created and updated the entity.
 
@@ -108,7 +108,7 @@ Tracks which user created and updated the entity.
 
 ```typescript
 @Entity()
-export class Document extends HasUserStamps(
+export class Document extends HasUserstamps(
   HasSoftDeletes(HasTimestamps(BaseEntity)),
   User, // User entity class for relationships
 ) {
@@ -171,14 +171,14 @@ You can combine mixins by nesting them:
 ```typescript
 // Combine timestamps + soft deletes + user stamps
 @Entity()
-export class Article extends HasUserStamps(HasSoftDeletes(HasTimestamps(BaseEntity)), User) {
+export class Article extends HasUserstamps(HasSoftDeletes(HasTimestamps(BaseEntity)), User) {
   @Property()
   title!: string;
 }
 
 // UUID + all features
 @Entity()
-export class File extends HasUserStamps(HasSoftDeletes(HasTimestamps(HasUuid(BaseEntity))), User) {
+export class File extends HasUserstamps(HasSoftDeletes(HasTimestamps(HasUuid(BaseEntity))), User) {
   @Property()
   filename!: string;
 }
@@ -288,7 +288,7 @@ The mixins maintain full TypeScript support:
 
 ```typescript
 // Type inference works correctly
-const post = new Post(); // Post extends HasUserStamps<User>
+const post = new Post(); // Post extends HasUserstamps<User>
 
 // All methods are properly typed
 post.setCreatedBy(user); // ✅ Accepts User object
@@ -298,7 +298,7 @@ post.wasCreatedRecently(5); // ✅ From timestamps mixin
 post.softDelete(); // ✅ From soft deletes mixin
 
 // Type helpers available
-type PostWithAllFeatures = WithUserStamps<WithSoftDeletes<WithTimestamps<BaseEntity>>, User>;
+type PostWithAllFeatures = WithUserstamps<WithSoftDeletes<WithTimestamps<BaseEntity>>, User>;
 ```
 
 ## Best Practices
@@ -308,7 +308,7 @@ type PostWithAllFeatures = WithUserStamps<WithSoftDeletes<WithTimestamps<BaseEnt
 ```typescript
 // Audit logs - permanent records (no soft deletes)
 @Entity()
-export class AuditLog extends HasUserStamps(HasTimestamps(BaseEntity), User) {
+export class AuditLog extends HasUserstamps(HasTimestamps(BaseEntity), User) {
   @Property()
   action!: string;
 }

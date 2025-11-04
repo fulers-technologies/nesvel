@@ -1,3 +1,5 @@
+import { BaseException } from '@nesvel/shared';
+
 /**
  * Database Exception
  *
@@ -9,10 +11,10 @@
  * @example
  * ```typescript
  * // Connection failure
- * throw new DatabaseException('CONNECTION_FAILED', 'Unable to connect to PostgreSQL database');
+ * throw DatabaseException.make('CONNECTION_FAILED', 'Unable to connect to PostgreSQL database');
  *
  * // Configuration error
- * throw new DatabaseException('CONFIG_ERROR', 'Invalid database configuration', { host: 'localhost' });
+ * throw DatabaseException.make('CONFIG_ERROR', 'Invalid database configuration', { host: 'localhost' });
  *
  * // Migration error
  * throw DatabaseException.forMigrationFailure('CreateUsersTable', 'Column already exists');
@@ -21,7 +23,7 @@
  * @author Nesvel
  * @since 1.0.0
  */
-export class DatabaseException extends Error {
+export class DatabaseException extends BaseException {
   /**
    * The type/category of database error
    */
@@ -77,11 +79,6 @@ export class DatabaseException extends Error {
       this.originalError = originalError;
     }
     this.timestamp = new Date();
-
-    // Maintains proper stack trace for where our error was thrown (only available on V8)
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, DatabaseException);
-    }
   }
 
   /**

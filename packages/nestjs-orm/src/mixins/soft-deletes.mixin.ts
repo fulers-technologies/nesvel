@@ -3,32 +3,31 @@ import { Constructor } from '@nesvel/shared';
 import { IHasSoftDeletes } from '@/interfaces/has-soft-deletes.interface';
 
 /**
- * Soft Deletes Mixin
- *
- * Adds soft delete functionality to entities.
- * Similar to Laravel's SoftDeletes trait.
- *
- * @example
- * ```typescript
- * @Entity()
- * @Filter({
- *   name: 'softDelete',
- *   cond: { deletedAt: { $eq: null } },
- *   default: true
- * })
- * export class User extends HasSoftDeletes(BaseEntity) {
- *   // User-specific properties
- * }
- * ```
- */
-
-/**
  * Soft deletes mixin function
  *
  * @param Base - The base class to extend
  * @returns Extended class with soft deletes functionality
  */
 export function HasSoftDeletes<TBase extends Constructor<object>>(Base: TBase) {
+  /**
+   * Soft Deletes Mixin
+   *
+   * Adds soft delete functionality to entities.
+   * Similar to Laravel's SoftDeletes trait.
+   *
+   * @example
+   * ```typescript
+   * @Entity()
+   * @Filter({
+   *   name: 'softDelete',
+   *   cond: { deletedAt: { $eq: null } },
+   *   default: true
+   * })
+   * export class User extends HasSoftDeletes(BaseEntity) {
+   *   // User-specific properties
+   * }
+   * ```
+   */
   abstract class SoftDeletesMixin extends Base implements IHasSoftDeletes {
     /**
      * The date and time when the entity was soft deleted

@@ -16,7 +16,8 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "require": "./dist/index.js"
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
     }
   },
   "scripts": {
@@ -29,20 +30,22 @@
     "lint:fix": "eslint src/**/*.ts --fix"
   },
   "dependencies": {
-    "@mikro-orm/cli": "^5.9.0",
-    "@mikro-orm/core": "^5.9.8",
-    "@mikro-orm/migrations": "^5.9.0",
-    "@mikro-orm/mongodb": "^5.9.0",
-    "@mikro-orm/mysql": "^5.9.0",
-    "@mikro-orm/nestjs": "^5.2.3",
-    "@mikro-orm/postgresql": "^5.9.0",
-    "@mikro-orm/sqlite": "^5.9.0",
+    "@faker-js/faker": "^10.1.0",
+    "@mikro-orm/cli": "^6.5.9",
+    "@mikro-orm/core": "^6.5.9",
+    "@mikro-orm/seeder": "^6.5.9",
+    "@mikro-orm/migrations": "^6.5.9",
+    "@mikro-orm/mongodb": "^6.5.9",
+    "@mikro-orm/mysql": "^6.5.9",
+    "@mikro-orm/nestjs": "^6.1.1",
+    "@mikro-orm/postgresql": "^6.5.9",
+    "@mikro-orm/sqlite": "^6.5.9",
     "@nestjs/common": "catalog:nestjs",
     "@nestjs/core": "catalog:nestjs",
     "@nesvel/nestjs-console": "workspace:*",
     "@nesvel/shared": "workspace:*",
     "ejs": "^3.1.10",
-    "figlet": "^1.7.0",
+    "figlet": "^1.9.3",
     "knex": "^3.1.0",
     "nest-commander": "^3.20.1",
     "nestjs-paginate": "^12.8.3",
@@ -61,8 +64,10 @@
     "@nesvel/tsup-config": "workspace:*",
     "@nesvel/typescript-config": "workspace:*",
     "@types/ejs": "^3.1.5",
-    "@types/figlet": "^1.5.8",
-    "@types/uuid": "^10.0.0"
+    "@types/figlet": "^1.7.0",
+    "@types/uuid": "^11.0.0",
+    "esbuild-plugin-path-alias": "^1.0.7",
+    "tsc-alias": "^1.8.16"
   },
   "publishConfig": {
     "access": "public"

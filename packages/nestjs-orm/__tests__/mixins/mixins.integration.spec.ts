@@ -7,7 +7,7 @@
  * Coverage:
  * - HasTimestamps mixin functionality
  * - HasSoftDeletes mixin functionality
- * - HasUserStamps mixin functionality
+ * - HasUserstamps mixin functionality
  * - HasUuid mixin functionality
  * - Mixin combination scenarios
  * - Entity lifecycle integration
@@ -21,7 +21,7 @@ import { Entity, Property, BaseEntity as MikroBaseEntity, PrimaryKey } from '@mi
 import { BaseEntity } from '@/entities/base.entity';
 import { HasTimestamps } from '@/mixins/timestamps.mixin';
 import { HasSoftDeletes } from '@/mixins/soft-deletes.mixin';
-import { HasUserStamps } from '@/mixins/user-stamps.mixin';
+import { HasUserstamps } from '@/mixins/user-stamps.mixin';
 import { HasUuid } from '@/mixins/uuid.mixin';
 
 /**
@@ -74,7 +74,7 @@ class UuidEntity extends HasUuid(BaseTestEntityWithoutId) {
  * Test entity with all mixins combined (using number ID base)
  */
 @Entity()
-class FullFeaturedEntity extends HasUserStamps(HasSoftDeletes(HasTimestamps(BaseTestEntity))) {
+class FullFeaturedEntity extends HasUserstamps(HasSoftDeletes(HasTimestamps(BaseTestEntity))) {
   @Property()
   name!: string;
 }
@@ -316,12 +316,12 @@ describe('ORM Mixins Integration', () => {
   });
 
   /**
-   * Test group: HasUserStamps mixin
+   * Test group: HasUserstamps mixin
    *
    * Verifies user stamping functionality for tracking
    * who created and updated entities.
    */
-  describe('HasUserStamps mixin', () => {
+  describe('HasUserstamps mixin', () => {
     /**
      * Test: User stamp properties
      *

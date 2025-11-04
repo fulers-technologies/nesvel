@@ -45,7 +45,7 @@ export class MakeDtoCommand extends BaseOrmMakeCommand {
       {
         stubName: 'dto',
         outputDir: 'src/dtos',
-        suffix: 'dto',
+        suffix: 'Dto',
       },
       {
         modelName,

@@ -13,7 +13,9 @@ import { Injectable, Logger } from '@nestjs/common';
 })
 export class EntityGraphCommand extends CommandRunner {
   private readonly logger = new Logger(EntityGraphCommand.name);
-  constructor(private readonly orm: MikroORM) { super(); }
+  constructor(private readonly orm: MikroORM) {
+    super();
+  }
 
   async run(): Promise<void> {
     this.logger.log('Entity Relationship Graph:\n');

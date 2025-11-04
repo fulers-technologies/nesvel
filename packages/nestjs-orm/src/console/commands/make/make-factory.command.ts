@@ -33,11 +33,18 @@ export class MakeFactoryCommand extends BaseOrmMakeCommand {
       throw new Error('Factory name argument is required.');
     }
 
-    // Convert name to PascalCase for class name
-    const modelName = this.toClassName(name);
+    // Remove 'Factory' suffix if already present to avoid duplication
+    const baseName = name.replace(/Factory$/i, '');
+
+    // Convert name to PascalCase for class name (will have Factory suffix added)
+    const modelName = this.toClassName(baseName);
+    const className = `${modelName}${this.toClassName('factory')}`;
 
     // Convert name to kebab-case for file name
-    const fileName = this.toFileName(name);
+    const fileName = this.toFileName(baseName);
+
+    // Convert to camelCase for variable name
+    const variableName = this.toVariableName(baseName);
 
     // Generate file from EJS template
     await this.generateFromStub(
@@ -48,8 +55,10 @@ export class MakeFactoryCommand extends BaseOrmMakeCommand {
         suffix: 'factory',
       },
       {
+        className,
         modelName,
         fileName,
+        variableName,
       },
     );
   }

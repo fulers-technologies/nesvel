@@ -9,6 +9,4 @@
  */
 
 export { BaseMigration } from './base.migration';
-export { Blueprint, ColumnBuilder } from './blueprint';
 export * from './base.migration';
-export * from './blueprint';

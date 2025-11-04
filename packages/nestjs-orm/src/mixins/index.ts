@@ -8,11 +8,11 @@
  * @example
  * ```typescript
  * import { BaseEntity } from '@/entities/base.entity';
- * import { HasTimestamps, HasSoftDeletes, HasUserStamps } from '@/mixins';
+ * import { HasTimestamps, HasSoftDeletes, HasUserstamps } from '@/mixins';
  *
  * // Entity with all features
  * @Entity()
- * export class User extends HasUserStamps(
+ * export class User extends HasUserstamps(
  *   HasSoftDeletes(
  *     HasTimestamps(BaseEntity)
  *   ),
@@ -41,15 +41,8 @@
  * @since 1.0.0
  */
 
-// Export all mixins
-export { HasTimestamps } from './timestamps.mixin';
-
-export { HasSoftDeletes } from './soft-deletes.mixin';
-
-export { HasUserStamps, UserStampService } from './user-stamps.mixin';
-
-export { HasUuid } from './uuid.mixin';
-export * from './soft-deletes.mixin';
+export * from './uuid.mixin';
 export * from './timestamps.mixin';
 export * from './user-stamps.mixin';
-export * from './uuid.mixin';
+export * from './soft-deletes.mixin';
+export * from './searchable.mixin';

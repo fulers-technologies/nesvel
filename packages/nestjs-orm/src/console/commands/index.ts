@@ -20,7 +20,7 @@ export * from './schema';
 // Entity inspection commands
 export * from './entity';
 
-// Database inspection commands  
+// Database inspection commands
 export * from './database';
 
 // ORM utility commands

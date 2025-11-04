@@ -108,6 +108,8 @@ export class HelpCommand extends CommandRunner {
       console.log('');
     }
 
-    console.log('\x1b[2mRun \'nesvel-orm [command] --help\' for more information on a command.\x1b[0m\n');
+    console.log(
+      "\x1b[2mRun 'nesvel-orm [command] --help' for more information on a command.\x1b[0m\n",
+    );
   }
 }

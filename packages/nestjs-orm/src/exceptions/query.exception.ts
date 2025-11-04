@@ -1,3 +1,5 @@
+import { BaseException } from '@nesvel/shared';
+
 /**
  * Query Exception
  *
@@ -8,16 +10,16 @@
  * @example
  * ```typescript
  * // Basic query exception
- * throw new QueryException('default', 'SELECT * FROM users WHERE id = ?', [123], originalError);
+ * throw QueryException.make('default', 'SELECT * FROM users WHERE id = ?', [123], originalError);
  *
  * // With custom message
- * throw new QueryException('postgres', 'INSERT INTO posts VALUES (?)', [data], error, 'Failed to create post');
+ * throw QueryException.make('postgres', 'INSERT INTO posts VALUES (?)', [data], error, 'Failed to create post');
  * ```
  *
  * @author Nesvel
  * @since 1.0.0
  */
-export class QueryException extends Error {
+export class QueryException extends BaseException {
   /**
    * The name of the database connection that failed
    */
@@ -92,11 +94,6 @@ export class QueryException extends Error {
     }
     if (severity !== undefined) {
       this.severity = severity;
-    }
-
-    // Maintains proper stack trace for where our error was thrown (only available on V8)
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, QueryException);
     }
   }
 

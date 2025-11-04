@@ -1,3 +1,5 @@
+import { BaseException } from '@nesvel/shared';
+
 /**
  * Relation Not Found Exception
  *
@@ -8,16 +10,16 @@
  * @example
  * ```typescript
  * // When trying to access 'posts' relation on User that doesn't exist
- * throw new RelationNotFoundException('User', 'posts');
+ * throw RelationNotFoundException.make('User', 'posts');
  *
  * // When a relationship query returns no results
- * throw new RelationNotFoundException('User', 'profile', 'No profile found for user');
+ * throw RelationNotFoundException.make('User', 'profile', 'No profile found for user');
  * ```
  *
  * @author Nesvel
  * @since 1.0.0
  */
-export class RelationNotFoundException extends Error {
+export class RelationNotFoundException extends BaseException {
   /**
    * The parent entity/model name
    */
@@ -56,11 +58,6 @@ export class RelationNotFoundException extends Error {
     (this as any).relation = relation;
     if (context !== undefined) {
       (this as any).context = context;
-    }
-
-    // Maintains proper stack trace for where our error was thrown (only available on V8)
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, RelationNotFoundException);
     }
   }
 

@@ -1,3 +1,5 @@
+import { BaseException } from '@nesvel/shared';
+
 /**
  * Mass Assignment Exception
  *
@@ -9,13 +11,13 @@
  * ```typescript
  * // If User entity only allows 'name' and 'email' to be fillable
  * // This would throw MassAssignmentException for 'role' field
- * throw new MassAssignmentException('User', ['role']);
+ * throw MassAssignmentException.make('User', ['role']);
  * ```
  *
  * @author Nesvel
  * @since 1.0.0
  */
-export class MassAssignmentException extends Error {
+export class MassAssignmentException extends BaseException {
   /**
    * The entity/model name that the mass assignment was attempted on
    */
@@ -43,11 +45,6 @@ export class MassAssignmentException extends Error {
     this.name = 'MassAssignmentException';
     this.model = model;
     this.attributes = attributes;
-
-    // Maintains proper stack trace for where our error was thrown (only available on V8)
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, MassAssignmentException);
-    }
   }
 
   /**

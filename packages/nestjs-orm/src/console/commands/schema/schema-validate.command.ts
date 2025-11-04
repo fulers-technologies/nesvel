@@ -68,7 +68,7 @@ export class SchemaValidateCommand extends CommandRunner {
    * @returns Promise that resolves when validation is complete
    * @throws Error if validation cannot be performed
    *
- * @example
+   * @example
    * ```typescript
    * // Output example:
    * // ✅ Schema validation passed
@@ -97,12 +97,12 @@ export class SchemaValidateCommand extends CommandRunner {
       // Schema has differences
       this.logger.error('❌ Schema validation failed');
       this.logger.error('❌ Database schema does NOT match entity definitions\n');
-      
+
       this.logger.log('Schema differences found:');
       this.logger.log('='.repeat(60));
       this.logger.log(updateSQL);
       this.logger.log('='.repeat(60));
-      
+
       this.logger.log('\n📋 Recommended actions:');
       this.logger.log('1. Review the SQL statements above');
       this.logger.log('2. Create a migration: npm run console make:migration SyncSchema');

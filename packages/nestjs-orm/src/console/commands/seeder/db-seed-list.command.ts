@@ -1,7 +1,5 @@
-import { Command, CommandRunner } from 'nest-commander';
 import { Injectable, Logger } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
-import { getSeederMetadata } from '@/decorators/seeder.decorator';
+import { Command, CommandRunner } from 'nest-commander';
 
 /**
  * Database Seed List Command
@@ -51,75 +49,5 @@ import { getSeederMetadata } from '@/decorators/seeder.decorator';
 export class DbSeedListCommand extends CommandRunner {
   private readonly logger = new Logger(DbSeedListCommand.name);
 
-  constructor(private readonly moduleRef: ModuleRef) {
-    super();
-  }
-
-  /**
-   * Execute the db:seed:list command
-   *
-   * This method scans the application for all classes decorated with @Seeder
-   * and displays them in a formatted list with their metadata. Seeders are
-   * sorted by priority to show the expected execution order.
-   *
-   * The command performs the following steps:
-   * 1. Discover all seeder classes in the DI container
-   * 2. Extract metadata from each seeder
-   * 3. Sort seeders by priority (ascending)
-   * 4. Format and display seeder information
-   * 5. Show dependencies and environment restrictions
-   *
-   * @param inputs - Command arguments (not used)
-   * @param options - Command options (not used)
-   * @returns Promise that resolves when listing is complete
-   *
-   * @example
-   * ```typescript
-   * // The command will output:
-   * // ┌─────────────────┬──────────┬─────────────────────────────┐
-   * // │ Seeder          │ Priority │ Description                 │
-   * // ├─────────────────┼──────────┼─────────────────────────────┤
-   * // │ RoleSeeder      │ 1        │ Seeds user roles            │
-   * // │ UserSeeder      │ 10       │ Seeds test users            │
-   * // │ PostSeeder      │ 20       │ Seeds blog posts            │
-   * // └─────────────────┴──────────┴─────────────────────────────┘
-   * ```
-   */
-  async run(): Promise<void> {
-    try {
-      this.logger.log('Scanning for available seeders...\n');
-
-      // TODO: Implement seeder discovery
-      // This requires:
-      // 1. A seeder registry service
-      // 2. Metadata scanning for @Seeder decorated classes
-      // 3. Access to all seeder instances in the DI container
-
-      // For now, show a message about manual implementation
-      this.logger.warn('⚠️  Seeder discovery not yet implemented.');
-      this.logger.log('\nTo list your seeders manually:');
-      this.logger.log('1. Check your src/seeders directory');
-      this.logger.log('2. Look for classes decorated with @Seeder');
-      this.logger.log('3. Check seeder metadata for priority and dependencies');
-      
-      // Example of what the output should look like:
-      this.logger.log('\n📋 Example output format:');
-      this.logger.log('─────────────────────────────────────────');
-      this.logger.log('Available Seeders (in execution order):');
-      this.logger.log('');
-      this.logger.log('1. RoleSeeder (priority: 1)');
-      this.logger.log('   Description: Seeds user roles');
-      this.logger.log('   Dependencies: None');
-      this.logger.log('   Environments: development, testing');
-      this.logger.log('');
-      this.logger.log('2. UserSeeder (priority: 10)');
-      this.logger.log('   Description: Seeds test users');
-      this.logger.log('   Dependencies: RoleSeeder');
-      this.logger.log('   Environments: development, testing');
-      this.logger.log('─────────────────────────────────────────');
-    } catch (error: any) {
-      this.logger.error('❌ Failed to list seeders:', error.message);
-      throw error;
-    }
-  }
+  async run(): Promise<void> {}
 }

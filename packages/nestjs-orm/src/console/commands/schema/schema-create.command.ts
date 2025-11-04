@@ -87,16 +87,16 @@ export class SchemaCreateCommand extends CommandRunner {
 
       if (options?.dryRun) {
         this.logger.log('DRY RUN MODE - Showing SQL that would be executed:\n');
-        
+
         // Get the SQL without executing
         const sql = await schemaGenerator.getCreateSchemaSQL();
-        
+
         this.logger.log('='.repeat(60));
         this.logger.log('CREATE SCHEMA SQL:');
         this.logger.log('='.repeat(60));
         this.logger.log(sql);
         this.logger.log('='.repeat(60));
-        
+
         this.logger.log('\n✅ Dry run complete - no changes made');
         return;
       }
