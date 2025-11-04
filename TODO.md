@@ -1,0 +1,3 @@
+- make IRepository generic for database and search
+- refactor all stubs files as some need camelcase and some need different params we need an interface for all passed vars to the ejs file
+-
