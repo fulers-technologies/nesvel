@@ -10,4 +10,7 @@ import { nestLibPreset } from '@nesvel/tsup-config';
  * - Outputs both ESM and CJS formats
  * - Generates TypeScript declarations
  */
-export default defineConfig(nestLibPreset);
+export default defineConfig({
+  ...nestLibPreset,
+  bundle: true, // Bundle to avoid missing module errors
+});

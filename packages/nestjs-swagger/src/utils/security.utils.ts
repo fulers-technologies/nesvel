@@ -51,12 +51,8 @@ export function applyBasicAuth(
 ): void {
   // This would require express-basic-auth middleware
   // Implementation note: Install express-basic-auth package
-  console.warn(
-    '⚠️  Basic auth for Swagger is configured but requires express-basic-auth package.',
-  );
-  console.warn(
-    '   Run: bun add express-basic-auth @types/express-basic-auth -D',
-  );
+  console.warn('⚠️  Basic auth for Swagger is configured but requires express-basic-auth package.');
+  console.warn('   Run: bun add express-basic-auth @types/express-basic-auth -D');
   console.warn(
     `   Swagger path: /${swaggerPath} should be protected with username: ${config.username}`,
   );
@@ -80,10 +76,7 @@ export function applyBasicAuth(
  * );
  * ```
  */
-export function shouldEnableSwagger(
-  nodeEnv?: string,
-  explicitEnabled?: boolean,
-): boolean {
+export function shouldEnableSwagger(nodeEnv?: string, explicitEnabled?: boolean): boolean {
   // If explicitly disabled, don't enable
   if (explicitEnabled === false) {
     return false;
@@ -132,11 +125,7 @@ export function validateSwaggerConfig(
   }
 
   // Warn if serverUrl is localhost in production
-  if (
-    config.serverUrl?.includes('localhost') &&
-    env === 'production' &&
-    config.enabled
-  ) {
+  if (config.serverUrl?.includes('localhost') && env === 'production' && config.enabled) {
     console.warn('⚠️  WARNING: Swagger server URL points to localhost in production!');
     console.warn(`   Update serverUrl to your production API URL.`);
   }

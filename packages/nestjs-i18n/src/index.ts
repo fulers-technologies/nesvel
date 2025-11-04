@@ -19,7 +19,19 @@
  * ```
  */
 
-// Module
+// Re-export everything from nestjs-i18n except I18nModule (to avoid conflict)
+export { I18nContext, I18nService, I18n, I18nLang, I18nJsonLoader, I18nLoader } from 'nestjs-i18n';
+
+export type {
+  I18nResolver,
+  I18nOptions,
+  I18nOptionsWithoutResolvers,
+  TranslateOptions,
+  Path,
+  PathValue,
+} from 'nestjs-i18n';
+
+// Module (our custom wrapper)
 export * from './i18n.module';
 
 // Constants

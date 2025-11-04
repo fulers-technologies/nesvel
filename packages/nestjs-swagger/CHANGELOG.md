@@ -73,8 +73,6 @@ swagger/
 - **Flexible configuration** via environment variables or code
 - **Production-ready** with security best practices
 
-
-
 ---
 
 ## License

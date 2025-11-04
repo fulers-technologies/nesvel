@@ -39,9 +39,7 @@ import { I18nContext, I18nValidationException, I18nValidationExceptionFilter } f
  * });
  * ```
  */
-export function createI18nValidationPipe(
-  options?: ValidationPipeOptions,
-): ValidationPipe {
+export function createI18nValidationPipe(options?: ValidationPipeOptions): ValidationPipe {
   return new ValidationPipe({
     ...options,
     exceptionFactory: (errors: ValidationError[]) => {

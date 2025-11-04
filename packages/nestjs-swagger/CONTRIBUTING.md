@@ -284,7 +284,7 @@ it('should setup swagger documentation', () => {
   // Arrange
   const config = {
     title: 'Test API',
-    path: 'docs'
+    path: 'docs',
   };
 
   // Act

@@ -32,6 +32,7 @@ Production-ready internationalization (i18n) module for NestJS applications usin
 ## Installation
 
 Already installed with the module. Dependencies:
+
 - `nestjs-i18n` - Core i18n functionality
 
 ---
@@ -182,7 +183,7 @@ app.useGlobalPipes(
     whitelist: true,
     forbidNonWhitelisted: true,
     transform: true,
-  })
+  }),
 );
 
 // DTO
@@ -216,6 +217,7 @@ src/i18n/
 ### Sample Translation File
 
 **en/common.json:**
+
 ```json
 {
   "welcome": "Welcome",
@@ -257,6 +259,7 @@ Cookie: lang=en
 ```
 
 Set via:
+
 ```typescript
 setLanguageCookie(res, 'ar');
 ```
@@ -397,8 +400,8 @@ i18n.t<I18nTranslations>('common.welcome');
 ```
 
 ```typescript
-i18n.t('items.count', { args: { count: 1 } });  // "1 item"
-i18n.t('items.count', { args: { count: 5 } });  // "5 items"
+i18n.t('items.count', { args: { count: 1 } }); // "1 item"
+i18n.t('items.count', { args: { count: 5 } }); // "5 items"
 ```
 
 ### 5. Environment-Specific Behavior
@@ -448,9 +451,9 @@ export class MyService {
 ```typescript
 const i18n = I18nContext.current();
 
-i18n.t('key');                     // Translate
-i18n.lang;                         // Current language
-i18n.translate('key', { args });   // Translate with arguments
+i18n.t('key'); // Translate
+i18n.lang; // Current language
+i18n.translate('key', { args }); // Translate with arguments
 ```
 
 ---
@@ -458,7 +461,7 @@ i18n.translate('key', { args });   // Translate with arguments
 ## Supported Languages
 
 | Code | Language | Direction | Display Name |
-|------|----------|-----------|--------------|
+| ---- | -------- | --------- | ------------ |
 | `en` | English  | LTR       | English      |
 | `ar` | Arabic   | RTL       | العربية      |
 | `fr` | French   | LTR       | Français     |
@@ -493,6 +496,7 @@ i18n.translate('key', { args });   // Translate with arguments
 ### Language Not Detected
 
 Check resolver priority:
+
 1. Query parameter (`?lang=en`)
 2. Cookie (`lang=en`)
 3. Header (`Accept-Language`)

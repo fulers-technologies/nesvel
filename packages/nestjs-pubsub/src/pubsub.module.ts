@@ -1,18 +1,17 @@
-import type { IPubSubAsyncOptions } from '@interfaces/pubsub-async-options.interface';
-import type { IPubSubOptionsFactory } from '@interfaces/pubsub-options-factory.interface';
-import type { IPubSubOptions } from '@interfaces/pubsub-options.interface';
-
-import { DynamicModule, Module, Provider, Type } from '@nestjs/common';
-import { DiscoveryModule, DiscoveryService, MetadataScanner, Reflector } from '@nestjs/core';
-import { PubSubFactoryService } from '@services/pubsub-factory.service';
-import { PubSubService } from '@services/pubsub.service';
+import { DiscoveryModule } from '@nestjs/core';
+import { DynamicModule, Module, Provider } from '@nestjs/common';
 
 import {
-  PUBSUB_MODULE_OPTIONS,
   PUBSUB_DRIVER,
   PUBSUB_SERVICE,
   DEFAULT_PUBSUB_CONFIG,
+  PUBSUB_MODULE_OPTIONS,
 } from './constants';
+import { PubSubService } from '@services/pubsub.service';
+import { PubSubFactoryService } from '@services/pubsub-factory.service';
+import type { IPubSubOptions } from '@interfaces/pubsub-options.interface';
+import type { IPubSubAsyncOptions } from '@interfaces/pubsub-async-options.interface';
+import type { IPubSubOptionsFactory } from '@interfaces/pubsub-options-factory.interface';
 
 /**
  * NestJS module for pub/sub messaging functionality.

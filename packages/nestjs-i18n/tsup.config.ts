@@ -2,7 +2,7 @@ import { defineConfig } from 'tsup';
 import { nestLibPreset } from '@nesvel/tsup-config';
 
 /**
- * Build configuration for @nesvel/nestjs-pubsub
+ * Build configuration for @nesvel/nestjs-i18n
  *
  * Uses the NestJS library preset which:
  * - Preserves decorators and metadata (required for NestJS)
@@ -10,4 +10,7 @@ import { nestLibPreset } from '@nesvel/tsup-config';
  * - Outputs both ESM and CJS formats
  * - Generates TypeScript declarations
  */
-export default defineConfig(nestLibPreset);
+export default defineConfig({
+  ...nestLibPreset,
+  bundle: true, // Bundle to avoid missing module errors
+});

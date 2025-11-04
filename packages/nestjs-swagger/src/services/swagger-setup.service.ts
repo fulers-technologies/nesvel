@@ -81,11 +81,11 @@ export class SwaggerSetupService {
     SwaggerModule.setup(this.config.apiPath, app, document, setupOptions);
 
     console.log(`📚 Swagger documentation available at: /${this.config.apiPath}`);
-    
+
     if (jsonDocumentUrl) {
       console.log(`   📄 JSON specification: /${jsonDocumentUrl}`);
     }
-    
+
     if (yamlDocumentUrl) {
       console.log(`   📄 YAML specification: /${yamlDocumentUrl}`);
     }

@@ -103,8 +103,6 @@ src/i18n/
 - **Live reloading** - See translation changes instantly in development
 - **Production-ready** with optimized performance and graceful fallbacks
 
-
-
 ---
 
 ## License

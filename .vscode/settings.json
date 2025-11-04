@@ -49,5 +49,8 @@
     "**/.next": true,
     "**/dist": true,
     "**/build": true
+  },
+  "[ejs]": {
+    "editor.defaultFormatter": "besthyhy.ejs-eta-beautify"
   }
 }

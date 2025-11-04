@@ -22,11 +22,15 @@
     "orm": "NODE_ENV=development tsx --tsconfig ../../packages/nestjs-orm/tsconfig.json ../../packages/nestjs-orm/src/cli.ts"
   },
   "dependencies": {
+    "@mikro-orm/cli": "^6.5.9",
+    "@mikro-orm/postgresql": "^6.5.9",
+    "@mikro-orm/sqlite": "^6.5.9",
     "@nestjs/cache-manager": "^3.0.1",
     "@nestjs/common": "catalog:nestjs",
     "@nestjs/core": "catalog:nestjs",
     "@nestjs/platform-express": "catalog:nestjs",
     "@nestjs/swagger": "catalog:nestjsModules",
+    "@nestjs/throttler": "^6.4.0",
     "@nesvel/nestjs-i18n": "workspace:*",
     "@nesvel/nestjs-orm": "workspace:*",
     "@nesvel/nestjs-swagger": "workspace:*",
@@ -36,8 +40,9 @@
     "rxjs": "catalog:nestjs"
   },
   "devDependencies": {
+    "@nesvel/typescript-config": "workspace:*",
     "@eslint/eslintrc": "^3.3.1",
-    "@eslint/js": "^9.38.0",
+    "@eslint/js": "^9.39.0",
     "@nestjs/cli": "catalog:nestjsCli",
     "@nestjs/schematics": "catalog:nestjsCli",
     "@nestjs/testing": "catalog:nestjsCli",
@@ -45,10 +50,10 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^24.9.2",
     "@types/supertest": "^6.0.3",
-    "eslint": "^9.38.0",
+    "eslint": "^9.39.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
-    "globals": "^16.4.0",
+    "globals": "^16.5.0",
     "jest": "^30.2.0",
     "prettier": "^3.6.2",
     "source-map-support": "^0.5.21",
@@ -58,7 +63,8 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.2"
+    "typescript-eslint": "^8.46.2",
+    "ajv": "^8.0.0"
   },
   "jest": {
     "moduleFileExtensions": [

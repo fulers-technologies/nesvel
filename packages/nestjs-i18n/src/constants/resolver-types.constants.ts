@@ -6,7 +6,6 @@
  * @module ResolverTypes
  */
 
-
 /**
  * Default Query Parameter Name
  */

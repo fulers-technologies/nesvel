@@ -125,24 +125,7 @@ Production-ready RESTful API for the Nesvel platform.
    * API Endpoint Tags
    * Groups endpoints by functionality
    */
-  tags: [
-    {
-      name: 'health',
-      description: 'Health check and monitoring endpoints',
-    },
-    {
-      name: 'auth',
-      description: 'Authentication and authorization endpoints',
-    },
-    {
-      name: 'users',
-      description: 'User management and profile endpoints',
-    },
-    {
-      name: 'admin',
-      description: 'Administrative endpoints (requires admin role)',
-    },
-  ],
+  tags: [],
 
   /**
    * Security Schemes Configuration

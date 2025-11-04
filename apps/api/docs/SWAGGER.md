@@ -46,17 +46,22 @@ Use NestJS Swagger decorators to document your controllers and DTOs:
 
 ```typescript
 import { Controller, Get, Post, Body } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nesvel/nestjs-swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nesvel/nestjs-swagger';
 
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
   @Get()
   @ApiOperation({ summary: 'Get all users' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'List of users',
-    type: [UserDto]
+    type: [UserDto],
   })
   findAll() {
     // ...
@@ -65,14 +70,14 @@ export class UsersController {
   @Post()
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Create a new user' })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiResponse({
+    status: 201,
     description: 'User created successfully',
-    type: UserDto
+    type: UserDto,
   })
-  @ApiResponse({ 
-    status: 400, 
-    description: 'Invalid input'
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input',
   })
   create(@Body() createUserDto: CreateUserDto) {
     // ...
@@ -173,7 +178,7 @@ SWAGGER_ENABLED=false
 Or in your configuration:
 
 ```typescript
-enabled: process.env.NODE_ENV !== 'production'
+enabled: process.env.NODE_ENV !== 'production';
 ```
 
 ### Security
