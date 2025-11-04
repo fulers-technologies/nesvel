@@ -363,9 +363,7 @@ export class ElasticsearchProvider implements ISearchProvider {
       await this.client.update({
         index: indexName,
         id: String(documentId),
-        body: {
-          doc: partialDocument,
-        },
+        doc: partialDocument,
         refresh: 'wait_for',
       });
 
@@ -692,10 +690,8 @@ export class ElasticsearchProvider implements ISearchProvider {
     try {
       await this.client.deleteByQuery({
         index: indexName,
-        body: {
-          query: {
-            match_all: {},
-          },
+        query: {
+          match_all: {},
         },
         refresh: true,
       });
