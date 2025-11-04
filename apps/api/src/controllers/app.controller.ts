@@ -1,13 +1,11 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { I18n, I18nContext } from 'nestjs-i18n';
-
-import { AppService } from '../services/app.service';
+import { I18n, I18nContext } from '@nesvel/nestjs-i18n';
 
 @ApiTags('app')
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor() {}
 
   @Get()
   @ApiOperation({ summary: 'Get welcome message' })

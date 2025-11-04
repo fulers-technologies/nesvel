@@ -7,9 +7,9 @@ import {
   I18nJsonLoader,
   QueryResolver,
 } from 'nestjs-i18n';
-import type { I18nOptions } from 'nestjs-i18n';
 
 import {
+  I18nConfig,
   COOKIE_OPTIONS,
   DEFAULT_COOKIE_NAME,
   DEFAULT_LANGUAGE,
@@ -36,7 +36,7 @@ const isProduction = process.env.NODE_ENV === 'production';
  *
  * @see {@link https://nestjs-i18n.com | nestjs-i18n Documentation}
  */
-export const i18nConfig: I18nOptions = {
+export const i18nConfig: I18nConfig = {
   /**
    * Default fallback language
    */
@@ -48,7 +48,7 @@ export const i18nConfig: I18nOptions = {
    * When a translation key is missing, the system will try
    * the fallback languages in order.
    */
-  fallbacks: FALLBACK_LANGUAGES,
+  fallbacks: FALLBACK_LANGUAGES || SUPPORTED_LANGUAGES,
 
   /**
    * Translation File Loader
