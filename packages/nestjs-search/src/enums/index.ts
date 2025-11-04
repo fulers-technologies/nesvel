@@ -8,3 +8,4 @@
  */
 
 export * from './search-connection-type.enum';
+export * from './index-naming-strategy.enum';
