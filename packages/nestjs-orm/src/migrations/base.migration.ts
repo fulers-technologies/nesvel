@@ -1,4 +1,5 @@
 import { Knex } from 'knex';
+import { Logger } from '@nestjs/common';
 import { Migration } from '@mikro-orm/migrations';
 
 /**
@@ -52,6 +53,31 @@ import { Migration } from '@mikro-orm/migrations';
  * @since 1.0.0
  */
 export abstract class BaseMigration extends Migration {
+  /**
+   * Logger instance for migration operations
+   *
+   * Provides structured logging throughout migration execution.
+   * Automatically configured with the migration class name as context.
+   *
+   * Use this logger to output informational messages, warnings, or errors
+   * during migration execution for better debugging and monitoring.
+   *
+   * @protected
+   * @readonly
+   *
+   * @example
+   * ```typescript
+   * async up(): Promise<void> {
+   *   this.logger.log('Creating users table...');
+   *   await this.schema.createTable('users', (table) => {
+   *     table.increments('id');
+   *   });
+   *   this.logger.log('Users table created successfully');
+   * }
+   * ```
+   */
+  protected readonly logger = new Logger(this.constructor.name);
+
   /**
    * Get the Knex schema builder instance
    *

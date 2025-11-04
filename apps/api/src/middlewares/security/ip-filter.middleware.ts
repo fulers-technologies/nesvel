@@ -132,7 +132,7 @@ export class IpFilterMiddleware implements NestMiddleware {
       // X-Forwarded-For can contain multiple IPs (client, proxy1, proxy2)
       // The first IP is the original client
       const ips: string = Array.isArray(forwardedFor) ? (forwardedFor[0] ?? '') : forwardedFor;
-      return ips.split(',')[0].trim();
+      return ips.split(',')[0]?.trim() || 'unknown';
     }
 
     // Fall back to direct connection IP

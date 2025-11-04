@@ -121,7 +121,9 @@ export class UserContextMiddleware implements NestMiddleware {
 
     if (forwardedFor) {
       const ips = Array.isArray(forwardedFor) ? forwardedFor[0] : forwardedFor;
-      return ips.split(',')[0].trim();
+      if (ips) {
+        return ips.split(',')[0]?.trim() || 'unknown';
+      }
     }
 
     return req.ip || req.socket.remoteAddress || 'unknown';

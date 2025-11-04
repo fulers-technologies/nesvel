@@ -119,12 +119,16 @@ export class TenantContextMiddleware implements NestMiddleware {
     // Remove port if present
     const hostname = host.split(':')[0];
 
+    if (!hostname) {
+      return null;
+    }
+
     // Split by dots
     const parts = hostname.split('.');
 
     // Need at least 3 parts for subdomain (subdomain.domain.tld)
     if (parts.length >= 3) {
-      return parts[0];
+      return parts[0] || null;
     }
 
     return null;

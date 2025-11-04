@@ -7,10 +7,11 @@ export class ErrorLoggerMiddleware implements NestMiddleware {
 
   use(req: Request, res: Response, next: NextFunction): void {
     const originalSend = res.send;
+    const logger = this.logger;
 
-    res.send = function (data: any): Response {
+    res.send = function (this: Response, data: any): Response {
       if (res.statusCode >= 400) {
-        const errorContext = req['errorContext'] || {};
+        const errorContext = req.errorContext || {};
         const errorLog = {
           ...errorContext,
           statusCode: res.statusCode,
@@ -18,14 +19,14 @@ export class ErrorLoggerMiddleware implements NestMiddleware {
         };
 
         if (res.statusCode >= 500) {
-          this.logger.error('Server Error', JSON.stringify(errorLog));
+          logger.error('Server Error', JSON.stringify(errorLog));
         } else {
-          this.logger.warn('Client Error', JSON.stringify(errorLog));
+          logger.warn('Client Error', JSON.stringify(errorLog));
         }
       }
 
       return originalSend.call(this, data);
-    }.bind(this);
+    };
 
     next();
   }

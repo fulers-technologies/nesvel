@@ -11,21 +11,21 @@ export class InitialMigration extends BaseMigration implements IRollbackable {
    * Run the migration (apply changes)
    */
   async up(): Promise<void> {
-    await this.getSchema().createTable('initial_migration', (table) => {
+    await this.schema.createTable('initial_migration', (table) => {
       table.increments('id').primary();
       table.string('name').notNullable();
       table.timestamps(true, true);
     });
 
-    this.context.logger.log('Created table: initial_migration');
+    console.log('Created table: initial_migration');
   }
 
   /**
    * Reverse the migration (rollback changes)
    */
   async down(): Promise<void> {
-    await this.getSchema().dropTableIfExists('initial_migration');
+    await this.schema.dropTableIfExists('initial_migration');
 
-    this.context.logger.log('Dropped table: initial_migration');
+    console.log('Dropped table: initial_migration');
   }
 }

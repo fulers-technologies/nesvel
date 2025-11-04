@@ -13,21 +13,21 @@ export class CreateOrderTable extends BaseMigration implements IRollbackable {
    * @param context - Migration context with database connection and utilities
    */
   async up(): Promise<void> {
-    await this.getSchema().createTable('order', (table) => {
+    await this.schema.createTable('order', (table) => {
       table.increments('id').primary();
       table.string('name').notNullable();
       table.timestamps(true, true);
     });
 
-    this.context.logger.log('Created table: order');
+    this.logger.log('Created table: order');
   }
 
   /**
    * Reverse the migration (rollback changes)
    */
   async down(): Promise<void> {
-    await this.getSchema().dropTableIfExists('order');
+    await this.schema.dropTableIfExists('order');
 
-    this.context.logger.log('Dropped table: order');
+    this.logger.log('Dropped table: order');
   }
 }

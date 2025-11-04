@@ -33,24 +33,27 @@
     "@nestjs/throttler": "^6.4.0",
     "@nesvel/nestjs-i18n": "workspace:*",
     "@nesvel/nestjs-orm": "workspace:*",
+    "@nesvel/nestjs-search": "workspace:*",
     "@nesvel/nestjs-swagger": "workspace:*",
+    "@types/compression": "^1.8.1",
     "class-transformer": "catalog:validation",
     "class-validator": "catalog:validation",
+    "compression": "^1.8.1",
     "reflect-metadata": "catalog:nestjs",
     "rxjs": "catalog:nestjs"
   },
   "devDependencies": {
     "@nesvel/typescript-config": "workspace:*",
     "@eslint/eslintrc": "^3.3.1",
-    "@eslint/js": "^9.39.0",
+    "@eslint/js": "^9.39.1",
     "@nestjs/cli": "catalog:nestjsCli",
     "@nestjs/schematics": "catalog:nestjsCli",
     "@nestjs/testing": "catalog:nestjsCli",
     "@types/express": "^5.0.5",
     "@types/jest": "^30.0.0",
-    "@types/node": "^24.9.2",
+    "@types/node": "^24.10.0",
     "@types/supertest": "^6.0.3",
-    "eslint": "^9.39.0",
+    "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "globals": "^16.5.0",
@@ -63,8 +66,8 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.2",
-    "ajv": "^8.0.0"
+    "typescript-eslint": "^8.46.3",
+    "ajv": "^8.17.1"
   },
   "jest": {
     "moduleFileExtensions": [

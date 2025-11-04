@@ -30,7 +30,8 @@ export class MetricsCollectorMiddleware implements NestMiddleware {
 
     // Expose metrics endpoint
     if (req.path === '/metrics') {
-      return res.json(this.metrics);
+      res.json(this.metrics);
+      return;
     }
 
     next();

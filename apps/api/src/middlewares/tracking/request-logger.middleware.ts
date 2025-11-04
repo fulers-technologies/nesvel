@@ -154,7 +154,7 @@ export class RequestLoggerMiddleware implements NestMiddleware {
 
     if (forwardedFor) {
       const ips = Array.isArray(forwardedFor) ? forwardedFor[0] : forwardedFor;
-      return (ips || '').split(',')[0].trim();
+      return (ips || '').split(',')[0]?.trim() || 'unknown';
     }
 
     // Fall back to direct connection IP

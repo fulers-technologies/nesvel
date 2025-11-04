@@ -107,13 +107,13 @@ export class RequestSanitizerMiddleware implements NestMiddleware {
     // Sanitize query parameters (GET query string)
     if (req.query && typeof req.query === 'object') {
       const sanitized = this.sanitizeObject(req.query);
-      req.query = sanitized as Record<string, unknown>;
+      req.query = sanitized as any;
     }
 
     // Sanitize URL parameters (route params like /users/:id)
     if (req.params && typeof req.params === 'object') {
       const sanitized = this.sanitizeObject(req.params);
-      req.params = sanitized as Record<string, unknown>;
+      req.params = sanitized as any;
     }
 
     next();

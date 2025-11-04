@@ -1,6 +1,6 @@
+import type { IHasSearchable } from '@nesvel/nestjs-orm';
 import { Injectable, Logger, Inject } from '@nestjs/common';
-import { EntityManager, BaseEntity, EventSubscriber } from '@mikro-orm/core';
-// import type { IHasSearchable } from '@nesvel/nestjs-orm';
+import { EntityManager, EventSubscriber, BaseEntity } from '@nesvel/nestjs-orm';
 
 import { SearchService } from '@/services';
 import { SEARCH_OPTIONS } from '@/constants';
@@ -143,8 +143,7 @@ export class SearchableSubscriber<T extends BaseEntity = BaseEntity> implements 
    *
    * @private
    */
-  // private isSearchable(entity: any): entity is IHasSearchable {
-  private isSearchable(entity: any) {
+  private isSearchable(entity: BaseEntity): entity is BaseEntity & IHasSearchable {
     return (
       entity &&
       typeof entity === 'object' &&

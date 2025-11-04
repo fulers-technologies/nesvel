@@ -86,7 +86,8 @@ export class AuthContextMiddleware implements NestMiddleware {
     } catch (error) {
       // Log error but don't block request
       // Authentication guards will handle actual auth failures
-      console.error('Auth context error:', error.message);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error('Auth context error:', errorMessage);
     }
 
     next();
@@ -147,6 +148,9 @@ export class AuthContextMiddleware implements NestMiddleware {
 
       // Decode payload (second part)
       const payload = parts[1];
+      if (!payload) {
+        return null;
+      }
       const decoded = Buffer.from(payload, 'base64').toString('utf-8');
 
       return JSON.parse(decoded);

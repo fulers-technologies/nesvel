@@ -12,8 +12,8 @@ export class AuditLogMiddleware implements NestMiddleware {
       res.on('finish', () => {
         const auditLog = {
           timestamp: new Date().toISOString(),
-          userId: req['user']?.id,
-          tenantId: req['tenantId'],
+          userId: req.user?.id,
+          tenantId: req.tenantId,
           action: req.method,
           resource: req.originalUrl,
           ip: req.ip,

@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from 'express';
 @Injectable()
 export class ErrorContextMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction): void {
-    req['errorContext'] = {
+    req.errorContext = {
       requestId: req.headers['x-request-id'],
       correlationId: req.headers['x-correlation-id'],
       method: req.method,
