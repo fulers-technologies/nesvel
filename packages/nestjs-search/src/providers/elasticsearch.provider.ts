@@ -1,5 +1,5 @@
 import { Client } from '@elastic/elasticsearch';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 
 import type {
   ISearchProvider,
@@ -8,6 +8,7 @@ import type {
   SearchResponse,
   SearchResult,
 } from '@/interfaces';
+import { IndexNamingService } from '@/services/index-naming.service';
 
 /**
  * Elasticsearch Provider
@@ -101,6 +102,8 @@ export class ElasticsearchProvider implements ISearchProvider {
    * and any custom options before being passed to this provider.
    *
    * @param client - The Elasticsearch client instance from @elastic/elasticsearch
+   * @param logger - Optional logger instance (injected by NestJS)
+   * @param namingService - Optional IndexNamingService for generating index names
    *
    * @example
    * ```typescript
@@ -111,7 +114,15 @@ export class ElasticsearchProvider implements ISearchProvider {
    * const provider = new ElasticsearchProvider(client);
    * ```
    */
-  constructor(private readonly client: Client) {}
+  constructor(
+    private readonly client: Client,
+    @Optional() logger?: Logger,
+    @Optional() private readonly namingService?: IndexNamingService,
+  ) {
+    if (logger) {
+      this.logger = logger;
+    }
+  }
 
   /**
    * Create an Elasticsearch index
@@ -155,18 +166,32 @@ export class ElasticsearchProvider implements ISearchProvider {
    */
   async createIndex(indexName: string, settings?: Record<string, any>): Promise<void> {
     try {
-      const exists = await this.indexExists(indexName);
+      // Delegate all naming logic to IndexNamingService
+      const physicalIndexName = this.namingService
+        ? this.namingService.getPhysicalIndexName(indexName)
+        : indexName;
+
+      // Check if physical index already exists
+      const exists = await this.indexExists(physicalIndexName);
       if (exists) {
-        this.logger.warn(`Index ${indexName} already exists`);
+        this.logger.warn(`Index ${physicalIndexName} already exists`);
         return;
       }
 
+      // Create the physical index
       await this.client.indices.create({
-        index: indexName,
+        index: physicalIndexName,
         body: settings,
       });
 
-      this.logger.log(`Created index: ${indexName}`);
+      this.logger.log(`Created index: ${physicalIndexName}`);
+
+      // Create alias if using timestamped or versioned strategy
+      if (this.namingService?.shouldUseAliases()) {
+        const aliasName = this.namingService.getAliasName(indexName);
+        await this.createAlias(physicalIndexName, aliasName);
+        this.logger.log(`Created alias: ${aliasName} -> ${physicalIndexName}`);
+      }
     } catch (error) {
       this.logger.error(`Failed to create index ${indexName}:`, error);
       throw error;
@@ -193,11 +218,30 @@ export class ElasticsearchProvider implements ISearchProvider {
    */
   async deleteIndex(indexName: string): Promise<void> {
     try {
-      await this.client.indices.delete({
-        index: indexName,
-      });
+      // Resolve base name to operational name (alias for timestamped/versioned)
+      const operationalName = this.namingService
+        ? this.namingService.getOperationalName(indexName)
+        : indexName;
 
-      this.logger.log(`Deleted index: ${indexName}`);
+      // Try to get indices behind the alias (if it's an alias)
+      let indicesToDelete = [operationalName];
+      try {
+        const aliasResponse = await this.client.indices.getAlias({
+          name: operationalName,
+        });
+        // If it's an alias, delete the concrete indices
+        indicesToDelete = Object.keys(aliasResponse);
+      } catch (error: any) {
+        // Not an alias or doesn't exist, try deleting directly
+      }
+
+      // Delete all indices (either the direct index or indices behind alias)
+      for (const index of indicesToDelete) {
+        await this.client.indices.delete({
+          index,
+        });
+        this.logger.log(`Deleted index: ${index}`);
+      }
     } catch (error) {
       this.logger.error(`Failed to delete index ${indexName}:`, error);
       throw error;
@@ -226,14 +270,76 @@ export class ElasticsearchProvider implements ISearchProvider {
    */
   async indexExists(indexName: string): Promise<boolean> {
     try {
+      // Resolve base name to operational name
+      const operationalName = this.namingService
+        ? this.namingService.getOperationalName(indexName)
+        : indexName;
+
       const result = await this.client.indices.exists({
-        index: indexName,
+        index: operationalName,
       });
 
       return result === true;
-    } catch (error) {
+    } catch (error: any) {
+      // Return false for index not found errors
+      if (
+        error.meta?.statusCode === 404 ||
+        error.name === 'ResponseError' && error.message?.includes('index_not_found') ||
+        error.message?.includes('no such index')
+      ) {
+        return false;
+      }
+      // Re-throw other errors (network issues, auth errors, etc.)
       this.logger.error(`Failed to check index existence ${indexName}:`, error);
-      return false;
+      throw error;
+    }
+  }
+
+  /**
+   * List all indices
+   *
+   * Retrieves information about all indices in Elasticsearch.
+   * Returns an array of index metadata including name, document count, and size.
+   *
+   * @returns Array of index information objects
+   *
+   * @throws {Error} If listing indices fails
+   *
+   * @example
+   * ```typescript
+   * const indices = await provider.listIndices();
+   * indices.forEach(index => {
+   *   console.log(`${index.name}: ${index.docsCount} documents`);
+   * });
+   * ```
+   */
+  async listIndices(): Promise<any[]> {
+    try {
+      // Get cat indices API for comprehensive index information
+      const response = await this.client.cat.indices({
+        format: 'json',
+        bytes: 'b', // Get size in bytes for consistency
+      });
+
+      // Map to a consistent format
+      const indices = response.map((indexInfo: any) => ({
+        name: indexInfo.index,
+        uuid: indexInfo.uuid,
+        health: indexInfo.health,
+        status: indexInfo.status,
+        docsCount: parseInt(indexInfo['docs.count'] || '0', 10),
+        docsDeleted: parseInt(indexInfo['docs.deleted'] || '0', 10),
+        storeSize: parseInt(indexInfo['store.size'] || '0', 10),
+        primaryStoreSize: parseInt(indexInfo['pri.store.size'] || '0', 10),
+        primaryShards: parseInt(indexInfo.pri || '0', 10),
+        replicaShards: parseInt(indexInfo.rep || '0', 10),
+      }));
+
+      this.logger.debug(`Listed ${indices.length} indices`);
+      return indices;
+    } catch (error) {
+      this.logger.error('Failed to list indices:', error);
+      throw error;
     }
   }
 
@@ -264,16 +370,21 @@ export class ElasticsearchProvider implements ISearchProvider {
    */
   async indexDocument(indexName: string, document: SearchDocument): Promise<void> {
     try {
+      // Resolve base name to operational name
+      const operationalName = this.namingService
+        ? this.namingService.getOperationalName(indexName)
+        : indexName;
+
       const { id, ...body } = document;
 
       await this.client.index({
-        index: indexName,
+        index: operationalName,
         id: String(id),
         body,
         refresh: 'wait_for',
       });
 
-      this.logger.debug(`Indexed document ${id} in ${indexName}`);
+      this.logger.debug(`Indexed document ${id} in ${operationalName}`);
     } catch (error) {
       this.logger.error(`Failed to index document in ${indexName}:`, error);
       throw error;
@@ -309,9 +420,14 @@ export class ElasticsearchProvider implements ISearchProvider {
     try {
       if (documents.length === 0) return;
 
+      // Resolve base name to operational name
+      const operationalName = this.namingService
+        ? this.namingService.getOperationalName(indexName)
+        : indexName;
+
       const operations = documents.flatMap((doc) => {
         const { id, ...body } = doc;
-        return [{ index: { _index: indexName, _id: String(id) } }, body];
+        return [{ index: { _index: operationalName, _id: String(id) } }, body];
       });
 
       const result = await this.client.bulk({
@@ -360,8 +476,13 @@ export class ElasticsearchProvider implements ISearchProvider {
     partialDocument: Partial<any>,
   ): Promise<void> {
     try {
+      // Resolve base name to operational name
+      const operationalName = this.namingService
+        ? this.namingService.getOperationalName(indexName)
+        : indexName;
+
       await this.client.update({
-        index: indexName,
+        index: operationalName,
         id: String(documentId),
         doc: partialDocument,
         refresh: 'wait_for',
@@ -394,8 +515,13 @@ export class ElasticsearchProvider implements ISearchProvider {
    */
   async deleteDocument(indexName: string, documentId: string | number): Promise<void> {
     try {
+      // Resolve base name to operational name
+      const operationalName = this.namingService
+        ? this.namingService.getOperationalName(indexName)
+        : indexName;
+
       await this.client.delete({
-        index: indexName,
+        index: operationalName,
         id: String(documentId),
         refresh: 'wait_for',
       });
@@ -461,8 +587,17 @@ export class ElasticsearchProvider implements ISearchProvider {
    * });
    * ```
    */
-  async search(indexName: string, query: string, options?: SearchOptions): Promise<SearchResponse> {
+  async search(
+    indexName: string,
+    query: string,
+    options?: SearchOptions,
+  ): Promise<SearchResponse> {
     try {
+      // Resolve base name to operational name
+      const operationalName = this.namingService
+        ? this.namingService.getOperationalName(indexName)
+        : indexName;
+
       const {
         limit = 20,
         offset = 0,
@@ -551,7 +686,7 @@ export class ElasticsearchProvider implements ISearchProvider {
 
       // Execute search query
       const result = await this.client.search({
-        index: indexName,
+        index: operationalName,
         body,
       });
 
@@ -607,8 +742,13 @@ export class ElasticsearchProvider implements ISearchProvider {
    */
   async getDocument(indexName: string, documentId: string | number): Promise<any | null> {
     try {
+      // Resolve base name to operational name
+      const operationalName = this.namingService
+        ? this.namingService.getOperationalName(indexName)
+        : indexName;
+
       const result = await this.client.get({
-        index: indexName,
+        index: operationalName,
         id: String(documentId),
       });
 
@@ -648,8 +788,13 @@ export class ElasticsearchProvider implements ISearchProvider {
    */
   async getIndexStats(indexName: string): Promise<Record<string, any>> {
     try {
+      // Resolve base name to operational name
+      const operationalName = this.namingService
+        ? this.namingService.getOperationalName(indexName)
+        : indexName;
+
       const stats = await this.client.indices.stats({
-        index: indexName,
+        index: operationalName,
       });
 
       return {
@@ -688,8 +833,13 @@ export class ElasticsearchProvider implements ISearchProvider {
    */
   async clearIndex(indexName: string): Promise<void> {
     try {
+      // Resolve base name to operational name
+      const operationalName = this.namingService
+        ? this.namingService.getOperationalName(indexName)
+        : indexName;
+
       await this.client.deleteByQuery({
-        index: indexName,
+        index: operationalName,
         query: {
           match_all: {},
         },
@@ -699,6 +849,495 @@ export class ElasticsearchProvider implements ISearchProvider {
       this.logger.log(`Cleared all documents from index: ${indexName}`);
     } catch (error) {
       this.logger.error(`Failed to clear index ${indexName}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Update index settings
+   *
+   * Updates the configuration of an existing Elasticsearch index.
+   * Some settings require the index to be closed before updating.
+   *
+   * **Updatable Settings**:
+   * - Dynamic settings (without closing): `number_of_replicas`, `refresh_interval`
+   * - Static settings (requires closing): `number_of_shards`, analysis configuration
+   *
+   * **Note**: This method does NOT close/reopen the index automatically to avoid
+   * disruption. For static settings, you must close the index manually first.
+   *
+   * @param indexName - The name of the index
+   * @param settings - Elasticsearch settings to update
+   *
+   * @throws {Error} If update fails
+   *
+   * @example
+   * ```typescript
+   * // Update dynamic settings (no close needed)
+   * await provider.updateSettings('products', {
+   *   number_of_replicas: 2,
+   *   refresh_interval: '5s',
+   * });
+   *
+   * // Update static settings (requires manual close/reopen)
+   * // await provider.client.indices.close({ index: 'products' });
+   * // await provider.updateSettings('products', { ... });
+   * // await provider.client.indices.open({ index: 'products' });
+   * ```
+   */
+  async updateSettings(indexName: string, settings: Record<string, any>): Promise<void> {
+    try {
+      // Resolve base name to operational name
+      const operationalName = this.namingService
+        ? this.namingService.getOperationalName(indexName)
+        : indexName;
+
+      await this.client.indices.putSettings({
+        index: operationalName,
+        body: settings,
+      });
+      this.logger.log(`Updated settings for index: ${indexName}`);
+    } catch (error) {
+      this.logger.error(`Failed to update settings for index ${indexName}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Create an alias for an index
+   *
+   * Creates an alias that points to a physical index.
+   * Aliases enable zero-downtime reindexing by allowing atomic switches.
+   *
+   * @param indexName - Physical index name
+   * @param aliasName - Alias name
+   *
+   * @throws {Error} If alias creation fails
+   *
+   * @example
+   * ```typescript
+   * // Create alias 'products' -> 'products_20231104_153422'
+   * await provider.createAlias('products_20231104_153422', 'products');
+   * ```
+   */
+  async createAlias(indexName: string, aliasName: string): Promise<void> {
+    try {
+      await this.client.indices.putAlias({
+        index: indexName,
+        name: aliasName,
+      });
+      this.logger.log(`Created alias: ${aliasName} -> ${indexName}`);
+    } catch (error) {
+      this.logger.error(`Failed to create alias ${aliasName} for index ${indexName}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Delete an alias
+   *
+   * Removes an alias without deleting the underlying index.
+   *
+   * @param aliasName - Alias name to delete
+   *
+   * @throws {Error} If alias deletion fails
+   *
+   * @example
+   * ```typescript
+   * await provider.deleteAlias('products_old');
+   * ```
+   */
+  async deleteAlias(aliasName: string): Promise<void> {
+    try {
+      // Get all indices that have this alias
+      const aliasesResponse = await this.client.indices.getAlias({
+        name: aliasName,
+      });
+
+      const indices = Object.keys(aliasesResponse);
+      if (indices.length === 0) {
+        this.logger.debug(`Alias ${aliasName} does not exist`);
+        return;
+      }
+
+      // Delete alias from all indices
+      await this.client.indices.deleteAlias({
+        index: indices,
+        name: aliasName,
+      });
+
+      this.logger.log(`Deleted alias: ${aliasName}`);
+    } catch (error: any) {
+      // Ignore 404 errors (alias doesn't exist)
+      if (error.meta?.statusCode === 404) {
+        this.logger.debug(`Alias ${aliasName} does not exist`);
+        return;
+      }
+      this.logger.error(`Failed to delete alias ${aliasName}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Update an alias to point to a different index
+   *
+   * Atomically switches an alias from one index to another.
+   * This is the key operation for zero-downtime reindexing.
+   *
+   * @param aliasName - Alias name
+   * @param newIndexName - New physical index name
+   * @param oldIndexName - Optional old index name (for atomic swap)
+   *
+   * @throws {Error} If alias update fails
+   *
+   * @example
+   * ```typescript
+   * // Atomic swap: products -> products_20231104_160000
+   * await provider.updateAlias(
+   *   'products',
+   *   'products_20231104_160000',
+   *   'products_20231104_153422'
+   * );
+   * ```
+   */
+  async updateAlias(aliasName: string, newIndexName: string, oldIndexName?: string): Promise<void> {
+    try {
+      const actions: any[] = [];
+
+      // Remove alias from old index if specified
+      if (oldIndexName) {
+        actions.push({
+          remove: {
+            index: oldIndexName,
+            alias: aliasName,
+          },
+        });
+      }
+
+      // Add alias to new index
+      actions.push({
+        add: {
+          index: newIndexName,
+          alias: aliasName,
+        },
+      });
+
+      // Execute atomically
+      await this.client.indices.updateAliases({
+        actions,
+      });
+
+      this.logger.log(`Updated alias: ${aliasName} -> ${newIndexName}`);
+    } catch (error) {
+      this.logger.error(
+        `Failed to update alias ${aliasName} from ${oldIndexName || 'N/A'} to ${newIndexName}:`,
+        error,
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Get all aliases for an index
+   *
+   * Returns list of aliases pointing to the specified index.
+   *
+   * @param indexName - Physical index name
+   *
+   * @returns Array of alias names
+   *
+   * @throws {Error} If retrieval fails
+   *
+   * @example
+   * ```typescript
+   * const aliases = await provider.getAliases('products_20231104_153422');
+   * // => ['products', 'products_latest']
+   * ```
+   */
+  async getAliases(indexName: string): Promise<string[]> {
+    try {
+      const response = await this.client.indices.getAlias({
+        index: indexName,
+      });
+
+      const indexData = response[indexName];
+      if (!indexData || !indexData.aliases) {
+        return [];
+      }
+
+      return Object.keys(indexData.aliases);
+    } catch (error: any) {
+      // Return empty array for 404 (index doesn't exist)
+      if (error.meta?.statusCode === 404) {
+        return [];
+      }
+      this.logger.error(`Failed to get aliases for index ${indexName}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Reindex data from a source into a target index with zero downtime
+   *
+   * Performs the following steps:
+   * 1. Determines if indexName is an alias (for ES with aliases) or direct index
+   * 2. Creates a temporary index with timestamped name
+   * 3. Fetches data from the data source
+   * 4. Indexes data to temporary index in batches
+   * 5. Verifies document count
+   * 6. If indexName is an alias: atomically switches alias to new index
+   * 7. If indexName is direct: deletes old index (if deleteOldIndex=true)
+   * 8. Optionally deletes the old physical index
+   *
+   * @param indexName - Target index name or alias name
+   * @param options - Reindex options
+   *
+   * @returns Reindex statistics
+   *
+   * @throws {Error} If reindexing fails at any step
+   *
+   * @example
+   * ```typescript
+   * const result = await provider.reindex('products', {
+   *   batchSize: 500,
+   *   dataSource: async () => {
+   *     const products = await productRepository.findAll();
+   *     return products.map(p => ({ id: p.id, name: p.name, price: p.price }));
+   *   },
+   *   newSettings: {
+   *     mappings: {
+   *       properties: {
+   *         name: { type: 'text' },
+   *         price: { type: 'float' },
+   *       },
+   *     },
+   *   },
+   *   deleteOldIndex: true,
+   * });
+   *
+   * console.log(`Reindexed ${result.indexedDocuments} documents in ${result.duration}ms`);
+   * ```
+   */
+  async reindex(
+    indexName: string,
+    options: {
+      batchSize?: number;
+      dataSource: () => Promise<SearchDocument[]> | AsyncGenerator<SearchDocument, void, unknown>;
+      newSettings?: Record<string, any>;
+      deleteOldIndex?: boolean;
+    },
+  ): Promise<{
+    success: boolean;
+    totalDocuments: number;
+    indexedDocuments: number;
+    failedDocuments: number;
+    oldIndexName?: string;
+    newIndexName: string;
+    duration: number;
+  }> {
+    const startTime = Date.now();
+    const batchSize = options.batchSize || 100;
+    const deleteOldIndex = options.deleteOldIndex !== false; // Default to true
+
+    this.logger.log(`Starting reindex for "${indexName}"...`);
+
+    let isAlias = false;
+    let oldPhysicalIndexName: string | undefined;
+
+    try {
+      // Step 1: Determine if indexName is an alias
+      try {
+        const aliasResponse = await this.client.indices.getAlias({
+          name: indexName,
+        });
+        // If we get a response, indexName is an alias
+        const indices = Object.keys(aliasResponse);
+        if (indices.length > 0) {
+          isAlias = true;
+          oldPhysicalIndexName = indices[0]; // Get the first (and usually only) index
+          this.logger.debug(`"${indexName}" is an alias pointing to "${oldPhysicalIndexName}"`);
+        }
+      } catch (error: any) {
+        // Not an alias, check if it's a direct index
+        if (error.meta?.statusCode === 404) {
+          const exists = await this.indexExists(indexName);
+          if (exists) {
+            isAlias = false;
+            oldPhysicalIndexName = indexName;
+            this.logger.debug(`"${indexName}" is a direct index (not an alias)`);
+          } else {
+            throw new Error(`Index or alias "${indexName}" does not exist`);
+          }
+        } else {
+          throw error;
+        }
+      }
+
+      // Step 2: Create temporary index using naming service or timestamp
+      let tempIndexName: string;
+      if (this.namingService) {
+        // Use naming service to generate a physical index name
+        const baseName = isAlias ? indexName : oldPhysicalIndexName!;
+        tempIndexName = this.namingService.getPhysicalIndexName(baseName);
+        this.logger.log(`Using naming service to generate temp index: ${tempIndexName}`);
+      } else {
+        // Fallback to manual timestamp
+        const timestamp = new Date()
+          .toISOString()
+          .replace(/[-:]/g, '')
+          .replace(/T/, '_')
+          .split('.')[0];
+        tempIndexName = `${isAlias ? indexName : oldPhysicalIndexName}_${timestamp}_temp`;
+      }
+
+      this.logger.log(`Creating temporary index: ${tempIndexName}`);
+      await this.createIndex(tempIndexName, options.newSettings);
+
+      // Step 3: Fetch and index data
+      let totalDocuments = 0;
+      let indexedDocuments = 0;
+      let failedDocuments = 0;
+
+      this.logger.log('Fetching data from source...');
+      const dataSourceResult = options.dataSource();
+
+      // Check if result is a generator by checking for Symbol.asyncIterator
+      const isGenerator =
+        dataSourceResult &&
+        typeof dataSourceResult === 'object' &&
+        Symbol.asyncIterator in dataSourceResult;
+
+      if (isGenerator) {
+        // AsyncGenerator - yields individual documents
+        const generator = dataSourceResult as AsyncGenerator<SearchDocument, void, unknown>;
+        let batch: SearchDocument[] = [];
+
+        for await (const document of generator) {
+          batch.push(document);
+          totalDocuments++;
+
+          if (batch.length >= batchSize) {
+            try {
+              await this.indexDocuments(tempIndexName, batch);
+              indexedDocuments += batch.length;
+              this.logger.debug(`Indexed batch: ${indexedDocuments}/${totalDocuments}`);
+            } catch (error) {
+              failedDocuments += batch.length;
+              this.logger.error(`Failed to index batch:`, error);
+            }
+            batch = [];
+          }
+        }
+
+        // Index remaining documents
+        if (batch.length > 0) {
+          try {
+            await this.indexDocuments(tempIndexName, batch);
+            indexedDocuments += batch.length;
+          } catch (error) {
+            failedDocuments += batch.length;
+            this.logger.error(`Failed to index final batch:`, error);
+          }
+        }
+      } else {
+        // Promise<SearchDocument[]>
+        const documents = (await dataSourceResult) as SearchDocument[];
+        totalDocuments = documents.length;
+
+        this.logger.log(`Indexing ${totalDocuments} documents in batches of ${batchSize}...`);
+
+        for (let i = 0; i < documents.length; i += batchSize) {
+          const batch = documents.slice(i, i + batchSize);
+          try {
+            await this.indexDocuments(tempIndexName, batch);
+            indexedDocuments += batch.length;
+            this.logger.debug(`Indexed ${indexedDocuments}/${totalDocuments} documents`);
+          } catch (error) {
+            failedDocuments += batch.length;
+            this.logger.error(`Failed to index batch ${i}-${i + batch.length}:`, error);
+          }
+        }
+      }
+
+      // Step 4: Verify document count
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait for ES to refresh
+      const tempStats = await this.getIndexStats(tempIndexName);
+      const tempDocCount = tempStats.documentCount || tempStats._all?.primaries?.docs?.count || 0;
+
+      this.logger.log(
+        `Indexed ${indexedDocuments} documents (${failedDocuments} failed, ${tempDocCount} in temp index)`,
+      );
+
+      if (tempDocCount === 0 && indexedDocuments > 0) {
+        this.logger.warn('Document count verification mismatch - proceeding with caution');
+      }
+
+      // Step 5: Switch to new index
+      if (isAlias) {
+        // Atomically switch alias
+        this.logger.log(
+          `Switching alias "${indexName}" from "${oldPhysicalIndexName}" to "${tempIndexName}"`,
+        );
+        await this.updateAlias(indexName, tempIndexName, oldPhysicalIndexName);
+
+        // Optionally delete old physical index
+        if (deleteOldIndex && oldPhysicalIndexName) {
+          this.logger.log(`Deleting old index: ${oldPhysicalIndexName}`);
+          await this.deleteIndex(oldPhysicalIndexName);
+        }
+      } else {
+        // Direct index: delete old and keep temp
+        if (deleteOldIndex && oldPhysicalIndexName) {
+          this.logger.log(`Deleting old index: ${oldPhysicalIndexName}`);
+          await this.deleteIndex(oldPhysicalIndexName);
+        }
+
+        // If using naming service with aliases, create the alias
+        if (this.namingService && this.namingService.shouldUseAliases()) {
+          const aliasName = this.namingService.getAliasName(oldPhysicalIndexName!);
+          this.logger.log(`Creating alias "${aliasName}" -> "${tempIndexName}"`);
+          await this.createAlias(tempIndexName, aliasName);
+          this.logger.log(`New index "${tempIndexName}" is now active with alias "${aliasName}"`);
+        } else {
+          this.logger.log(`New index "${tempIndexName}" is now active`);
+        }
+      }
+
+      const duration = Date.now() - startTime;
+
+      this.logger.log(
+        `Reindex completed successfully in ${duration}ms: ${indexedDocuments}/${totalDocuments} documents indexed`,
+      );
+
+      return {
+        success: true,
+        totalDocuments,
+        indexedDocuments,
+        failedDocuments,
+        oldIndexName: oldPhysicalIndexName,
+        newIndexName: tempIndexName,
+        duration,
+      };
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      this.logger.error(`Reindex failed after ${duration}ms:`, error);
+
+      // Attempt cleanup of temp index if it was created
+      try {
+        const timestamp = new Date()
+          .toISOString()
+          .replace(/[-:]/g, '')
+          .replace(/T/, '_')
+          .split('.')[0];
+        const possibleTempName = `${indexName}_${timestamp}_temp`;
+        if (await this.indexExists(possibleTempName)) {
+          this.logger.log(`Cleaning up temp index: ${possibleTempName}`);
+          await this.deleteIndex(possibleTempName);
+        }
+      } catch (cleanupError) {
+        this.logger.warn('Failed to cleanup temp index:', cleanupError);
+      }
+
       throw error;
     }
   }
