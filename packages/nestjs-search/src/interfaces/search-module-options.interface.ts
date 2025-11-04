@@ -2,6 +2,7 @@ import { Config as MeilisearchOptions } from 'meilisearch';
 import { ClientOptions as ESOptions } from '@elastic/elasticsearch';
 
 import type { SearchConnectionType } from '@/enums/search-connection-type.enum';
+import type { IndexNamingStrategy } from '@/enums/index-naming-strategy.enum';
 
 /**
  * Search Module Options Interface
@@ -41,6 +42,29 @@ export interface SearchModuleOptions {
    * @default 'nesvel'
    */
   indexPrefix?: string;
+
+  /**
+   * Index naming strategy
+   *
+   * Controls how index names are generated:
+   * - `IndexNamingStrategy.SIMPLE`: Use index name as-is with prefix (e.g., 'nesvel_products')
+   * - `IndexNamingStrategy.TIME_STAMPED`: Append timestamp (e.g., 'nesvel_products_20231104_153422')
+   * - `IndexNamingStrategy.VERSIONED`: Append version (e.g., 'nesvel_products_v1')
+   *
+   * When using `TIME_STAMPED` or `VERSIONED`, an alias matching the prefixed base name is automatically created.
+   * This enables zero-downtime reindexing by creating new indexes and switching aliases atomically.
+   *
+   * @default IndexNamingStrategy.SIMPLE
+   *
+   * @example
+   * ```typescript
+   * // With TIME_STAMPED strategy:
+   * // Physical index: 'nesvel_products_20231104_153422'
+   * // Alias: 'nesvel_products'
+   * // Access via: 'nesvel_products' (uses alias)
+   * ```
+   */
+  indexNamingStrategy?: IndexNamingStrategy;
 
   /**
    * Automatically sync entities with IHasSearchable on create/update/delete

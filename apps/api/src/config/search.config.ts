@@ -1,4 +1,8 @@
-import { SearchConnectionType, type SearchConfig } from '@nesvel/nestjs-search';
+import {
+  SearchConnectionType,
+  IndexNamingStrategy,
+  type SearchConfig,
+} from '@nesvel/nestjs-search';
 
 /**
  * Search Module Configuration
@@ -36,8 +40,7 @@ export const searchConfig: SearchConfig = {
    * @env SEARCH_CONNECTION
    */
   connection:
-    (process.env.SEARCH_CONNECTION as SearchConnectionType) ||
-    SearchConnectionType.MEILISEARCH,
+    (process.env.SEARCH_CONNECTION as SearchConnectionType) || SearchConnectionType.ELASTICSEARCH,
 
   /**
    * Default index prefix
@@ -48,6 +51,26 @@ export const searchConfig: SearchConfig = {
    * @env SEARCH_INDEX_PREFIX
    */
   indexPrefix: process.env.SEARCH_INDEX_PREFIX || 'nesvel',
+
+  /**
+   * Index naming strategy
+   *
+   * Controls how index names are generated:
+   * - `IndexNamingStrategy.SIMPLE`: Use index name with prefix (e.g., 'nesvel_products')
+   * - `IndexNamingStrategy.TIME_STAMPED`: Append timestamp with alias (e.g., 'nesvel_products_20231104_153422')
+   * - `IndexNamingStrategy.VERSIONED`: Append version with alias (e.g., 'nesvel_products_v1')
+   *
+   * **Recommended**: Use `TIME_STAMPED` for Elasticsearch in production to enable:
+   * - Zero-downtime reindexing
+   * - Easy rollback capability
+   * - Multiple index versions
+   *
+   * @env SEARCH_INDEX_NAMING_STRATEGY
+   * @default IndexNamingStrategy.TIME_STAMPED for Elasticsearch, IndexNamingStrategy.SIMPLE for Meilisearch
+   */
+  indexNamingStrategy:
+    (process.env.SEARCH_INDEX_NAMING_STRATEGY as IndexNamingStrategy) ||
+    IndexNamingStrategy.TIME_STAMPED,
 
   /**
    * Automatic entity synchronization
@@ -132,10 +155,7 @@ export const searchConfig: SearchConfig = {
      *
      * @env SEARCH_BACKOFF_MULTIPLIER
      */
-    backoffMultiplier: parseInt(
-      process.env.SEARCH_BACKOFF_MULTIPLIER || '2',
-      10,
-    ),
+    backoffMultiplier: parseInt(process.env.SEARCH_BACKOFF_MULTIPLIER || '2', 10),
   },
 
   /**
@@ -200,7 +220,7 @@ export const searchConfig: SearchConfig = {
      *
      * @env MEILISEARCH_API_KEY
      */
-    apiKey: process.env.MEILISEARCH_API_KEY,
+    apiKey: process.env.MEILISEARCH_API_KEY || 'api-key',
   },
 
   /**
@@ -211,7 +231,5 @@ export const searchConfig: SearchConfig = {
    *
    * @env SEARCH_LOGGING
    */
-  logging:
-    process.env.NODE_ENV === 'development' ||
-    process.env.SEARCH_LOGGING === 'true',
+  logging: process.env.NODE_ENV === 'development' || process.env.SEARCH_LOGGING === 'true',
 };

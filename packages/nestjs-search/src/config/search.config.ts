@@ -1,4 +1,5 @@
-import { SearchConnectionType, type SearchConfig } from '@nesvel/nestjs-search';
+import { SearchConnectionType, IndexNamingStrategy } from '@/enums';
+import type { SearchConfig } from '@/interfaces';
 
 /**
  * Search Module Configuration
@@ -47,6 +48,25 @@ export const searchConfig: SearchConfig = {
    * @env SEARCH_INDEX_PREFIX
    */
   indexPrefix: process.env.SEARCH_INDEX_PREFIX || 'nesvel',
+
+  /**
+   * Index naming strategy
+   *
+   * Controls how index names are generated:
+   * - `IndexNamingStrategy.SIMPLE`: Use index name with prefix (e.g., 'nesvel_products')
+   * - `IndexNamingStrategy.TIME_STAMPED`: Append timestamp (e.g., 'nesvel_products_20231104_153422')
+   *                                      Creates alias 'nesvel_products' -> 'nesvel_products_20231104_153422'
+   * - `IndexNamingStrategy.VERSIONED`: Append version (e.g., 'nesvel_products_v1')
+   *                                    Creates alias 'nesvel_products' -> 'nesvel_products_v1'
+   *
+   * Timestamped/versioned strategies enable zero-downtime reindexing.
+   *
+   * @env SEARCH_INDEX_NAMING_STRATEGY
+   * @default IndexNamingStrategy.SIMPLE
+   */
+  indexNamingStrategy:
+    (process.env.SEARCH_INDEX_NAMING_STRATEGY as IndexNamingStrategy) ||
+    IndexNamingStrategy.TIME_STAMPED,
 
   /**
    * Automatic entity synchronization
