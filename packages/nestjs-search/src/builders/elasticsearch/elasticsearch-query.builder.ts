@@ -1,6 +1,5 @@
 import { BaseQueryBuilder } from '@/builders/base-query.builder';
 
-import type { SearchService } from '@/services/search.service';
 import type { IWhereClause } from '@/interfaces/where-clause.interface';
 import type { SearchOptions } from '@/interfaces/search-options.interface';
 
@@ -47,7 +46,7 @@ import type { SearchOptions } from '@/interfaces/search-options.interface';
  *
  * @example
  * ```typescript
- * const builder = new ElasticsearchQueryBuilder(searchService);
+ * const builder = new ElasticsearchQueryBuilder(provider);
  *
  * // Simple query
  * builder
@@ -70,59 +69,6 @@ import type { SearchOptions } from '@/interfaces/search-options.interface';
  * ```
  */
 export class ElasticsearchQueryBuilder<T = any> extends BaseQueryBuilder<T> {
-  /**
-   * Constructor
-   *
-   * @param searchService - The search service instance
-   */
-  constructor(searchService: SearchService) {
-    super(searchService);
-  }
-
-  /**
-   * Build the query options for SearchService
-   *
-   * Translates all fluent API calls into Elasticsearch-compatible SearchOptions.
-   *
-   * @returns SearchOptions object for Elasticsearch
-   * @protected
-   */
-  protected buildQuery(): SearchOptions {
-    const options: SearchOptions = {
-      limit: this._limitValue,
-      offset: this._offsetValue,
-    };
-
-    // Add search fields if specified
-    if (this._searchFields && this._searchFields.length > 0) {
-      options.searchFields = this._searchFields;
-    }
-
-    // Convert where clauses to filters
-    if (this._whereClauses.length > 0) {
-      options.filters = this.buildFilters();
-    }
-
-    // Add sorting
-    if (this._orderByClauses.length > 0) {
-      options.sort = this._orderByClauses.map((clause) => ({
-        field: clause.field,
-        order: clause.direction,
-      }));
-    }
-
-    // Add highlight fields
-    if (this._highlightFields.length > 0) {
-      options.highlightFields = this._highlightFields;
-    }
-
-    // Add facets (aggregations)
-    if (this._aggregations.length > 0) {
-      options.facets = this._aggregations.map((agg) => agg.field);
-    }
-
-    return options;
-  }
 
   /**
    * Get the raw Elasticsearch DSL query
@@ -243,7 +189,7 @@ export class ElasticsearchQueryBuilder<T = any> extends BaseQueryBuilder<T> {
    * @returns New ElasticsearchQueryBuilder instance
    */
   public clone(): ElasticsearchQueryBuilder<T> {
-    const cloned = new ElasticsearchQueryBuilder<T>(this.searchService);
+    const cloned = new ElasticsearchQueryBuilder<T>();
     cloned._indexName = this._indexName;
     cloned._searchQuery = this._searchQuery;
     cloned._searchFields = this._searchFields ? [...this._searchFields] : undefined;

@@ -1,53 +1,28 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
 
-import { SearchQueryBuilder } from '@/builders/search-query.builder';
-
-import type {
-  ISearchProvider,
-  SearchDocument,
-  SearchOptions,
-  SearchResponse,
-} from '@/interfaces';
-import type { IQueryBuilder } from '@/interfaces/query-builder.interface';
-
-/**
- * Search Provider injection token
- *
- * Used internally by SearchModule to inject the appropriate search provider
- * (ElasticsearchProvider or MeilisearchProvider) based on configuration.
- *
- * @constant
- * @type {string}
- */
-export const SEARCH_PROVIDER = 'SEARCH_PROVIDER';
+import { SEARCH_PROVIDER } from '@/constants';
+import type { ISearchProvider, SearchDocument, SearchOptions, SearchResponse } from '@/interfaces';
 
 /**
  * Search Service
  *
- * Main service for interacting with search engines in NestJS applications.
- * Provides a unified, provider-agnostic API for search operations regardless of
- * whether you're using Elasticsearch or Meilisearch. This service acts as a
- * facade that delegates all operations to the configured search provider.
+ * Main service for executing search operations with Elasticsearch or Meilisearch.
+ * This service delegates all operations to the configured search provider.
+ *
+ * **New Query Pattern** (v2.0):
+ * Query builders are now stateless and only build query objects.
+ * Use SearchQueryBuilder to create queries, then pass them to this service for execution.
  *
  * **Key Features**:
  * - Provider-agnostic API (works with both Elasticsearch and Meilisearch)
  * - Full CRUD operations on documents
- * - Advanced search with filtering, sorting, and pagination
- * - Fluent query builder for complex queries
+ * - Executes queries built by SearchQueryBuilder
  * - Index management (create, delete, stats, clear)
- * - Automatic provider selection based on configuration
  * - Type-safe document operations
- *
- * **Usage Pattern**: Inject this service using `@InjectSearchService()` decorator
- * for a clean, type-safe API to work with search functionality.
- *
- * **Architecture**: This service delegates all operations to the underlying
- * ISearchProvider implementation (ElasticsearchProvider or MeilisearchProvider),
- * which is automatically selected by SearchModule based on your configuration.
  *
  * @example
  * ```typescript
- * // Basic search operations
+ * // New pattern: Build query, then execute
  * @Injectable()
  * export class ProductService {
  *   constructor(
@@ -55,13 +30,74 @@ export const SEARCH_PROVIDER = 'SEARCH_PROVIDER';
  *     private readonly searchService: SearchService,
  *   ) {}
  *
- *   async searchProducts(query: string) {
- *     return this.searchService.search('products', query, {
- *       limit: 20,
- *       searchFields: ['name', 'description'],
- *       filters: { status: 'active' },
- *     });
+ *   async findActiveProducts() {
+ *     // 1. Build the query (stateless, no execution)
+ *     const query = SearchQueryBuilder
+ *       .elasticsearch<Product>()
+ *       .index('products')
+ *       .where('status', 'active')
+ *       .where('price', '>', 100)
+ *       .orderBy('price', 'asc')
+ *       .limit(20)
+ *       .build(); // Returns Elasticsearch DSL
+ *
+ *     // 2. Execute the query
+ *     return this.searchService.search('products', '', query);
  *   }
+ *
+ *   async searchProducts(searchTerm: string) {
+ *     // Build query with search
+ *     const query = SearchQueryBuilder
+ *       .elasticsearch<Product>()
+ *       .index('products')
+ *       .search(searchTerm, ['name', 'description'])
+ *       .where('status', 'active')
+ *       .toQuery(); // Alias for build()
+ *
+ *     // Execute
+ *     return this.searchService.search('products', searchTerm, query);
+ *   }
+ * }
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // For debugging: inspect query before execution
+ * @Injectable()
+ * export class ProductService {
+ *   constructor(
+ *     @InjectSearchService()
+ *     private readonly searchService: SearchService,
+ *     private readonly logger: Logger,
+ *   ) {}
+ *
+ *   async searchWithDebug(term: string) {
+ *     const builder = SearchQueryBuilder
+ *       .elasticsearch<Product>()
+ *       .where('status', 'active')
+ *       .where('price', '>', 100);
+ *
+ *     // Inspect before executing
+ *     this.logger.debug('Query:', builder.toJson(true));
+ *     console.log('Index:', builder.getIndex());
+ *     console.log('Options:', builder.getOptions());
+ *
+ *     // Execute
+ *     const query = builder.build();
+ *     return this.searchService.search('products', term, query);
+ *   }
+ * }
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // Direct indexing operations
+ * @Injectable()
+ * export class ProductService {
+ *   constructor(
+ *     @InjectSearchService()
+ *     private readonly searchService: SearchService,
+ *   ) {}
  *
  *   async indexProduct(product: Product) {
  *     await this.searchService.indexDocument('products', {
@@ -71,90 +107,9 @@ export const SEARCH_PROVIDER = 'SEARCH_PROVIDER';
  *       price: product.price,
  *     });
  *   }
- * }
- * ```
  *
- * @example
- * ```typescript
- * // Using the fluent query builder
- * @Injectable()
- * export class ProductService {
- *   constructor(
- *     @InjectSearchService()
- *     private readonly searchService: SearchService,
- *   ) {}
- *
- *   async findActiveProducts() {
- *     // Create a query builder
- *     const query = this.searchService.query<Product>();
- *     
- *     // Build the query with fluent API
- *     return query
- *       .index('products')
- *       .where('status', 'active')
- *       .where('price', '>', 100)
- *       .orderBy('price', 'asc')
- *       .limit(20)
- *       .get();
- *   }
- *
- *   async searchWithPagination(searchTerm: string, page: number) {
- *     const query = this.searchService.query<Product>();
- *     
- *     return query
- *       .index('products')
- *       .search(searchTerm, ['name', 'description'])
- *       .where('status', 'active')
- *       .paginate(20, page);
- *   }
- *
- *   async complexSearch() {
- *     const query = this.searchService.query<Product>();
- *     
- *     return query
- *       .index('products')
- *       .where('status', 'active')
- *       .where((qb) => {
- *         // Nested conditions
- *         qb.where('category', 'Electronics')
- *           .orWhere('category', 'Computers');
- *       })
- *       .whereIn('brand', ['Apple', 'Dell', 'HP'])
- *       .whereBetween('price', [500, 2000])
- *       .orderBy('popularity', 'desc')
- *       .offset(40)
- *       .limit(20)
- *       .get();
- *   }
- * }
- * ```
- *
- * @example
- * ```typescript
- * // Using index() and createSearchQuery() convenience methods
- * @Injectable()
- * export class ProductService {
- *   constructor(
- *     @InjectSearchService()
- *     private readonly searchService: SearchService,
- *   ) {}
- *
- *   async quickSearch(term: string) {
- *     // index() sets the index and returns query builder
- *     return this.searchService
- *       .index<Product>('products')
- *       .where('status', 'active')
- *       .search(term)
- *       .get();
- *   }
- *
- *   async advancedSearch(term: string) {
- *     // createSearchQuery() sets index and search in one call
- *     return this.searchService
- *       .createSearchQuery<Product>('products', term, ['name', 'description'])
- *       .where('inStock', true)
- *       .orderBy('relevance', 'desc')
- *       .paginate(20, 1);
+ *   async updateProduct(id: string, updates: Partial<Product>) {
+ *     await this.searchService.updateDocument('products', id, updates);
  *   }
  * }
  * ```
@@ -179,15 +134,13 @@ export class SearchService {
    * Constructor
    *
    * Injects the configured search provider (Elasticsearch or Meilisearch)
-   * and the query builder for fluent API queries.
+   * and the search options for configuration access.
    *
-   * @param provider - The search provider implementation (injected automatically)
-   * @param queryBuilder - The query builder service for fluent queries
+   * @param provider - The search provider implementation
    */
   constructor(
     @Inject(SEARCH_PROVIDER)
     private readonly provider: ISearchProvider,
-    private readonly queryBuilder: SearchQueryBuilder,
   ) {}
 
   /**
@@ -385,11 +338,7 @@ export class SearchService {
    * });
    * ```
    */
-  async search(
-    indexName: string,
-    query: string,
-    options?: SearchOptions,
-  ): Promise<SearchResponse> {
+  async search(indexName: string, query: string, options?: SearchOptions): Promise<SearchResponse> {
     return this.provider.search(indexName, query, options);
   }
 
@@ -462,76 +411,296 @@ export class SearchService {
   }
 
   /**
-   * Create a new query builder
+   * Delete all documents from an index (alias for clearIndex)
    *
-   * Returns a fluent query builder instance for building complex search queries
-   * with a chainable API. This is the recommended way to build advanced queries.
+   * Removes all documents while keeping the index structure intact.
+   * This is an alias for clearIndex() for API consistency.
    *
-   * @template T - The document type
-   * @returns Query builder instance
+   * **Warning**: This operation is irreversible.
+   *
+   * @param indexName - The name of the index to clear
+   *
+   * @throws {Error} If clearing fails
    *
    * @example
    * ```typescript
-   * const results = await searchService
-   *   .query<Product>()
-   *   .index('products')
-   *   .where('status', 'active')
-   *   .where('price', '>', 100)
-   *   .orderBy('price', 'asc')
-   *   .get();
+   * await searchService.deleteAllDocuments('test_products');
    * ```
    */
-  query<T = any>(): IQueryBuilder<T> {
-    return this.queryBuilder.newQuery<T>();
+  async deleteAllDocuments(indexName: string): Promise<void> {
+    return this.clearIndex(indexName);
   }
 
   /**
-   * Create a query builder for a specific index
+   * Count documents in an index
    *
-   * Convenience method that creates a query builder and immediately sets the index.
-   * Equivalent to `query<T>().index(indexName)`.
+   * Returns the total number of documents in the specified index.
    *
-   * @template T - The document type
    * @param indexName - The name of the index
-   * @returns Query builder with index set
+   *
+   * @returns Total number of documents
+   *
+   * @throws {Error} If count fails
    *
    * @example
    * ```typescript
-   * const activeProducts = await searchService
-   *   .index<Product>('products')
-   *   .where('status', 'active')
-   *   .get();
+   * const count = await searchService.count('products');
+   * console.log(`Total products: ${count}`);
    * ```
    */
-  index<T = any>(indexName: string): IQueryBuilder<T> {
-    return this.queryBuilder.newQuery<T>().index(indexName);
+  async count(indexName: string): Promise<number> {
+    const stats = await this.getIndexStats(indexName);
+    return stats.documentCount || stats.docsCount || 0;
   }
 
   /**
-   * Create a search query builder
+   * List all indices
    *
-   * Convenience method for starting a full-text search query.
-   * Sets the index and search query in one call.
+   * Returns a list of all indices in the search engine.
+   * The structure depends on the provider.
    *
-   * @template T - The document type
-   * @param indexName - The name of the index
-   * @param searchQuery - The search query string
-   * @param fields - Optional array of fields to search in
-   * @returns Query builder with search configured
+   * @returns Array of index information objects
+   *
+   * @throws {Error} If listing fails
    *
    * @example
    * ```typescript
-   * const results = await searchService
-   *   .createSearchQuery<Product>('products', 'laptop', ['name', 'description'])
-   *   .where('status', 'active')
-   *   .get();
+   * const indices = await searchService.listIndices();
+   * indices.forEach(index => {
+   *   console.log(`Index: ${index.name}, Docs: ${index.docsCount}`);
+   * });
    * ```
    */
-  createSearchQuery<T = any>(
+  async listIndices(): Promise<Array<Record<string, any>>> {
+    return this.provider.listIndices();
+  }
+
+  /**
+   * Update index settings
+   *
+   * Updates the configuration of an existing index.
+   * The structure of settings depends on the provider (Elasticsearch vs Meilisearch).
+   *
+   * @param indexName - The name of the index
+   * @param settings - Provider-specific settings to update
+   *
+   * @throws {Error} If update fails
+   *
+   * @example
+   * ```typescript
+   * // Meilisearch
+   * await searchService.updateSettings('products', {
+   *   searchableAttributes: ['name', 'description'],
+   *   filterableAttributes: ['category', 'price'],
+   * });
+   *
+   * // Elasticsearch
+   * await searchService.updateSettings('products', {
+   *   number_of_replicas: 2,
+   *   refresh_interval: '5s',
+   * });
+   * ```
+   */
+  async updateSettings(indexName: string, settings: Record<string, any>): Promise<void> {
+    return this.provider.updateSettings(indexName, settings);
+  }
+
+  /**
+   * Create an alias for an index
+   *
+   * Creates an alias that points to the specified index.
+   * This is useful for zero-downtime reindexing and managing index versions.
+   * Note: Only supported by Elasticsearch. Meilisearch will log a warning.
+   *
+   * @param indexName - The physical index name
+   * @param aliasName - The alias name to create
+   *
+   * @throws {Error} If alias creation fails
+   *
+   * @example
+   * ```typescript
+   * await searchService.createAlias('products_20231104_153422', 'products');
+   * // Now you can use 'products' to query 'products_20231104_153422'
+   * ```
+   */
+  async createAlias(indexName: string, aliasName: string): Promise<void> {
+    return this.provider.createAlias(indexName, aliasName);
+  }
+
+  /**
+   * Delete an alias
+   *
+   * Removes an alias from the search engine.
+   * The underlying index remains intact.
+   * Note: Only supported by Elasticsearch. Meilisearch will log a warning.
+   *
+   * @param aliasName - The alias name to delete
+   *
+   * @throws {Error} If alias deletion fails
+   *
+   * @example
+   * ```typescript
+   * await searchService.deleteAlias('products');
+   * ```
+   */
+  async deleteAlias(aliasName: string): Promise<void> {
+    return this.provider.deleteAlias(aliasName);
+  }
+
+  /**
+   * Update an alias to point to a different index
+   *
+   * Atomically switches an alias from one index to another.
+   * This is the recommended way to perform zero-downtime reindexing.
+   * Note: Only supported by Elasticsearch. Meilisearch will log a warning.
+   *
+   * @param aliasName - The alias name to update
+   * @param newIndexName - The new index to point to
+   * @param oldIndexName - The old index to remove (optional)
+   *
+   * @throws {Error} If alias update fails
+   *
+   * @example
+   * ```typescript
+   * // Reindex flow:
+   * // 1. Create new index with timestamp
+   * await searchService.createIndex('products_20231104_160000', { ... });
+   * // 2. Index data into new index
+   * await searchService.indexDocuments('products_20231104_160000', documents);
+   * // 3. Atomically switch alias
+   * await searchService.updateAlias(
+   *   'products',
+   *   'products_20231104_160000',
+   *   'products_20231104_153422'
+   * );
+   * // 4. Delete old index
+   * await searchService.deleteIndex('products_20231104_153422');
+   * ```
+   */
+  async updateAlias(aliasName: string, newIndexName: string, oldIndexName?: string): Promise<void> {
+    return this.provider.updateAlias(aliasName, newIndexName, oldIndexName);
+  }
+
+  /**
+   * Get all aliases for an index
+   *
+   * Returns a list of alias names that point to the specified index.
+   * Note: Only supported by Elasticsearch. Meilisearch will return an empty array.
+   *
+   * @param indexName - The physical index name
+   *
+   * @returns Array of alias names
+   *
+   * @throws {Error} If retrieval fails
+   *
+   * @example
+   * ```typescript
+   * const aliases = await searchService.getAliases('products_20231104_153422');
+   * console.log(`Aliases: ${aliases.join(', ')}`);
+   * // Output: Aliases: products, products_latest
+   * ```
+   */
+  async getAliases(indexName: string): Promise<string[]> {
+    return this.provider.getAliases(indexName);
+  }
+
+  /**
+   * Reindex documents from a data source
+   *
+   * Performs zero-downtime reindexing by creating a temporary index,
+   * fetching data from the provided data source, indexing it in batches,
+   * and then atomically switching to the new index.
+   *
+   * The process works as follows:
+   * 1. Creates a temporary index with optional new settings
+   * 2. Fetches data from the data source function/generator
+   * 3. Indexes data to the temporary index in batches
+   * 4. Verifies the indexing succeeded
+   * 5. For Elasticsearch with aliases: switches alias atomically
+   * 6. For simple naming: deletes old index and renames temp index
+   * 7. Optionally deletes the old index
+   *
+   * @param indexName - The name of the index to reindex (or alias name for ES)
+   * @param options - Reindex options
+   * @param options.batchSize - Number of documents to process per batch (default: 100)
+   * @param options.dataSource - Function that returns documents to index
+   * @param options.newSettings - Optional new index settings for the temp index
+   * @param options.deleteOldIndex - Whether to delete old index after reindex (default: true)
+   *
+   * @returns Reindex result with detailed statistics
+   *
+   * @throws {Error} If reindexing fails or data source is not provided
+   *
+   * @example
+   * ```typescript
+   * // Example 1: Reindex from database
+   * const result = await searchService.reindex('products', {
+   *   batchSize: 500,
+   *   dataSource: async () => {
+   *     const products = await this.productRepository.findAll();
+   *     return products.map(p => ({
+   *       id: p.id,
+   *       name: p.name,
+   *       description: p.description,
+   *       price: p.price,
+   *       category: p.category,
+   *     }));
+   *   },
+   *   newSettings: {
+   *     // Elasticsearch settings
+   *     mappings: {
+   *       properties: {
+   *         name: { type: 'text', analyzer: 'standard' },
+   *         price: { type: 'float' },
+   *       },
+   *     },
+   *   },
+   * });
+   *
+   * console.log(`Reindexed ${result.indexedDocuments} documents in ${result.duration}ms`);
+   *
+   * // Example 2: Reindex with generator (for large datasets)
+   * const result = await searchService.reindex('products', {
+   *   batchSize: 100,
+   *   dataSource: async function* () {
+   *     let offset = 0;
+   *     const limit = 1000;
+   *
+   *     while (true) {
+   *       const batch = await productRepository.findMany({ offset, limit });
+   *       if (batch.length === 0) break;
+   *
+   *       for (const product of batch) {
+   *         yield {
+   *           id: product.id,
+   *           name: product.name,
+   *           price: product.price,
+   *         };
+   *       }
+   *
+   *       offset += limit;
+   *     }
+   *   },
+   * });
+   * ```
+   */
+  async reindex(
     indexName: string,
-    searchQuery: string,
-    fields?: string[],
-  ): IQueryBuilder<T> {
-    return this.queryBuilder.newQuery<T>().index(indexName).search(searchQuery, fields);
+    options: {
+      batchSize?: number;
+      dataSource: () => Promise<SearchDocument[]> | AsyncGenerator<SearchDocument, void, unknown>;
+      newSettings?: Record<string, any>;
+      deleteOldIndex?: boolean;
+    },
+  ): Promise<{
+    success: boolean;
+    totalDocuments: number;
+    indexedDocuments: number;
+    failedDocuments: number;
+    oldIndexName?: string;
+    newIndexName: string;
+    duration: number;
+  }> {
+    return this.provider.reindex(indexName, options);
   }
 }

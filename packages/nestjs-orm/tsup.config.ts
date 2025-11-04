@@ -1,7 +1,7 @@
+import { join } from 'path';
 import { defineConfig } from 'tsup';
 import { cliLibPreset } from '@nesvel/tsup-config';
 import { copyFileSync, mkdirSync, readdirSync } from 'fs';
-import { join } from 'path';
 import pathAliasPlugin from 'esbuild-plugin-path-alias';
 
 /**

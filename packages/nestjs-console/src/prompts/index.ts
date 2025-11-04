@@ -13,6 +13,7 @@ export * from './confirm';
 export * from './form';
 export * from './multiselect';
 export * from './multisearch';
+export * from './newline';
 export * from './number';
 export * from './password';
 export * from './pause';

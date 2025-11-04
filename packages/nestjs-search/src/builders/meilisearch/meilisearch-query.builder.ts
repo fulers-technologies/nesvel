@@ -1,6 +1,5 @@
 import { BaseQueryBuilder } from '@/builders/base-query.builder';
 
-import type { SearchService } from '@/services/search.service';
 import type { IWhereClause } from '@/interfaces/where-clause.interface';
 import type { SearchOptions } from '@/interfaces/search-options.interface';
 
@@ -54,49 +53,6 @@ import type { SearchOptions } from '@/interfaces/search-options.interface';
  * ```
  */
 export class MeilisearchQueryBuilder<T = any> extends BaseQueryBuilder<T> {
-  /**
-   * Constructor
-   *
-   * @param searchService - The search service instance
-   */
-  constructor(searchService: SearchService) {
-    super(searchService);
-  }
-
-  /**
-   * Build the query options for SearchService
-   *
-   * Translates all fluent API calls into Meilisearch-compatible SearchOptions.
-   *
-   * @returns SearchOptions object for Meilisearch
-   * @protected
-   */
-  protected buildQuery(): SearchOptions {
-    const options: SearchOptions = {
-      limit: this._limitValue,
-      offset: this._offsetValue,
-    };
-
-    // Add search fields if specified
-    if (this._searchFields && this._searchFields.length > 0) {
-      options.searchFields = this._searchFields;
-    }
-
-    // Convert where clauses to filters (simple equality filters for compatibility)
-    if (this._whereClauses.length > 0) {
-      options.filters = this.buildSimpleFilters();
-    }
-
-    // Add sorting
-    if (this._orderByClauses.length > 0) {
-      options.sort = this._orderByClauses.map((clause) => ({
-        field: clause.field,
-        order: clause.direction,
-      }));
-    }
-
-    return options;
-  }
 
   /**
    * Get the raw Meilisearch query object
@@ -154,7 +110,7 @@ export class MeilisearchQueryBuilder<T = any> extends BaseQueryBuilder<T> {
    * @returns New MeilisearchQueryBuilder instance
    */
   public clone(): MeilisearchQueryBuilder<T> {
-    const cloned = new MeilisearchQueryBuilder<T>(this.searchService);
+    const cloned = new MeilisearchQueryBuilder<T>();
     cloned._indexName = this._indexName;
     cloned._searchQuery = this._searchQuery;
     cloned._searchFields = this._searchFields ? [...this._searchFields] : undefined;

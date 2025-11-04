@@ -4,7 +4,9 @@
   ],
   "tasks": {
     "build": {
-      "dependsOn": []
+      "dependsOn": [
+        "@nesvel/nestjs-orm#build"
+      ]
     }
   }
 }

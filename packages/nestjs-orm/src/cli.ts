@@ -1,17 +1,18 @@
-import 'reflect-metadata';
-import { CommandFactory } from 'nest-commander';
-import { Logger } from '@nestjs/common';
-import { ConsoleModule } from '@/console/console.module';
 import {
   handleError,
+  CLI_METADATA,
+  CLI_FEATURES,
   displayBanner,
-  setupErrorHandlers,
-  validateEnvironment,
   configureLogger,
   getLoggerOptions,
   getEnvironmentInfo,
-} from '@/utils/cli';
-import { CLI_METADATA, CLI_FEATURES } from '@/constants';
+  setupErrorHandlers,
+  validateEnvironment,
+} from '@nesvel/shared';
+import { Logger } from '@nestjs/common';
+import { CommandFactory } from 'nest-commander';
+
+import { ConsoleModule } from '@/console/console.module';
 
 /**
  * Global logger instance for CLI operations
@@ -67,15 +68,33 @@ async function bootstrap(): Promise<void> {
       logger: getLoggerOptions(),
 
       // Custom error handler for command-specific errors
-      errorHandler: (error: Error) => {
+      errorHandler: (error: Error & { code?: string }) => {
+        // Ignore help display "errors" - these are not real errors
+        if (error.code === 'commander.helpDisplayed' || error.message === '(outputHelp)') {
+          process.exit(0);
+          return;
+        }
         handleError(error, 'Command Execution', logger);
+      },
+
+      // Service options
+      serviceErrorHandler: (error: Error & { code?: string }) => {
+        // Ignore help display errors
+        if (error.code === 'commander.helpDisplayed' || error.message === '(outputHelp)') {
+          process.exit(0);
+          return;
+        }
+        handleError(error, 'Service Error', logger);
       },
 
       // Enable/disable colors based on terminal support
       usePlugins: true,
 
       // Additional NestJS application options
-      abortOnError: true,
+      abortOnError: false, // Don't abort on help display
+
+      // Enable command parsing
+      enablePositionalOptions: true,
     });
 
     // Step 5: Successful completion
@@ -164,27 +183,3 @@ export async function runCLI(args: string[]): Promise<void> {
     process.argv = originalArgv;
   }
 }
-
-/**
- * Export ConsoleModule for direct integration
- *
- * Allows developers to import and use the ConsoleModule directly
- * in their NestJS applications for custom CLI integration.
- *
- * @example
- * ```typescript
- * import { ConsoleModule } from '@nesvel/nestjs-orm/cli';
- *
- * @Module({
- *   imports: [ConsoleModule]
- * })
- * export class AppModule {}
- * ```
- */
-export { ConsoleModule };
-
-/**
- * Re-export constants and utilities for programmatic usage
- */
-export { CLI_METADATA, CLI_FEATURES } from '@/constants';
-export * from '@/utils/cli';

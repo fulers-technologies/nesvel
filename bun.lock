@@ -191,7 +191,6 @@
         "@nesvel/nestjs-console": "workspace:*",
         "@nesvel/shared": "workspace:*",
         "ejs": "^3.1.10",
-        "figlet": "^1.9.3",
         "knex": "^3.1.0",
         "nest-commander": "^3.20.1",
         "nestjs-paginate": "^12.8.3",
@@ -205,7 +204,6 @@
         "@nesvel/tsup-config": "workspace:*",
         "@nesvel/typescript-config": "workspace:*",
         "@types/ejs": "^3.1.5",
-        "@types/figlet": "^1.7.0",
         "@types/uuid": "^11.0.0",
         "esbuild-plugin-path-alias": "^1.0.7",
         "tsc-alias": "^1.8.16",
@@ -248,8 +246,13 @@
     "packages/nestjs-search": {
       "name": "@nesvel/nestjs-search",
       "version": "1.0.0",
+      "bin": {
+        "nesvel-search": "./dist/cli.js",
+      },
       "dependencies": {
+        "@nesvel/nestjs-console": "workspace:*",
         "@nesvel/nestjs-orm": "workspace:*",
+        "nest-commander": "^3.17.0",
       },
       "devDependencies": {
         "@elastic/elasticsearch": "^9.2.0",
@@ -260,8 +263,10 @@
         "@nesvel/typescript-config": "workspace:*",
         "@types/jest": "catalog:types",
         "@types/node": "catalog:types",
+        "esbuild-plugin-path-alias": "^1.0.7",
         "eslint": "catalog:lint",
         "jest": "catalog:testing",
+        "jiti": "^2.6.1",
         "meilisearch": "^0.54.0",
         "prettier": "catalog:lint",
         "tsup": "catalog:tsBuild",
@@ -304,11 +309,15 @@
     "packages/shared": {
       "name": "@nesvel/shared",
       "version": "1.0.0",
+      "dependencies": {
+        "figlet": "^1.9.3",
+      },
       "devDependencies": {
         "@nesvel/eslint-config": "workspace:*",
         "@nesvel/jest-config": "workspace:*",
         "@nesvel/tsup-config": "workspace:*",
         "@nesvel/typescript-config": "workspace:*",
+        "@types/figlet": "^1.7.0",
       },
     },
     "packages/tsup-config": {
@@ -2463,7 +2472,7 @@
 
     "jest-worker": ["jest-worker@30.2.0", "", { "dependencies": { "@types/node": "*", "@ungap/structured-clone": "^1.3.0", "jest-util": "30.2.0", "merge-stream": "^2.0.0", "supports-color": "^8.1.1" } }, "sha512-0Q4Uk8WF7BUwqXHuAjc23vmopWJw5WH7w2tqBoUOZpOjW/ZnR44GXXd1r82RvnmI2GZge3ivrYXk/BE2+VtW2g=="],
 
-    "jiti": ["jiti@1.21.7", "", { "bin": { "jiti": "bin/jiti.js" } }, "sha512-/imKNG4EbWNrVjoNC/1H5/9GFy+tqjGBHCaSsN+P2RnPqjsLmv6UD3Ej+Kj8nBWaRAwyk7kK5ZUc+OEatnTR3A=="],
+    "jiti": ["jiti@2.6.1", "", { "bin": { "jiti": "lib/jiti-cli.mjs" } }, "sha512-ekilCSN1jwRvIbgeg/57YFh8qQDNbwDb9xT/qu2DAHbFFZUicIl4ygVaAvzveMhMVr3LnpSKTNnwt8PoOfmKhQ=="],
 
     "jju": ["jju@1.4.0", "", {}, "sha512-8wb9Yw966OSxApiCt0K3yNJL8pnNeIv+OEq2YMidz4FKP6nonSRoOXc80iXY4JaN2FC11B9qsNmDsm+ZOfMROA=="],
 
@@ -3637,8 +3646,6 @@
 
     "cosmiconfig-typescript-loader/cosmiconfig": ["cosmiconfig@9.0.0", "", { "dependencies": { "env-paths": "^2.2.1", "import-fresh": "^3.3.0", "js-yaml": "^4.1.0", "parse-json": "^5.2.0" }, "peerDependencies": { "typescript": ">=4.9.5" }, "optionalPeers": ["typescript"] }, "sha512-itvL5h8RETACmOTFc4UfIyB2RfEHi71Ax6E/PivVxq9NseKbOWpeyHEOIbmAw1rs8Ak0VursQNww7lf7YtUwzg=="],
 
-    "cosmiconfig-typescript-loader/jiti": ["jiti@2.6.1", "", { "bin": { "jiti": "lib/jiti-cli.mjs" } }, "sha512-ekilCSN1jwRvIbgeg/57YFh8qQDNbwDb9xT/qu2DAHbFFZUicIl4ygVaAvzveMhMVr3LnpSKTNnwt8PoOfmKhQ=="],
-
     "cz-conventional-changelog/@commitlint/load": ["@commitlint/load@20.1.0", "", { "dependencies": { "@commitlint/config-validator": "^20.0.0", "@commitlint/execute-rule": "^20.0.0", "@commitlint/resolve-extends": "^20.1.0", "@commitlint/types": "^20.0.0", "chalk": "^5.3.0", "cosmiconfig": "^9.0.0", "cosmiconfig-typescript-loader": "^6.1.0", "lodash.isplainobject": "^4.0.6", "lodash.merge": "^4.6.2", "lodash.uniq": "^4.5.0" } }, "sha512-qo9ER0XiAimATQR5QhvvzePfeDfApi/AFlC1G+YN+ZAY8/Ua6IRrDrxRvQAr+YXUKAxUsTDSp9KXeXLBPsNRWg=="],
 
     "cz-conventional-changelog/chalk": ["chalk@2.4.2", "", { "dependencies": { "ansi-styles": "^3.2.1", "escape-string-regexp": "^1.0.5", "supports-color": "^5.3.0" } }, "sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ=="],
@@ -3890,6 +3897,8 @@
     "sucrase/commander": ["commander@4.1.1", "", {}, "sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA=="],
 
     "sucrase/glob": ["glob@10.4.5", "", { "dependencies": { "foreground-child": "^3.1.0", "jackspeak": "^3.1.2", "minimatch": "^9.0.4", "minipass": "^7.1.2", "package-json-from-dist": "^1.0.0", "path-scurry": "^1.11.1" }, "bin": { "glob": "dist/esm/bin.mjs" } }, "sha512-7Bv8RF0k6xjo7d4A/PxYLbUCfb6c+Vpd2/mB2yRDlew7Jb5hEXiCD9ibfO7wpk8i4sevK6DFny9h7EYbM3/sHg=="],
+
+    "tailwindcss/jiti": ["jiti@1.21.7", "", { "bin": { "jiti": "bin/jiti.js" } }, "sha512-/imKNG4EbWNrVjoNC/1H5/9GFy+tqjGBHCaSsN+P2RnPqjsLmv6UD3Ej+Kj8nBWaRAwyk7kK5ZUc+OEatnTR3A=="],
 
     "tailwindcss/lilconfig": ["lilconfig@2.1.0", "", {}, "sha512-utWOt/GHzuUxnLKxB6dk81RoOeoNeHgbrXiuGk4yyF5qlRz+iIVWu56E2fqGHFrXz0QNUhLB/8nKqvRH66JKGQ=="],
 

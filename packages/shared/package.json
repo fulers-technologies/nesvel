@@ -26,9 +26,12 @@
     "lint:fix": "eslint src/**/*.ts --fix",
     "check-types": "tsc -p tsconfig.json --noEmit"
   },
-  "dependencies": {},
+  "dependencies": {
+    "figlet": "^1.9.3"
+  },
   "peerDependencies": {},
   "devDependencies": {
+    "@types/figlet": "^1.7.0",
     "@nesvel/eslint-config": "workspace:*",
     "@nesvel/jest-config": "workspace:*",
     "@nesvel/tsup-config": "workspace:*",

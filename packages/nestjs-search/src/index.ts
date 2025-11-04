@@ -29,9 +29,6 @@ export * from './config';
 // Builders
 export * from './builders';
 
-// Models
-export * from './models';
-
 // Providers
 export * from './providers';
 

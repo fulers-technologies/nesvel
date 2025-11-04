@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MakeTsconfigCommand, BaseCommand } from '@nesvel/nestjs-console';
+
 import {
   // Make commands
   MakeModelCommand,

@@ -9,6 +9,5 @@
  * @since 1.0.0
  */
 
-export * from './log-level.enum';
 export * from './sort-direction.enum';
 export * from './entity-operation.enum';

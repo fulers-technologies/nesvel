@@ -46,7 +46,7 @@ export function displayBanner(): void {
 
   try {
     // Generate NESVEL ORM text with figlet
-    const nesvelText = figlet.textSync('NESVEL  ORM', {
+    const nesvelText = figlet.textSync('NESVEL', {
       font: 'Standard',
       horizontalLayout: 'default',
       verticalLayout: 'default',
@@ -55,7 +55,7 @@ export function displayBanner(): void {
     });
 
     console.log('\n' + nesvelText);
-    console.log('\n  Laravel-inspired ORM for NestJS • Powered by MikroORM');
+    // console.log('\n  Laravel-inspired ORM for NestJS • Powered by MikroORM');
     console.log(`  Version ${packageJson.version}\n`);
   } catch (error: Error | any) {
     // Fallback to simple banner if figlet fails
@@ -72,15 +72,33 @@ export function displayBanner(): void {
  * @param version - Package version
  * @private
  */
+// function displayFallbackBanner(version: string): void {
+//   const banner = `
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║                                                                  ║
+// ║    _   _ _____ ______     _______ _         ___  ____  __  __    ║
+// ║   | \ | | ____/ ___\ \   / / ____| |       / _ \|  _ \|  \/  |   ║
+// ║   |  \| |  _| \___ \\ \ / /|  _| | |      | | | | |_) | |\/| |   ║
+// ║   | |\  | |___ ___) |\ V / | |___| |___   | |_| |  _ <| |  | |   ║
+// ║   |_| \_|_____|____/  \_/  |_____|_____|   \___/|_| \_\_|  |_|   ║
+// ║                                                                  ║
+// ║   Laravel-inspired ORM for NestJS • Powered by MikroORM          ║
+// ║   Version ${version.padEnd(67)}                                  ║
+// ║                                                                  ║
+// ╚══════════════════════════════════════════════════════════════════╝
+// `;
+
+//   console.log(banner);
+// }
 function displayFallbackBanner(version: string): void {
   const banner = `
 ╔══════════════════════════════════════════════════════════════════╗
 ║                                                                  ║
-║    _   _ _____ ______     _______ _         ___  ____  __  __    ║
-║   | \ | | ____/ ___\ \   / / ____| |       / _ \|  _ \|  \/  |   ║
-║   |  \| |  _| \___ \\ \ / /|  _| | |      | | | | |_) | |\/| |   ║
-║   | |\  | |___ ___) |\ V / | |___| |___   | |_| |  _ <| |  | |   ║
-║   |_| \_|_____|____/  \_/  |_____|_____|   \___/|_| \_\_|  |_|   ║
+║              _   _ _____ ______     _______ _                    ║
+║             | \ | | ____/ ___\ \   / / ____| |                   ║
+║             |  \| |  _| \___ \\ \ / /|  _| | |                   ║
+║             | |\  | |___ ___) |\ V / | |___| |___                ║
+║             |_| \_|_____|____/  \_/  |_____|_____|               ║
 ║                                                                  ║
 ║   Laravel-inspired ORM for NestJS • Powered by MikroORM          ║
 ║   Version ${version.padEnd(67)}                                  ║

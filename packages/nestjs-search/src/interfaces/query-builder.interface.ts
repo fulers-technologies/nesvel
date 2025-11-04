@@ -227,81 +227,74 @@ export interface IQueryBuilder<T = any> {
    */
   aggregate(name: string, field: string, type?: string): this;
 
-  /**
-   * Execute the query and return all results
-   *
-   * @returns Promise resolving to search response
-   */
-  get(): Promise<SearchResponse<T>>;
 
   /**
-   * Alias for get() - returns all results
+   * Build and return the raw query object (provider-specific)
+   * Alias for toQuery()
    *
-   * @returns Promise resolving to search response
+   * @returns Raw query object (Elasticsearch DSL, Meilisearch filters, etc.)
    */
-  all(): Promise<SearchResponse<T>>;
-
-  /**
-   * Get the first result
-   *
-   * @returns Promise resolving to first document or null
-   */
-  first(): Promise<T | null>;
-
-  /**
-   * Get the first result or throw an error
-   *
-   * @throws Error if no results found
-   * @returns Promise resolving to first document
-   */
-  firstOrFail(): Promise<T>;
-
-  /**
-   * Find a document by ID
-   *
-   * @param id - Document ID
-   * @returns Promise resolving to document or null
-   */
-  find(id: string | number): Promise<T | null>;
-
-  /**
-   * Find a document by ID or throw an error
-   *
-   * @param id - Document ID
-   * @throws Error if document not found
-   * @returns Promise resolving to document
-   */
-  findOrFail(id: string | number): Promise<T>;
-
-  /**
-   * Get the count of matching documents
-   *
-   * @returns Promise resolving to count
-   */
-  count(): Promise<number>;
-
-  /**
-   * Check if any results exist
-   *
-   * @returns Promise resolving to boolean
-   */
-  exists(): Promise<boolean>;
-
-  /**
-   * Paginate results
-   *
-   * @param perPage - Results per page
-   * @param page - Page number (1-indexed)
-   * @returns Promise resolving to paginated response
-   */
-  paginate(perPage: number, page?: number): Promise<PaginatedResponse<T>>;
+  build(): any;
 
   /**
    * Get the raw query object (provider-specific)
+   * Alias for build()
    *
    * @returns Raw query object
    */
   toQuery(): any;
+
+  /**
+   * Get the index name
+   *
+   * @returns Index name or undefined if not set
+   */
+  getIndex(): string | undefined;
+
+  /**
+   * Get the search query string
+   *
+   * @returns Search query string or undefined
+   */
+  getSearchQuery(): string | undefined;
+
+  /**
+   * Get the search fields
+   *
+   * @returns Array of search fields or undefined
+   */
+  getSearchFields(): string[] | undefined;
+
+  /**
+   * Get the limit value
+   *
+   * @returns Limit value or undefined
+   */
+  getLimit(): number | undefined;
+
+  /**
+   * Get the offset value
+   *
+   * @returns Offset value
+   */
+  getOffset(): number;
+
+  /**
+   * Get all query options as a plain object
+   * Useful for debugging and inspection
+   *
+   * @returns Object containing all query parameters
+   */
+  getOptions(): Record<string, any>;
+
+  /**
+   * Convert the query builder to JSON string
+   * Useful for debugging and logging
+   *
+   * @param pretty - Whether to pretty-print the JSON
+   * @returns JSON string representation
+   */
+  toJson(pretty?: boolean): string;
 
   /**
    * Get the where clauses

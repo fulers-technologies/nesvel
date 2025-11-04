@@ -1,7 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { InjectSearchService, SearchService, SearchModel } from '@nesvel/nestjs-search';
+import { Injectable, Logger } from '@nestjs/common';
+import {
+  InjectSearchService,
+  SearchService,
+  SearchQueryBuilder,
+  SearchConnectionType,
+} from '@nesvel/nestjs-search';
 
-import type { SearchResponse, PaginatedResponse } from '@nesvel/nestjs-search';
+import type { SearchResponse } from '@nesvel/nestjs-search';
 
 /**
  * Order Search Document
@@ -24,44 +29,18 @@ export interface OrderSearchDocument {
 }
 
 /**
- * Order Search Model
- *
- * Laravel Eloquent-style Active Record pattern for Order search operations.
- */
-export class OrderSearch extends SearchModel<OrderSearchDocument> {
-  static indexName = 'orders';
-
-  /**
-   * Get active orders (not cancelled)
-   */
-  static active() {
-    return this.query<OrderSearchDocument>().where('status', '!=', 'cancelled');
-  }
-
-  /**
-   * Get orders by status
-   */
-  static byStatus(status: OrderSearchDocument['status']) {
-    return this.query<OrderSearchDocument>().where('status', status);
-  }
-
-  /**
-   * Get high-value orders
-   */
-  static highValue(minAmount: number = 1000) {
-    return this.query<OrderSearchDocument>().where('total', '>=', minAmount);
-  }
-}
-
-/**
  * Order Search Service
  *
- * Comprehensive service demonstrating all search patterns:
- * - Direct SearchService usage with query builder
- * - SearchModel Active Record pattern
- * - Complex queries with filtering, sorting, and pagination
- * - Full-text search across multiple fields
- * - Aggregations and faceted search
+ * Demonstrates the new stateless query builder pattern:
+ * 1. Build queries using SearchQueryBuilder (no execution)
+ * 2. Execute queries via SearchService
+ * 3. Inspect and debug queries before execution
+ *
+ * **Key Benefits**:
+ * - No circular dependencies
+ * - Queries are composable and testable
+ * - Full visibility into generated DSL
+ * - Follows Magento 2 / Doctrine QueryBuilder pattern
  *
  * @example
  * ```typescript
@@ -79,6 +58,8 @@ export class OrderSearch extends SearchModel<OrderSearchDocument> {
  */
 @Injectable()
 export class OrderSearchService {
+  private readonly logger = new Logger(OrderSearchService.name);
+
   constructor(
     @InjectSearchService()
     private readonly searchService: SearchService,
@@ -87,102 +68,90 @@ export class OrderSearchService {
   /**
    * Search orders with full-text search
    *
-   * Searches across customer name, email, and order number.
+   * NEW PATTERN: Build query → Execute query
    *
    * @param searchTerm - Search query
-   * @param page - Page number (1-indexed)
-   * @returns Paginated search results
-   *
-   * @example
-   * ```typescript
-   * const results = await orderSearchService.searchOrders('john', 1);
-   * console.log(`Found ${results.total} orders`);
-   * ```
+   * @param limit - Number of results
+   * @returns Search results
    */
   async searchOrders(
     searchTerm: string,
-    page: number = 1,
-  ): Promise<PaginatedResponse<OrderSearchDocument>> {
-    // Using query builder
-    const query = this.searchService.query<OrderSearchDocument>();
-
-    return query
+    limit: number = 20,
+  ): Promise<SearchResponse<OrderSearchDocument>> {
+    // 1. Build the query (stateless, no execution)
+    const queryBuilder = SearchQueryBuilder.elasticsearch<OrderSearchDocument>()
       .index('orders')
       .search(searchTerm, ['customerName', 'customerEmail', 'orderNumber'])
       .where('status', '!=', 'cancelled')
       .orderBy('createdAt', 'desc')
-      .paginate(20, page);
+      .limit(limit);
+
+    // Optional: Debug the query before execution
+    this.logger.debug('Search Query:', queryBuilder.toJson(true));
+
+    // 2. Build and execute
+    const query = queryBuilder.build();
+    return this.searchService.search('orders', searchTerm, query);
   }
 
   /**
-   * Get orders by status with pagination
+   * Get orders by status
    *
    * @param status - Order status
-   * @param page - Page number
-   * @returns Paginated results
-   *
-   * @example
-   * ```typescript
-   * const pending = await orderSearchService.getOrdersByStatus('pending', 1);
-   * ```
+   * @returns Orders matching status
    */
   async getOrdersByStatus(
     status: OrderSearchDocument['status'],
-    page: number = 1,
-  ): Promise<PaginatedResponse<OrderSearchDocument>> {
-    // Using SearchModel Active Record pattern
-    return OrderSearch.byStatus(status).orderBy('createdAt', 'desc').paginate(20, page);
+  ): Promise<SearchResponse<OrderSearchDocument>> {
+    const query = SearchQueryBuilder.elasticsearch<OrderSearchDocument>()
+      .index('orders')
+      .where('status', status)
+      .orderBy('createdAt', 'desc')
+      .limit(100)
+      .build();
+
+    return this.searchService.search('orders', '', query);
   }
 
   /**
    * Get active orders (not cancelled)
-   *
-   * @returns All active orders
-   *
-   * @example
-   * ```typescript
-   * const active = await orderSearchService.getActiveOrders();
-   * console.log(`${active.hits.length} active orders`);
-   * ```
    */
   async getActiveOrders(): Promise<SearchResponse<OrderSearchDocument>> {
-    // Using SearchModel
-    return OrderSearch.active().orderBy('createdAt', 'desc').limit(100).get();
+    const query = SearchQueryBuilder.elasticsearch<OrderSearchDocument>()
+      .index('orders')
+      .where('status', '!=', 'cancelled')
+      .orderBy('createdAt', 'desc')
+      .limit(100)
+      .build();
+
+    return this.searchService.search('orders', '', query);
   }
 
   /**
    * Get high-value orders
    *
    * @param minAmount - Minimum order amount
-   * @returns Orders above threshold
-   *
-   * @example
-   * ```typescript
-   * const highValue = await orderSearchService.getHighValueOrders(5000);
-   * ```
    */
-  async getHighValueOrders(minAmount: number = 1000): Promise<SearchResponse<OrderSearchDocument>> {
-    // Using SearchModel
-    return OrderSearch.highValue(minAmount).orderBy('total', 'desc').get();
+  async getHighValueOrders(
+    minAmount: number = 1000,
+  ): Promise<SearchResponse<OrderSearchDocument>> {
+    const query = SearchQueryBuilder.elasticsearch<OrderSearchDocument>()
+      .index('orders')
+      .where('total', '>=', minAmount)
+      .orderBy('total', 'desc')
+      .limit(50)
+      .build();
+
+    return this.searchService.search('orders', '', query);
   }
 
   /**
    * Find order by ID
    *
    * @param orderId - Order ID
-   * @returns Order document or null
-   *
-   * @example
-   * ```typescript
-   * const order = await orderSearchService.findOrder('order_123');
-   * if (order) {
-   *   console.log(`Order ${order.orderNumber} found`);
-   * }
-   * ```
    */
   async findOrder(orderId: string): Promise<OrderSearchDocument | null> {
-    // Using SearchModel
-    return OrderSearch.find(orderId);
+    return this.searchService.getDocument('orders', orderId);
   }
 
   /**
@@ -190,24 +159,9 @@ export class OrderSearchService {
    *
    * Demonstrates advanced query building with:
    * - Multiple where conditions
-   * - Nested OR conditions
    * - Range filters
    * - IN clauses
-   * - Sorting and pagination
-   *
-   * @param filters - Search filters
-   * @returns Paginated results
-   *
-   * @example
-   * ```typescript
-   * const results = await orderSearchService.complexSearch({
-   *   statuses: ['processing', 'shipped'],
-   *   minAmount: 100,
-   *   maxAmount: 5000,
-   *   countries: ['US', 'CA', 'UK'],
-   *   page: 1,
-   * });
-   * ```
+   * - Sorting
    */
   async complexSearch(filters: {
     searchTerm?: string;
@@ -217,80 +171,60 @@ export class OrderSearchService {
     countries?: string[];
     startDate?: string;
     endDate?: string;
-    page?: number;
-  }): Promise<PaginatedResponse<OrderSearchDocument>> {
-    const query = this.searchService.query<OrderSearchDocument>();
-
-    query.index('orders');
+    limit?: number;
+  }): Promise<SearchResponse<OrderSearchDocument>> {
+    const builder = SearchQueryBuilder.elasticsearch<OrderSearchDocument>().index('orders');
 
     // Full-text search if provided
     if (filters.searchTerm) {
-      query.search(filters.searchTerm, ['customerName', 'customerEmail', 'orderNumber']);
+      builder.search(filters.searchTerm, ['customerName', 'customerEmail', 'orderNumber']);
     }
 
-    // Status filter with OR conditions
+    // Status filter with IN clause
     if (filters.statuses && filters.statuses.length > 0) {
-      query.whereIn('status', filters.statuses);
+      builder.whereIn('status', filters.statuses);
     }
 
     // Price range filter
-    if (filters.minAmount !== undefined || filters.maxAmount !== undefined) {
-      if (filters.minAmount !== undefined && filters.maxAmount !== undefined) {
-        query.whereBetween('total', [filters.minAmount, filters.maxAmount]);
-      } else if (filters.minAmount !== undefined) {
-        query.where('total', '>=', filters.minAmount);
-      } else if (filters.maxAmount !== undefined) {
-        query.where('total', '<=', filters.maxAmount);
-      }
+    if (filters.minAmount !== undefined && filters.maxAmount !== undefined) {
+      builder.whereBetween('total', [filters.minAmount, filters.maxAmount]);
+    } else if (filters.minAmount !== undefined) {
+      builder.where('total', '>=', filters.minAmount);
+    } else if (filters.maxAmount !== undefined) {
+      builder.where('total', '<=', filters.maxAmount);
     }
 
     // Country filter
     if (filters.countries && filters.countries.length > 0) {
-      query.whereIn('shippingCountry', filters.countries);
+      builder.whereIn('shippingCountry', filters.countries);
     }
 
     // Date range filter
-    if (filters.startDate || filters.endDate) {
-      if (filters.startDate && filters.endDate) {
-        query.whereBetween('createdAt', [filters.startDate, filters.endDate]);
-      } else if (filters.startDate) {
-        query.where('createdAt', '>=', filters.startDate);
-      } else if (filters.endDate) {
-        query.where('createdAt', '<=', filters.endDate);
-      }
+    if (filters.startDate && filters.endDate) {
+      builder.whereBetween('createdAt', [filters.startDate, filters.endDate]);
+    } else if (filters.startDate) {
+      builder.where('createdAt', '>=', filters.startDate);
+    } else if (filters.endDate) {
+      builder.where('createdAt', '<=', filters.endDate);
     }
 
     // Sort by newest first
-    query.orderBy('createdAt', 'desc');
+    builder.orderBy('createdAt', 'desc').limit(filters.limit || 20);
 
-    // Paginate
-    return query.paginate(20, filters.page || 1);
+    // Debug before execution
+    this.logger.debug('Complex Search Options:', builder.getOptions());
+
+    const query = builder.build();
+    return this.searchService.search('orders', filters.searchTerm || '', query);
   }
 
   /**
-   * Search orders with nested conditions
+   * Search with nested conditions
    *
-   * Demonstrates using callback pattern for grouped OR conditions.
-   *
-   * @param searchTerm - Search term
-   * @param page - Page number
-   * @returns Paginated results
-   *
-   * @example
-   * ```typescript
-   * // Find orders that are:
-   * // - High value (>= $1000) AND
-   * // - Either processing OR shipped
-   * const results = await orderSearchService.searchWithNestedConditions('', 1);
-   * ```
+   * Demonstrates callback pattern for grouped OR conditions
    */
-  async searchWithNestedConditions(
-    searchTerm?: string,
-    page: number = 1,
-  ): Promise<PaginatedResponse<OrderSearchDocument>> {
-    const query = this.searchService.query<OrderSearchDocument>();
-
-    return query
+  async searchWithNestedConditions(): Promise<SearchResponse<OrderSearchDocument>> {
+    const query = SearchQueryBuilder.elasticsearch<OrderSearchDocument>()
       .index('orders')
       .where('total', '>=', 1000) // High value orders
       .where((qb) => {
@@ -298,206 +232,50 @@ export class OrderSearchService {
         qb.where('status', 'processing').orWhere('status', 'shipped');
       })
       .orderBy('total', 'desc')
-      .paginate(20, page);
+      .limit(50)
+      .build();
+
+    return this.searchService.search('orders', '', query);
   }
 
   /**
-   * Get order count by status
+   * Example: Test query building without execution
    *
-   * @param status - Order status
-   * @returns Number of orders
-   *
-   * @example
-   * ```typescript
-   * const pendingCount = await orderSearchService.countByStatus('pending');
-   * console.log(`${pendingCount} pending orders`);
-   * ```
+   * Useful for unit tests or debugging
    */
-  async countByStatus(status: OrderSearchDocument['status']): Promise<number> {
-    return OrderSearch.byStatus(status).count();
-  }
-
-  /**
-   * Check if any high-value orders exist
-   *
-   * @param minAmount - Minimum amount
-   * @returns True if orders exist
-   *
-   * @example
-   * ```typescript
-   * const hasHighValue = await orderSearchService.hasHighValueOrders(10000);
-   * if (hasHighValue) {
-   *   console.log('We have VIP orders!');
-   * }
-   * ```
-   */
-  async hasHighValueOrders(minAmount: number = 5000): Promise<boolean> {
-    return OrderSearch.highValue(minAmount).exists();
-  }
-
-  /**
-   * Get recent orders
-   *
-   * @param limit - Number of orders to retrieve
-   * @returns Recent orders
-   *
-   * @example
-   * ```typescript
-   * const recent = await orderSearchService.getRecentOrders(10);
-   * ```
-   */
-  async getRecentOrders(limit: number = 10): Promise<SearchResponse<OrderSearchDocument>> {
-    return this.searchService
-      .index<OrderSearchDocument>('orders')
-      .orderBy('createdAt', 'desc')
-      .limit(limit)
-      .get();
-  }
-
-  /**
-   * Advanced search with convenience method
-   *
-   * Demonstrates using createSearchQuery() convenience method.
-   *
-   * @param searchTerm - Search term
-   * @param page - Page number
-   * @returns Paginated results
-   *
-   * @example
-   * ```typescript
-   * const results = await orderSearchService.quickSearch('john@example.com', 1);
-   * ```
-   */
-  async quickSearch(
-    searchTerm: string,
-    page: number = 1,
-  ): Promise<PaginatedResponse<OrderSearchDocument>> {
-    // createSearchQuery() sets index and search in one call
-    return this.searchService
-      .createSearchQuery<OrderSearchDocument>('orders', searchTerm, [
-        'customerName',
-        'customerEmail',
-        'orderNumber',
-      ])
-      .where('status', '!=', 'cancelled')
-      .orderBy('createdAt', 'desc')
-      .paginate(20, page);
-  }
-
-  /**
-   * Get first order for a customer
-   *
-   * @param customerEmail - Customer email
-   * @returns First order or null
-   *
-   * @example
-   * ```typescript
-   * const firstOrder = await orderSearchService.getFirstOrderByCustomer('john@example.com');
-   * ```
-   */
-  async getFirstOrderByCustomer(customerEmail: string): Promise<OrderSearchDocument | null> {
-    return this.searchService
-      .query<OrderSearchDocument>()
+  buildSearchQuery(searchTerm: string) {
+    const builder = SearchQueryBuilder.elasticsearch<OrderSearchDocument>()
       .index('orders')
-      .where('customerEmail', customerEmail)
-      .orderBy('createdAt', 'asc')
-      .first();
+      .search(searchTerm, ['customerName', 'customerEmail'])
+      .where('status', '!=', 'cancelled');
+
+    // Return query object for inspection/testing
+    return {
+      builder,
+      query: builder.build(),
+      json: builder.toJson(true),
+      options: builder.getOptions(),
+    };
   }
 
   /**
-   * Get customer lifetime value
-   *
-   * @param customerEmail - Customer email
-   * @returns Total order value
-   *
-   * @example
-   * ```typescript
-   * const orders = await orderSearchService.getCustomerOrders('john@example.com');
-   * const total = orders.hits.reduce((sum, hit) => sum + hit.document.total, 0);
-   * console.log(`Customer lifetime value: $${total}`);
-   * ```
-   */
-  async getCustomerOrders(customerEmail: string): Promise<SearchResponse<OrderSearchDocument>> {
-    return this.searchService
-      .query<OrderSearchDocument>()
-      .index('orders')
-      .where('customerEmail', customerEmail)
-      .where('status', '!=', 'cancelled')
-      .orderBy('createdAt', 'desc')
-      .get();
-  }
-
-  /**
-   * Bulk operations - Index multiple orders
-   *
-   * @param orders - Array of order documents
-   *
-   * @example
-   * ```typescript
-   * await orderSearchService.indexOrders([
-   *   { id: '1', orderNumber: 'ORD-001', ... },
-   *   { id: '2', orderNumber: 'ORD-002', ... },
-   * ]);
-   * ```
-   */
-  async indexOrders(orders: OrderSearchDocument[]): Promise<void> {
-    return this.searchService.indexDocuments('orders', orders);
-  }
-
-  /**
-   * Index a single order
-   *
-   * @param order - Order document
-   *
-   * @example
-   * ```typescript
-   * await orderSearchService.indexOrder({
-   *   id: 'order_123',
-   *   orderNumber: 'ORD-12345',
-   *   customerName: 'John Doe',
-   *   customerEmail: 'john@example.com',
-   *   status: 'pending',
-   *   total: 299.99,
-   *   currency: 'USD',
-   *   itemCount: 3,
-   *   createdAt: new Date().toISOString(),
-   *   updatedAt: new Date().toISOString(),
-   * });
-   * ```
+   * Index an order document
    */
   async indexOrder(order: OrderSearchDocument): Promise<void> {
-    return this.searchService.indexDocument('orders', order);
+    await this.searchService.indexDocument('orders', order);
   }
 
   /**
    * Update order status in search index
-   *
-   * @param orderId - Order ID
-   * @param status - New status
-   *
-   * @example
-   * ```typescript
-   * await orderSearchService.updateOrderStatus('order_123', 'shipped');
-   * ```
    */
-  async updateOrderStatus(
-    orderId: string,
-    status: OrderSearchDocument['status'],
-  ): Promise<void> {
-    return this.searchService.updateDocument('orders', orderId, { status });
+  async updateOrderStatus(orderId: string, status: OrderSearchDocument['status']): Promise<void> {
+    await this.searchService.updateDocument('orders', orderId, { status });
   }
 
   /**
    * Delete order from search index
-   *
-   * @param orderId - Order ID
-   *
-   * @example
-   * ```typescript
-   * await orderSearchService.deleteOrder('order_123');
-   * ```
    */
   async deleteOrder(orderId: string): Promise<void> {
-    return this.searchService.deleteDocument('orders', orderId);
+    await this.searchService.deleteDocument('orders', orderId);
   }
 }

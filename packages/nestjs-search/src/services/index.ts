@@ -8,3 +8,5 @@
  */
 
 export * from './search.service';
+export * from './index-registry.service';
+export * from './index-naming.service';

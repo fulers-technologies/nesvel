@@ -1,15 +1,6 @@
-import { Inject } from '@nestjs/common';
+import { Inject, Optional } from '@nestjs/common';
 
-/**
- * SearchService injection token
- *
- * The injection token used by the SearchService. This is registered
- * automatically by SearchModule when you call forRoot() or forRootAsync().
- *
- * @constant
- * @type {string}
- */
-export const SEARCH_SERVICE = 'SEARCH_SERVICE';
+import { SEARCH_SERVICE } from '@/constants';
 
 /**
  * InjectSearchService Decorator
@@ -90,6 +81,9 @@ export const SEARCH_SERVICE = 'SEARCH_SERVICE';
  * @author Nesvel
  * @since 1.0.0
  */
-export const InjectSearchService = (): PropertyDecorator & ParameterDecorator => {
-  return Inject(SEARCH_SERVICE);
+export const InjectSearchService = (): ParameterDecorator => {
+  return (target: object, propertyKey: string | symbol | undefined, parameterIndex: number) => {
+    Optional()(target, propertyKey, parameterIndex);
+    Inject(SEARCH_SERVICE)(target, propertyKey, parameterIndex);
+  };
 };

@@ -1,20 +1,15 @@
-import type {
-  SearchResponse,
-  IQueryBuilder,
-  IWhereClause,
-  IOrderByClause,
-  IAggregationClause,
-  PaginatedResponse,
-} from '@/interfaces';
-import type { SearchService } from '@/services';
+import type { IQueryBuilder, IWhereClause, IOrderByClause, IAggregationClause } from '@/interfaces';
 import type { WhereOperator, OrderDirection, BooleanOperator } from '@/types';
 
 /**
  * Base Query Builder
  *
- * Abstract base class for all query builders.
+ * Abstract stateless base class for all query builders.
  * Provides common functionality and fluent API for building search queries.
- * Extended by provider-specific implementations.
+ * Does not execute queries - only builds query objects.
+ *
+ * **Pattern**: Builder pattern - constructs query objects without executing them.
+ * Similar to Magento 2, Doctrine QueryBuilder, Eloquent Query Builder.
  *
  * @template T - The document type
  *
@@ -84,13 +79,6 @@ export abstract class BaseQueryBuilder<T = any> implements IQueryBuilder<T> {
    * @protected
    */
   protected _offsetValue: number = 0;
-
-  /**
-   * Constructor
-   *
-   * @param searchService - The search service instance
-   */
-  constructor(protected readonly searchService: SearchService) {}
 
   /**
    * Set the index name
@@ -344,105 +332,46 @@ export abstract class BaseQueryBuilder<T = any> implements IQueryBuilder<T> {
   }
 
   /**
-   * Execute query and get all results
+   * Build and return the raw query object
+   * Alias for toQuery()
    */
-  public async get(): Promise<SearchResponse<T>> {
-    this.ensureIndexSet();
-    const query = this.buildQuery();
-    const response = await this.searchService.search(
-      this._indexName!,
-      this._searchQuery || '',
-      query,
-    );
-    return response as SearchResponse<T>;
+  public build(): any {
+    return this.toQuery();
   }
 
   /**
-   * Alias for get()
+   * Get the index name
    */
-  public async all(): Promise<SearchResponse<T>> {
-    return this.get();
+  public getIndex(): string | undefined {
+    return this._indexName;
   }
 
   /**
-   * Get the first result
+   * Get the search query string
    */
-  public async first(): Promise<T | null> {
-    this.limit(1);
-    const response = await this.get();
-    return response.hits.length > 0 ? (response.hits[0]?.document as T) : null;
+  public getSearchQuery(): string | undefined {
+    return this._searchQuery;
   }
 
   /**
-   * Get the first result or fail
+   * Get the search fields
    */
-  public async firstOrFail(): Promise<T> {
-    const result = await this.first();
-    if (!result) {
-      throw new Error(`No results found for query in index: ${this._indexName}`);
-    }
-    return result;
+  public getSearchFields(): string[] | undefined {
+    return this._searchFields;
   }
 
   /**
-   * Find by ID
+   * Get the limit value
    */
-  public async find(id: string | number): Promise<T | null> {
-    this.ensureIndexSet();
-    return (await this.searchService.getDocument(this._indexName!, id)) as T | null;
+  public getLimit(): number | undefined {
+    return this._limitValue;
   }
 
   /**
-   * Find by ID or fail
+   * Get the offset value
    */
-  public async findOrFail(id: string | number): Promise<T> {
-    const result = await this.find(id);
-    if (!result) {
-      throw new Error(`Document with ID ${id} not found in index: ${this._indexName}`);
-    }
-    return result;
-  }
-
-  /**
-   * Get count
-   */
-  public async count(): Promise<number> {
-    const response = await this.get();
-    return response.total;
-  }
-
-  /**
-   * Check if exists
-   */
-  public async exists(): Promise<boolean> {
-    const count = await this.count();
-    return count > 0;
-  }
-
-  /**
-   * Paginate results
-   *
-   * @param perPage - Results per page
-   * @param page - Page number (1-indexed, defaults to 1)
-   * @returns Promise resolving to paginated response
-   */
-  public async paginate(perPage: number, page: number = 1): Promise<PaginatedResponse<T>> {
-    const offset = (page - 1) * perPage;
-    this.limit(perPage).offset(offset);
-
-    const response = await this.get();
-    const total = response.total;
-    const lastPage = Math.ceil(total / perPage);
-
-    return {
-      data: response.hits.map((hit) => hit.document) as T[],
-      total,
-      perPage,
-      currentPage: page,
-      lastPage,
-      from: offset + 1,
-      to: Math.min(offset + perPage, total),
-    };
+  public getOffset(): number {
+    return this._offsetValue;
   }
 
   /**
@@ -467,6 +396,31 @@ export abstract class BaseQueryBuilder<T = any> implements IQueryBuilder<T> {
   }
 
   /**
+   * Get all query options as a plain object
+   */
+  public getOptions(): Record<string, any> {
+    return {
+      index: this._indexName,
+      searchQuery: this._searchQuery,
+      searchFields: this._searchFields,
+      whereClauses: this._whereClauses,
+      orderBy: this._orderByClauses,
+      aggregations: this._aggregations,
+      highlightFields: this._highlightFields,
+      limit: this._limitValue,
+      offset: this._offsetValue,
+    };
+  }
+
+  /**
+   * Convert the query builder to JSON string
+   */
+  public toJson(pretty: boolean = false): string {
+    const query = this.toQuery();
+    return pretty ? JSON.stringify(query, null, 2) : JSON.stringify(query);
+  }
+
+  /**
    * Clone the query builder
    */
   public abstract clone(): IQueryBuilder<T>;
@@ -475,14 +429,6 @@ export abstract class BaseQueryBuilder<T = any> implements IQueryBuilder<T> {
    * Get the raw query object (provider-specific)
    */
   public abstract toQuery(): any;
-
-  /**
-   * Build the query for execution
-   * Must be implemented by provider-specific builders
-   *
-   * @protected
-   */
-  protected abstract buildQuery(): any;
 
   /**
    * Add a where clause (internal helper)

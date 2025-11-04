@@ -1,26 +1,42 @@
-import { MeiliSearch } from 'meilisearch';
-import { Module, DynamicModule, Provider } from '@nestjs/common';
-import { Client as ElasticsearchClient } from '@elastic/elasticsearch';
+import { Module, DynamicModule } from '@nestjs/common';
 
 import type {
   SearchModuleOptions,
   SearchModuleAsyncOptions,
-  SearchModuleOptionsFactory,
+  IndexRegistrationOptions,
 } from '@/interfaces';
 
-import { SEARCH_OPTIONS } from '@/constants';
-import { SearchConnectionType } from '@/enums';
-import { SEARCH_SERVICE } from '@/decorators';
-import { SearchQueryBuilder } from '@/builders';
-import { SearchableSubscriber } from '@/subscribers';
-import { SearchService, SEARCH_PROVIDER } from '@/services';
-import { ElasticsearchProvider, MeilisearchProvider } from '@/providers';
+import {
+  IndexListCommand,
+  IndexStatusCommand,
+  IndexClearCommand,
+  IndexCreateCommand,
+  IndexDeleteCommand,
+  IndexReindexCommand,
+} from '@/console/commands';
+import { SEARCH_SERVICE } from '@/constants';
+import { SearchModuleFactory } from '@/factories';
+import { IndexRegistryService, SearchService } from '@/services';
 
 /**
  * Search Module
  *
  * Dynamic NestJS module that provides search engine integration.
  * Supports both Elasticsearch and Meilisearch with automatic entity synchronization.
+ *
+ * **Features**:
+ * - Elasticsearch and Meilisearch support
+ * - Automatic entity synchronization
+ * - CLI commands for index management
+ * - Query builder pattern (stateless)
+ *
+ * **CLI Commands**:
+ * - `index:list` - List all indices
+ * - `index:status <index>` - Show index status
+ * - `index:create <index>` - Create new index
+ * - `index:delete <index>` - Delete index
+ * - `index:clear <index>` - Clear all documents
+ * - `index:reindex <index>` - Rebuild index
  *
  * @example
  * ```typescript
@@ -58,6 +74,38 @@ import { ElasticsearchProvider, MeilisearchProvider } from '@/providers';
  * export class AppModule {}
  * ```
  *
+ * @example
+ * ```typescript
+ * // Register indices (similar to BullModule.registerQueue)
+ * @Module({
+ *   imports: [
+ *     SearchModule.forRoot({ ... }),
+ *     SearchModule.registerIndex({
+ *       name: 'products',
+ *       alias: 'products_v1',
+ *       elasticsearch: {
+ *         numberOfShards: 3,
+ *         numberOfReplicas: 2,
+ *         mappings: {
+ *           properties: {
+ *             name: { type: 'text' },
+ *             price: { type: 'float' },
+ *           },
+ *         },
+ *       },
+ *     }),
+ *     SearchModule.registerIndex({
+ *       name: 'orders',
+ *       meilisearch: {
+ *         searchableAttributes: ['customerName', 'orderNumber'],
+ *         filterableAttributes: ['status', 'total'],
+ *       },
+ *     }),
+ *   ],
+ * })
+ * export class AppModule {}
+ * ```
+ *
  * @author Nesvel
  * @since 1.0.0
  */
@@ -65,15 +113,99 @@ import { ElasticsearchProvider, MeilisearchProvider } from '@/providers';
 export class SearchModule {
   /**
    * Register the search module with synchronous configuration
+   *
+   * @param options - Module configuration options
+   * @returns Dynamic module definition
    */
   static forRoot(options: SearchModuleOptions): DynamicModule {
-    const providers = this.createProviders(options);
-
     return {
       module: SearchModule,
       global: true,
-      providers,
-      exports: [SEARCH_SERVICE, SearchQueryBuilder],
+      providers: SearchModuleFactory.createProviders(options),
+      exports: [SEARCH_SERVICE],
+    };
+  }
+
+  /**
+   * Register an index with configuration
+   *
+   * Similar to BullModule.registerQueue(), this method allows you to
+   * declaratively register search indices with provider-specific settings.
+   *
+   * **Features**:
+   * - Auto-create indices on startup
+   * - Provider-specific configurations (Elasticsearch/Meilisearch)
+   * - Index aliases support
+   * - Custom mappings and analysis
+   *
+   * @param options - Index registration options
+   * @returns Dynamic module definition
+   *
+   * @example
+   * ```typescript
+   * @Module({
+   *   imports: [
+   *     SearchModule.forRoot({ ... }),
+   *     SearchModule.registerIndex({
+   *       name: 'products',
+   *       elasticsearch: {
+   *         numberOfShards: 3,
+   *         mappings: {
+   *           properties: {
+   *             name: { type: 'text' },
+   *             price: { type: 'float' },
+   *           },
+   *         },
+   *       },
+   *     }),
+   *   ],
+   * })
+   * ```
+   */
+  static registerIndex(options: IndexRegistrationOptions): DynamicModule {
+    return {
+      module: SearchModule,
+      providers: [
+        {
+          provide: 'INDEX_REGISTRATION_' + options.name,
+          useFactory: (registry: IndexRegistryService) => {
+            registry.register(options);
+            return options;
+          },
+          inject: [IndexRegistryService],
+        },
+      ],
+    };
+  }
+
+  /**
+   * Register multiple indices at once
+   *
+   * Convenience method for registering multiple indices.
+   *
+   * @param options - Array of index registration options
+   * @returns Dynamic module definition
+   *
+   * @example
+   * ```typescript
+   * SearchModule.registerIndices([
+   *   { name: 'products', ... },
+   *   { name: 'orders', ... },
+   *   { name: 'users', ... },
+   * ])
+   * ```
+   */
+  static registerIndices(optionsArray: IndexRegistrationOptions[]): DynamicModule {
+    return {
+      module: SearchModule,
+      providers: optionsArray.map((options) => ({
+        provide: 'INDEX_REGISTRATION_' + options.name,
+        useFactory: (registry: IndexRegistryService) => {
+          registry.register(options);
+          return options;
+        },
+        inject: [IndexRegistryService],
+      })),
     };
   }
 
@@ -81,145 +213,12 @@ export class SearchModule {
    * Register the search module with asynchronous configuration
    */
   static forRootAsync(options: SearchModuleAsyncOptions): DynamicModule {
-    const providers: Provider[] = [
-      ...this.createAsyncProviders(options),
-      {
-        provide: SEARCH_PROVIDER,
-        useFactory: (opts: SearchModuleOptions) => {
-          return this.createSearchProvider(opts);
-        },
-        inject: [SEARCH_OPTIONS],
-      },
-      {
-        provide: SEARCH_SERVICE,
-        useClass: SearchService,
-      },
-      SearchQueryBuilder,
-      SearchableSubscriber,
-    ];
-
     return {
       module: SearchModule,
       global: options.isGlobal ?? true,
       imports: options.imports || [],
-      providers,
-      exports: [SEARCH_SERVICE, SearchQueryBuilder],
+      providers: SearchModuleFactory.createAsyncProviders(options),
+      exports: [SEARCH_SERVICE],
     };
-  }
-
-  /**
-   * Create providers for synchronous configuration
-   */
-  private static createProviders(options: SearchModuleOptions): Provider[] {
-    const searchProvider = this.createSearchProvider(options);
-
-    return [
-      {
-        provide: SEARCH_OPTIONS,
-        useValue: options,
-      },
-      {
-        provide: SEARCH_PROVIDER,
-        useValue: searchProvider,
-      },
-      {
-        provide: SEARCH_SERVICE,
-        useClass: SearchService,
-      },
-      SearchQueryBuilder,
-      SearchableSubscriber,
-    ];
-  }
-
-  /**
-   * Create async providers for asynchronous configuration
-   */
-  private static createAsyncProviders(options: SearchModuleAsyncOptions): Provider[] {
-    if (options.useFactory) {
-      return [
-        {
-          provide: SEARCH_OPTIONS,
-          useFactory: options.useFactory,
-          inject: options.inject || [],
-        },
-      ];
-    }
-
-    if (options.useClass) {
-      return [
-        {
-          provide: SEARCH_OPTIONS,
-          useFactory: async (optionsFactory: SearchModuleOptionsFactory) => {
-            return optionsFactory.createSearchModuleOptions();
-          },
-          inject: [options.useClass],
-        },
-        {
-          provide: options.useClass,
-          useClass: options.useClass,
-        },
-      ];
-    }
-
-    if (options.useExisting) {
-      return [
-        {
-          provide: SEARCH_OPTIONS,
-          useFactory: async (optionsFactory: SearchModuleOptionsFactory) => {
-            return optionsFactory.createSearchModuleOptions();
-          },
-          inject: [options.useExisting],
-        },
-      ];
-    }
-
-    throw new Error(
-      'Invalid SearchModuleAsyncOptions: must provide useFactory, useClass, or useExisting',
-    );
-  }
-
-  /**
-   * Create the appropriate search provider based on connection type
-   */
-  private static createSearchProvider(options: SearchModuleOptions): any {
-    switch (options.connection) {
-      case SearchConnectionType.ELASTICSEARCH:
-        return this.createElasticsearchProvider(options);
-
-      case SearchConnectionType.MEILISEARCH:
-        return this.createMeilisearchProvider(options);
-
-      default:
-        throw new Error(`Unsupported search connection type: ${options.connection}`);
-    }
-  }
-
-  /**
-   * Create Elasticsearch provider
-   */
-  private static createElasticsearchProvider(options: SearchModuleOptions): ElasticsearchProvider {
-    if (!options.elasticsearch) {
-      throw new Error(
-        'Elasticsearch configuration is required when using ELASTICSEARCH connection type',
-      );
-    }
-
-    const client = new ElasticsearchClient(options.elasticsearch);
-    return new ElasticsearchProvider(client);
-  }
-
-  /**
-   * Create Meilisearch provider
-   */
-  private static createMeilisearchProvider(options: SearchModuleOptions): MeilisearchProvider {
-    if (!options.meilisearch) {
-      throw new Error(
-        'Meilisearch configuration is required when using MEILISEARCH connection type',
-      );
-    }
-
-    const client = new MeiliSearch(options.meilisearch);
-
-    return new MeilisearchProvider(client);
   }
 }

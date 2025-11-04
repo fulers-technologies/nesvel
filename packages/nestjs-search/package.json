@@ -4,6 +4,9 @@
   "description": "Search engine integration for NestJS with Elasticsearch and Meilisearch support",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "nesvel-search": "./dist/cli.js"
+  },
   "scripts": {
     "build": "tsup",
     "build:watch": "tsup --watch",
@@ -37,10 +40,12 @@
     "rxjs": "^7.8.1"
   },
   "dependencies": {
-    "@nesvel/nestjs-orm": "workspace:*"
+    "@nesvel/nestjs-console": "workspace:*",
+    "@nesvel/nestjs-orm": "workspace:*",
+    "nest-commander": "^3.17.0"
   },
   "devDependencies": {
-    "@elastic/elasticsearch": "^8.11.0",
+    "@elastic/elasticsearch": "^9.2.0",
     "@nestjs/testing": "catalog:nestjsCli",
     "@nesvel/eslint-config": "workspace:*",
     "@nesvel/jest-config": "workspace:*",
@@ -48,9 +53,11 @@
     "@nesvel/typescript-config": "workspace:*",
     "@types/jest": "catalog:types",
     "@types/node": "catalog:types",
+    "esbuild-plugin-path-alias": "^1.0.7",
     "eslint": "catalog:lint",
     "jest": "catalog:testing",
-    "meilisearch": "^0.38.0",
+    "jiti": "^2.6.1",
+    "meilisearch": "^0.54.0",
     "prettier": "catalog:lint",
     "tsup": "catalog:tsBuild",
     "typescript": "catalog:typescript"

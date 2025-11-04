@@ -24,13 +24,13 @@
  * @example
  * ```bash
  * # Enable experimental features
- * NESVEL_CLI_EXPERIMENTAL=true npx @nesvel/nestjs-orm make:model User
+ * NESVEL_CLI_EXPERIMENTAL=true npx @nesvel/nestjs-* make:model User
  *
  * # Enable profiling
- * NESVEL_CLI_PROFILE=true npx @nesvel/nestjs-orm migrate
+ * NESVEL_CLI_PROFILE=true npx @nesvel/nestjs-* migrate
  *
  * # Enable debug mode
- * NESVEL_CLI_DEBUG=true npx @nesvel/nestjs-orm db:seed
+ * NESVEL_CLI_DEBUG=true npx @nesvel/nestjs-* db:seed
  * ```
  */
 export const CLI_FEATURES = {
@@ -44,7 +44,7 @@ export const CLI_FEATURES = {
    *
    * @example
    * ```bash
-   * NESVEL_CLI_EXPERIMENTAL=true npx @nesvel/nestjs-orm make:advanced-model User
+   * NESVEL_CLI_EXPERIMENTAL=true npx @nesvel/nestjs-* make:advanced-model User
    * ```
    */
   experimental: process.env.NESVEL_CLI_EXPERIMENTAL === 'true',
@@ -59,7 +59,7 @@ export const CLI_FEATURES = {
    *
    * @example
    * ```bash
-   * NESVEL_CLI_PROFILE=true npx @nesvel/nestjs-orm migrate
+   * NESVEL_CLI_PROFILE=true npx @nesvel/nestjs-* migrate
    * # Output: Command completed in 1.23s (CPU: 45%, Memory: 128MB)
    * ```
    */
@@ -75,7 +75,7 @@ export const CLI_FEATURES = {
    *
    * @example
    * ```bash
-   * NESVEL_CLI_DEBUG=true npx @nesvel/nestjs-orm db:seed
+   * NESVEL_CLI_DEBUG=true npx @nesvel/nestjs-* db:seed
    * # Shows detailed debugging information
    * ```
    */
@@ -91,7 +91,7 @@ export const CLI_FEATURES = {
    *
    * @example
    * ```bash
-   * NESVEL_CLI_NO_TELEMETRY=true npx @nesvel/nestjs-orm migrate
+   * NESVEL_CLI_NO_TELEMETRY=true npx @nesvel/nestjs-* migrate
    * ```
    */
   noTelemetry: process.env.NESVEL_CLI_NO_TELEMETRY === 'true',
@@ -107,7 +107,7 @@ export const CLI_FEATURES = {
    * @example
    * ```bash
    * # Disable auto-completion
-   * NESVEL_CLI_AUTOCOMPLETE=false npx @nesvel/nestjs-orm
+   * NESVEL_CLI_AUTOCOMPLETE=false npx @nesvel/nestjs-*
    * ```
    */
   autoComplete: process.env.NESVEL_CLI_AUTOCOMPLETE !== 'false',
@@ -123,7 +123,7 @@ export const CLI_FEATURES = {
    * @example
    * ```bash
    * # Disable interactive prompts for CI
-   * NESVEL_CLI_INTERACTIVE=false npx @nesvel/nestjs-orm make:model User
+   * NESVEL_CLI_INTERACTIVE=false npx @nesvel/nestjs-* make:model User
    * ```
    */
   interactive: process.env.NESVEL_CLI_INTERACTIVE !== 'false' && process.env.CI !== 'true',
@@ -139,7 +139,7 @@ export const CLI_FEATURES = {
    * @example
    * ```bash
    * # Disable colors
-   * NO_COLOR=true npx @nesvel/nestjs-orm migrate
+   * NO_COLOR=true npx @nesvel/nestjs-* migrate
    * ```
    */
   colors: process.env.NO_COLOR !== 'true' && process.env.FORCE_COLOR !== '0',
@@ -154,7 +154,7 @@ export const CLI_FEATURES = {
    * @example
    * ```bash
    * # Disable update checks
-   * NESVEL_CLI_UPDATE_CHECK=false npx @nesvel/nestjs-orm migrate
+   * NESVEL_CLI_UPDATE_CHECK=false npx @nesvel/nestjs-* migrate
    * ```
    */
   updateCheck: process.env.NESVEL_CLI_UPDATE_CHECK !== 'false',
@@ -170,7 +170,7 @@ export const CLI_FEATURES = {
    * @example
    * ```bash
    * # Disable banner
-   * NESVEL_CLI_NO_BANNER=true npx @nesvel/nestjs-orm migrate
+   * NESVEL_CLI_NO_BANNER=true npx @nesvel/nestjs-* migrate
    * ```
    */
   banner: process.env.NESVEL_CLI_NO_BANNER !== 'true',

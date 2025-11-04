@@ -68,10 +68,10 @@
   "devDependencies": {
     "@nesvel/eslint-config": "workspace:*",
     "@nesvel/typescript-config": "workspace:*",
-    "@types/node": "^24.9.2",
+    "@types/node": "^24.10.0",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
-    "eslint": "^9.39.0",
+    "eslint": "^9.39.1",
     "typescript": "5.9.3"
   },
   "peerDependencies": {

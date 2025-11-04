@@ -31,6 +31,15 @@ export * from './search-module-async-options.interface';
 export * from './search-module-options-factory.interface';
 
 /**
+ * Index Registration Interfaces
+ *
+ * Interfaces for declaratively registering search indices with
+ * provider-specific configurations (similar to BullModule.registerQueue).
+ */
+export * from './index-registration.interface';
+export * from './index-registration-options.interface';
+
+/**
  * Query Builder Interfaces
  *
  * Type-safe fluent API interfaces for building complex search queries

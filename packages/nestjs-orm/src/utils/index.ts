@@ -7,9 +7,6 @@
  * @module utils
  */
 
-// CLI utilities
-export * from './cli';
-
 // CLI help formatter
 export * from './cli-help-formatter.util';
 

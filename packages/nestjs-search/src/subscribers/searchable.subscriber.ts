@@ -1,9 +1,10 @@
 import type { IHasSearchable } from '@nesvel/nestjs-orm';
-import { Injectable, Logger, Inject } from '@nestjs/common';
+import { Injectable, Logger, Inject, Optional } from '@nestjs/common';
 import { EntityManager, EventSubscriber, BaseEntity } from '@nesvel/nestjs-orm';
 
 import { SearchService } from '@/services';
 import { SEARCH_OPTIONS } from '@/constants';
+import { InjectSearchService } from '@/decorators';
 import type { SearchConfig } from '@/interfaces';
 
 /**
@@ -121,7 +122,9 @@ export class SearchableSubscriber<T extends BaseEntity = BaseEntity> implements 
    * @param options - Search module configuration options
    */
   constructor(
-    private readonly searchService: SearchService,
+    @Optional()
+    @InjectSearchService()
+    private readonly searchService: SearchService | null,
     @Inject(SEARCH_OPTIONS)
     private readonly options: SearchConfig,
   ) {}
@@ -181,8 +184,10 @@ export class SearchableSubscriber<T extends BaseEntity = BaseEntity> implements 
   private getIndexName(entity: any): string {
     // Extract entity class name and convert to lowercase
     const entityName = entity.constructor.name.toLowerCase();
+
     // Use configured prefix or default to 'nesvel'
     const prefix = this.options.indexPrefix || 'nesvel';
+
     // Combine prefix and entity name with underscore
     return `${prefix}_${entityName}`;
   }
@@ -222,6 +227,9 @@ export class SearchableSubscriber<T extends BaseEntity = BaseEntity> implements 
   async afterCreate(args: { entity: any; em: EntityManager }): Promise<void> {
     const { entity } = args;
 
+    // Skip if SearchService is not available
+    if (!this.searchService) return;
+
     // Skip if auto-sync is disabled
     if (!this.options.autoSync) return;
 
@@ -239,7 +247,7 @@ export class SearchableSubscriber<T extends BaseEntity = BaseEntity> implements 
       const searchableData = entity.toSearchableArray();
 
       // Index document to search engine
-      await this.searchService.indexDocument(indexName, {
+      await this.searchService!.indexDocument(indexName, {
         id: (entity as any).id, // Use entity's primary key as document ID
         ...searchableData, // Spread searchable fields
       });
@@ -288,6 +296,9 @@ export class SearchableSubscriber<T extends BaseEntity = BaseEntity> implements 
   async afterUpdate(args: { entity: any; em: EntityManager }): Promise<void> {
     const { entity } = args;
 
+    // Skip if SearchService is not available
+    if (!this.searchService) return;
+
     // Skip if auto-sync is disabled
     if (!this.options.autoSync) return;
 
@@ -302,12 +313,12 @@ export class SearchableSubscriber<T extends BaseEntity = BaseEntity> implements 
       if (entity.shouldBeSearchable()) {
         // Entity should be in search index - update it
         const searchableData = entity.toSearchableArray();
-        await this.searchService.updateDocument(indexName, entityId, searchableData);
+        await this.searchService!.updateDocument(indexName, entityId, searchableData);
         this.logger.debug(`Updated entity ${entity.constructor.name} with id ${entityId}`);
       } else {
         // Entity should NOT be in search index - remove it
         // (e.g., status changed from 'published' to 'draft')
-        await this.searchService.deleteDocument(indexName, entityId);
+        await this.searchService!.deleteDocument(indexName, entityId);
         this.logger.debug(
           `Removed entity ${entity.constructor.name} with id ${entityId} (no longer searchable)`,
         );
@@ -349,6 +360,9 @@ export class SearchableSubscriber<T extends BaseEntity = BaseEntity> implements 
   async afterDelete(args: { entity: any; em: EntityManager }): Promise<void> {
     const { entity } = args;
 
+    // Skip if SearchService is not available
+    if (!this.searchService) return;
+
     // Skip if auto-sync is disabled
     if (!this.options.autoSync) return;
 
@@ -361,7 +375,7 @@ export class SearchableSubscriber<T extends BaseEntity = BaseEntity> implements 
       const entityId = (entity as any).id;
 
       // Remove document from search engine
-      await this.searchService.deleteDocument(indexName, entityId);
+      await this.searchService!.deleteDocument(indexName, entityId);
       this.logger.debug(`Deleted entity ${entity.constructor.name} with id ${entityId} from index`);
     } catch (error) {
       this.logger.error(`Failed to delete entity from search index:`, error);
