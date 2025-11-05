@@ -65,10 +65,31 @@ export abstract class BaseCommand extends CommandRunner {
   abstract run(inputs?: string[], options?: Record<string, any>): Promise<void>;
 
   /**
+   * Check if a command is registered
+   *
+   * @param commandName - The name of the command to check
+   * @returns True if the command is registered, false otherwise
+   *
+   * @example
+   * ```typescript
+   * if (this.commandExists('make:model')) {
+   *   await this.call('make:model', ['User']);
+   * }
+   * ```
+   */
+  protected commandExists(commandName: string): boolean {
+    return BaseCommand.commandMap.has(commandName);
+  }
+
+  /**
    * Call another command by name
    *
    * Executes another command with the given arguments and options,
    * showing output to the user (similar to Symfony/Laravel's call method).
+   *
+   * If the command is registered in the command map, it will be executed
+   * via executeCommand(). Otherwise, it will attempt to execute it as a
+   * shell command (e.g., for delegating to external CLIs like MikroORM).
    *
    * @param commandName - The name of the command to execute
    * @param args - Array of arguments and options to pass to the command
@@ -76,12 +97,20 @@ export abstract class BaseCommand extends CommandRunner {
    *
    * @example
    * ```typescript
+   * // Call registered command
    * await this.call('make:model', ['User']);
-   * await this.call('make:controller', ['UserController', '--path', 'src/api']);
+   *
+   * // Call external CLI command (e.g., MikroORM)
+   * await this.call('bun', ['orm', 'migration:up']);
    * ```
    */
   protected async call(commandName: string, args: string[] = []): Promise<void> {
-    await this.executeCommand(commandName, args, false);
+    if (this.commandExists(commandName)) {
+      await this.executeCommand(commandName, args, false);
+    } else {
+      // Fallback to shell execution for external commands
+      await this.shell(commandName, args, { silent: false });
+    }
   }
 
   /**
@@ -90,22 +119,37 @@ export abstract class BaseCommand extends CommandRunner {
    * Executes another command with the given arguments and options,
    * suppressing all output (similar to Symfony/Laravel's callSilent method).
    *
+   * If the command is registered in the command map, it will be executed
+   * via executeCommand(). Otherwise, it will attempt to execute it as a
+   * shell command with output suppressed.
+   *
    * @param commandName - The name of the command to execute
    * @param args - Array of arguments and options to pass to the command
    * @returns Promise that resolves when the command completes
    *
    * @example
    * ```typescript
+   * // Call registered command silently
    * await this.callSilent('make:model', ['User']);
-   * await this.callSilent('make:controller', ['UserController']);
+   *
+   * // Call external CLI command silently
+   * await this.callSilent('bun', ['orm', 'migration:up']);
    * ```
    */
   protected async callSilent(commandName: string, args: string[] = []): Promise<void> {
-    await this.executeCommand(commandName, args, true);
+    if (this.commandExists(commandName)) {
+      await this.executeCommand(commandName, args, true);
+    } else {
+      // Fallback to shell execution for external commands (silent)
+      await this.shell(commandName, args, { silent: true });
+    }
   }
 
   /**
    * Execute a command with or without output suppression
+   *
+   * This method assumes the command exists in the command map.
+   * Use commandExists() to check before calling this method.
    *
    * @private
    * @param commandName - The name of the command to execute
@@ -120,8 +164,11 @@ export abstract class BaseCommand extends CommandRunner {
     // Get command from the registered command map
     const commandInstance = BaseCommand.commandMap.get(commandName);
 
+    // This should not happen as call() and callSilent() check existence first
     if (!commandInstance) {
-      throw new Error(`Command not found: ${commandName}. Make sure the command is registered.`);
+      throw new Error(
+        `Command not found: ${commandName}. This is likely a bug - the command should have been checked for existence.`,
+      );
     }
 
     // Parse arguments and options
@@ -165,6 +212,72 @@ export abstract class BaseCommand extends CommandRunner {
         console.info = originalInfo;
       }
     }
+  }
+
+  /**
+   * Execute a shell command
+   *
+   * Useful for delegating to external CLI tools like MikroORM CLI.
+   * Use this when you need to call commands that aren't registered
+   * in the NestJS command system.
+   *
+   * @param command - The command to execute (e.g., 'bun', 'npx')
+   * @param args - Array of arguments to pass to the command
+   * @param options - Execution options
+   * @returns Promise that resolves when the command completes
+   *
+   * @example
+   * ```typescript
+   * // Call MikroORM CLI
+   * await this.shell('bun', ['orm', 'migration:up']);
+   *
+   * // Call with custom working directory
+   * await this.shell('git', ['status'], { cwd: '/path/to/repo' });
+   * ```
+   */
+  protected async shell(
+    command: string,
+    args: string[] = [],
+    options: { cwd?: string; silent?: boolean } = {},
+  ): Promise<{ stdout: string; stderr: string; exitCode: number }> {
+    const { spawn } = await import('child_process');
+
+    return new Promise((resolve, reject) => {
+      const child = spawn(command, args, {
+        cwd: options.cwd || process.cwd(),
+        stdio: options.silent ? 'pipe' : 'inherit',
+        shell: true,
+      });
+
+      let stdout = '';
+      let stderr = '';
+
+      if (options.silent) {
+        child.stdout?.on('data', (data) => {
+          stdout += data.toString();
+        });
+
+        child.stderr?.on('data', (data) => {
+          stderr += data.toString();
+        });
+      }
+
+      child.on('error', (error) => {
+        reject(new Error(`Failed to execute command: ${command} ${args.join(' ')}\n${error.message}`));
+      });
+
+      child.on('close', (code) => {
+        if (code === 0) {
+          resolve({ stdout, stderr, exitCode: code || 0 });
+        } else {
+          reject(
+            new Error(
+              `Command failed with exit code ${code}: ${command} ${args.join(' ')}\n${stderr}`,
+            ),
+          );
+        }
+      });
+    });
   }
 
   /**
