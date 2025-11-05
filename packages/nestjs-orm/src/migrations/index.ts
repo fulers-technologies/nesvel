@@ -9,4 +9,5 @@
  */
 
 export { BaseMigration } from './base.migration';
+export { Blueprint } from './blueprint';
 export * from './base.migration';
