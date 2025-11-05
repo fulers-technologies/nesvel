@@ -12,6 +12,8 @@ import { i18nConfig } from './config/i18n.config';
 import { swaggerConfig } from './config/swagger.config';
 import { searchConfig } from './config/search.config';
 import { rateLimitConfig } from './config/rate-limit.config';
+import { PubSubModule } from '@nesvel/nestjs-pubsub';
+import { pubsubConfig } from './config/pubsub.config';
 // import { OrderModule } from './modules/order/order.module';
 
 @Module({
@@ -30,6 +32,8 @@ import { rateLimitConfig } from './config/rate-limit.config';
 
     // Search configuration
     SearchModule.forRoot(searchConfig),
+
+    PubSubModule.forRoot(pubsubConfig),
 
     // Register orders search index with comprehensive configuration
     SearchModule.registerIndex({

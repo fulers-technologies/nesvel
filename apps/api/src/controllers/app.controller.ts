@@ -1,11 +1,12 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { I18n, I18nContext } from '@nesvel/nestjs-i18n';
+import { InjectPubSub, PubSubService } from '@nesvel/nestjs-pubsub';
 
 @ApiTags('app')
 @Controller()
 export class AppController {
-  constructor() {}
+  constructor(@InjectPubSub() private readonly pubsubService: PubSubService) {}
 
   @Get()
   @ApiOperation({ summary: 'Get welcome message' })
@@ -18,6 +19,10 @@ export class AppController {
     },
   })
   async getHello(@I18n() i18n: I18nContext): Promise<string> {
+    await this.pubsubService.publish<object>('test', {
+      name: 'kouta',
+    });
+
     return i18n.t('common.welcome');
   }
 
@@ -31,10 +36,7 @@ export class AppController {
       example: 'Hello, John!',
     },
   })
-  async getGreeting(
-    @I18n() i18n: I18nContext,
-    @Param('name') name: string,
-  ): Promise<string> {
+  async getGreeting(@I18n() i18n: I18nContext, @Param('name') name: string): Promise<string> {
     return i18n.t('common.hello', { args: { name } });
   }
 }
