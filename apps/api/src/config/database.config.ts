@@ -5,7 +5,7 @@ import {
   UnderscoreNamingStrategy,
 } from '@nesvel/nestjs-orm';
 import { Migrator } from '@mikro-orm/migrations';
-import { BetterSqliteDriver } from '@mikro-orm/better-sqlite';
+import { SqliteDriver } from '@mikro-orm/sqlite';
 
 /**
  * Database Configuration for NestJS + MikroORM
@@ -32,7 +32,7 @@ export const databaseConfig: DatabaseConfig = {
    * Available drivers: PostgreSqlDriver, MySqlDriver, SqliteDriver, BetterSqliteDriver, MongoDriver
    */
   // driver: PostgreSqlDriver as any,
-  driver: BetterSqliteDriver,
+  driver: SqliteDriver,
 
   /**
    * Database connection settings
@@ -40,7 +40,7 @@ export const databaseConfig: DatabaseConfig = {
    */
   host: process.env.DB_HOST || 'localhost',
   port: Number(process.env.DB_PORT) || 5432,
-  dbName: process.env.DB_NAME || 'nesvel_api',
+  dbName: process.env.DB_NAME || 'nesvel_app',
   user: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || 'postgres',
 
@@ -60,21 +60,21 @@ export const databaseConfig: DatabaseConfig = {
   /**
    * Migration settings
    * Controls how database migrations are generated and executed
-   * Looks for migrations in all module directories
+   * Looks for migrations in all directories under src
    */
   migrations: {
     safe: true,
     emit: 'ts',
+    path: './src',
     snapshot: true,
+    pathTs: './src',
     dropTables: false,
     allOrNothing: true,
     transactional: true,
     generator: undefined,
     tableName: 'migrations',
-    path: './src/modules',
-    pathTs: './src/modules',
-    glob: '{,**/migrations/}*.{js,ts}',
     disableForeignKeys: false,
+    glob: '**/migrations/*.{js,ts}',
   },
 
   /**
@@ -84,9 +84,9 @@ export const databaseConfig: DatabaseConfig = {
    */
   seeder: {
     emit: 'ts',
-    path: './src/modules',
-    glob: '{,**/seeders/}*.seeder.{js,ts}',
-    pathTs: './src/modules',
+    path: './src',
+    pathTs: './src',
+    glob: '**/seeders/*.{js,ts}',
     defaultSeeder: 'OrderSeeder',
   },
 
