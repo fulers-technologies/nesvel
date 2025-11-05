@@ -64,10 +64,9 @@ export class SearchModuleFactory {
       IndexNamingService,
       {
         provide: SEARCH_PROVIDER,
-        useFactory: (namingService: IndexNamingService) => {
-          return SearchModuleFactory.createSearchProvider(options, namingService);
+        useFactory: () => {
+          return SearchModuleFactory.createSearchProvider(options);
         },
-        inject: [IndexNamingService],
       },
       {
         provide: SEARCH_SERVICE,
@@ -104,10 +103,10 @@ export class SearchModuleFactory {
       IndexNamingService,
       {
         provide: SEARCH_PROVIDER,
-        useFactory: (opts: SearchModuleOptions, namingService: IndexNamingService) => {
-          return this.createSearchProvider(opts, namingService);
+        useFactory: (opts: SearchModuleOptions) => {
+          return this.createSearchProvider(opts);
         },
-        inject: [SEARCH_OPTIONS, IndexNamingService],
+        inject: [SEARCH_OPTIONS],
       },
       {
         provide: SEARCH_SERVICE,
@@ -178,7 +177,6 @@ export class SearchModuleFactory {
    * based on the configured connection type.
    *
    * @param options - Module configuration options
-   * @param namingService - Index naming service for generating index names
    * @returns Instantiated search provider
    *
    * @throws {Error} If unsupported connection type is provided
@@ -187,14 +185,13 @@ export class SearchModuleFactory {
    */
   static createSearchProvider(
     options: SearchModuleOptions,
-    namingService: IndexNamingService,
   ): ElasticsearchProvider | MeilisearchProvider {
     switch (options.connection) {
       case SearchConnectionType.ELASTICSEARCH:
-        return this.createElasticsearchProvider(options, namingService);
+        return this.createElasticsearchProvider(options);
 
       case SearchConnectionType.MEILISEARCH:
-        return this.createMeilisearchProvider(options, namingService);
+        return this.createMeilisearchProvider(options);
 
       default:
         throw new Error(`Unsupported search connection type: ${options.connection}`);
@@ -207,7 +204,6 @@ export class SearchModuleFactory {
    * Instantiates an Elasticsearch client and wraps it in the provider.
    *
    * @param options - Module configuration options
-   * @param namingService - Index naming service for generating index names
    * @returns Elasticsearch provider instance
    *
    * @throws {Error} If Elasticsearch configuration is missing
@@ -216,7 +212,6 @@ export class SearchModuleFactory {
    */
   private static createElasticsearchProvider(
     options: SearchModuleOptions,
-    namingService: IndexNamingService,
   ): ElasticsearchProvider {
     if (!options.elasticsearch) {
       throw new Error(
@@ -225,7 +220,7 @@ export class SearchModuleFactory {
     }
 
     const client = new ElasticsearchClient(options.elasticsearch);
-    return new ElasticsearchProvider(client, undefined, namingService);
+    return new ElasticsearchProvider(client);
   }
 
   /**
@@ -234,7 +229,6 @@ export class SearchModuleFactory {
    * Instantiates a Meilisearch client and wraps it in the provider.
    *
    * @param options - Module configuration options
-   * @param namingService - Index naming service for generating index names
    * @returns Meilisearch provider instance
    *
    * @throws {Error} If Meilisearch configuration is missing
@@ -243,7 +237,6 @@ export class SearchModuleFactory {
    */
   private static createMeilisearchProvider(
     options: SearchModuleOptions,
-    namingService: IndexNamingService,
   ): MeilisearchProvider {
     if (!options.meilisearch) {
       throw new Error(
@@ -252,6 +245,6 @@ export class SearchModuleFactory {
     }
 
     const client = new MeiliSearch(options.meilisearch);
-    return new MeilisearchProvider(client, undefined, namingService);
+    return new MeilisearchProvider(client);
   }
 }

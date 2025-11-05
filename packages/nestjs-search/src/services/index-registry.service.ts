@@ -1,10 +1,13 @@
-import { Injectable, Logger, OnModuleInit, Optional } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit, Optional, Inject } from '@nestjs/common';
 
 import { SearchService } from './search.service';
 import { InjectSearchService } from '@/decorators';
 import { IndexNamingService } from './index-naming.service';
+import { SEARCH_OPTIONS } from '@/constants';
+import { SearchConnectionType } from '@/enums';
 import type { IndexRegistry } from '@/interfaces/index-registration.interface';
 import type { IndexRegistrationOptions } from '@/interfaces/index-registration-options.interface';
+import type { SearchModuleOptions } from '@/interfaces';
 
 /**
  * Index Registry Service
@@ -50,10 +53,11 @@ export class IndexRegistryService implements OnModuleInit {
   };
 
   constructor(
-    @Optional()
     @InjectSearchService()
-    private readonly searchService: SearchService | null,
+    private readonly searchService: SearchService,
     private readonly namingService: IndexNamingService,
+    @Inject(SEARCH_OPTIONS)
+    private readonly options: SearchModuleOptions,
   ) {}
 
   /**
@@ -185,36 +189,19 @@ export class IndexRegistryService implements OnModuleInit {
     const autoUpdateSettings = options.autoUpdateSettings ?? false;
 
     try {
-      // Generate physical index name based on naming strategy
-      const physicalIndexName = this.namingService.getPhysicalIndexName(name);
-      const aliasName = this.namingService.getAliasName(name);
-      const useAliases = this.namingService.shouldUseAliases();
-
-      this.logger.debug(
-        `Initializing index: ${name} (physical: ${physicalIndexName}, alias: ${useAliases ? aliasName : 'none'})`,
-      );
-
-      // For timestamped/versioned strategies, check if alias exists
-      // For simple strategy, check if index exists directly
-      const checkName = useAliases ? aliasName : name;
-      const exists = await this.searchService!.indexExists(checkName);
+      const operationalName = this.namingService.getOperationalName(name);
+      const exists = await this.searchService.indexExists(operationalName);
 
       if (!exists && autoCreate) {
-        // Create the physical index with settings
-        await this.createIndexWithSettings(physicalIndexName, options);
-        this.logger.log(`Created physical index: ${physicalIndexName}`);
-
-        // Create alias if using timestamped/versioned strategy
-        if (useAliases) {
-          await this.searchService!.createAlias(physicalIndexName, aliasName);
-          this.logger.log(`Created alias: ${aliasName} -> ${physicalIndexName}`);
-        }
+        // Create index with settings (SearchService handles naming transformation)
+        await this.createIndexWithSettings(name, options);
+        this.logger.log(`Created index: ${name}`);
       } else if (exists && autoUpdateSettings) {
-        // Update index settings (use alias name for lookups)
-        await this.updateIndexSettings(checkName, options);
-        this.logger.log(`Updated settings for index: ${checkName}`);
+        // Update index settings (use operational name)
+        await this.updateIndexSettings(operationalName, options);
+        this.logger.log(`Updated settings for index: ${operationalName}`);
       } else if (exists) {
-        this.logger.debug(`Index already exists: ${checkName}`);
+        this.logger.debug(`Index already exists: ${operationalName}`);
       } else {
         this.logger.debug(`Skipping auto-create for index: ${name}`);
       }
@@ -230,7 +217,7 @@ export class IndexRegistryService implements OnModuleInit {
   /**
    * Create index with provider-specific settings
    *
-   * @param name - Index name
+   * @param name - Base index name (without prefix/suffix)
    * @param options - Index configuration
    * @private
    */
@@ -240,11 +227,14 @@ export class IndexRegistryService implements OnModuleInit {
   ): Promise<void> {
     // Build settings object based on provider type
     const settings = this.buildIndexSettings(options);
+    const connectionType = this.options.connection;
 
-    await this.searchService!.createIndex(name, settings);
+    // SearchService.createIndex handles naming transformation
+    await this.searchService.createIndex(name, settings);
 
-    // Apply Meilisearch-specific settings if configured
-    if (options.meilisearch) {
+    // Apply Meilisearch-specific settings only if using Meilisearch
+    // Pass base name - SearchService.updateSettings will transform it
+    if (connectionType === SearchConnectionType.MEILISEARCH && options.meilisearch) {
       await this.applyMeilisearchSettings(name, options.meilisearch);
     }
   }
@@ -263,13 +253,15 @@ export class IndexRegistryService implements OnModuleInit {
     name: string,
     options: IndexRegistrationOptions,
   ): Promise<void> {
-    // Update Elasticsearch-specific settings if configured
-    if (options.elasticsearch) {
+    const connectionType = this.options.connection;
+
+    // Update Elasticsearch-specific settings only if using Elasticsearch
+    if (connectionType === SearchConnectionType.ELASTICSEARCH && options.elasticsearch) {
       await this.applyElasticsearchSettings(name, options.elasticsearch);
     }
 
-    // Update Meilisearch-specific settings if configured
-    if (options.meilisearch) {
+    // Update Meilisearch-specific settings only if using Meilisearch
+    if (connectionType === SearchConnectionType.MEILISEARCH && options.meilisearch) {
       await this.applyMeilisearchSettings(name, options.meilisearch);
     }
   }
@@ -298,9 +290,10 @@ export class IndexRegistryService implements OnModuleInit {
    */
   private buildIndexSettings(options: IndexRegistrationOptions): Record<string, any> {
     const settings: Record<string, any> = {};
+    const connectionType = this.options.connection;
 
-    // Build Elasticsearch settings
-    if (options.elasticsearch) {
+    // Only build settings for the active provider
+    if (connectionType === SearchConnectionType.ELASTICSEARCH && options.elasticsearch) {
       const es = options.elasticsearch;
 
       // Build Elasticsearch settings object
@@ -322,8 +315,8 @@ export class IndexRegistryService implements OnModuleInit {
       }
     }
 
-    // Build Meilisearch settings
-    if (options.meilisearch) {
+    // Only build Meilisearch settings if using Meilisearch
+    if (connectionType === SearchConnectionType.MEILISEARCH && options.meilisearch) {
       const ms = options.meilisearch;
 
       // Add primary key
@@ -441,7 +434,7 @@ export class IndexRegistryService implements OnModuleInit {
         this.logger.debug(`Settings to apply: ${JSON.stringify(Object.keys(settings))}`);
 
         // Call the provider's updateSettings method via SearchService
-        await this.searchService!.updateSettings(name, settings);
+        await this.searchService.updateSettings(name, settings);
 
         this.logger.log(`Successfully applied Elasticsearch settings for index: ${name}`);
       } else {
@@ -552,7 +545,7 @@ export class IndexRegistryService implements OnModuleInit {
         );
         this.logger.debug(`Settings to apply: ${JSON.stringify(Object.keys(settings))}`);
 
-        await this.searchService!.updateSettings(name, settings);
+        await this.searchService.updateSettings(name, settings);
 
         this.logger.log(`Successfully applied Meilisearch settings for index: ${name}`);
       } else {

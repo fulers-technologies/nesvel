@@ -1,14 +1,13 @@
 import { MeiliSearch, Index } from 'meilisearch';
-import { Injectable, Logger, Optional } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 import type {
-  ISearchProvider,
-  SearchDocument,
+  SearchResult,
   SearchOptions,
   SearchResponse,
-  SearchResult,
+  SearchDocument,
+  ISearchProvider,
 } from '@/interfaces';
-import { IndexNamingService } from '@/services/index-naming.service';
 
 /**
  * Meilisearch Provider
@@ -81,7 +80,6 @@ export class MeilisearchProvider implements ISearchProvider {
    *
    * @param client - The Meilisearch client instance from 'meilisearch' package
    * @param logger - Optional logger instance (injected by NestJS)
-   * @param namingService - Optional IndexNamingService for generating index names
    *
    * @example
    * ```typescript
@@ -92,15 +90,7 @@ export class MeilisearchProvider implements ISearchProvider {
    * const provider = new MeilisearchProvider(client);
    * ```
    */
-  constructor(
-    private readonly client: MeiliSearch,
-    @Optional() logger?: Logger,
-    @Optional() private readonly namingService?: IndexNamingService,
-  ) {
-    if (logger) {
-      this.logger = logger;
-    }
-  }
+  constructor(private readonly client: MeiliSearch) {}
 
   /**
    * Get index instance
@@ -153,31 +143,36 @@ export class MeilisearchProvider implements ISearchProvider {
    * ```
    */
   async createIndex(indexName: string, settings?: Record<string, any>): Promise<void> {
-    // Delegate all naming logic to IndexNamingService
-    const physicalIndexName = this.namingService
-      ? this.namingService.getPhysicalIndexName(indexName)
-      : indexName;
-
     try {
-      // Create index with 'id' as primary key (required by Meilisearch)
-      await this.client.createIndex(physicalIndexName, { primaryKey: 'id' });
+      // Extract primaryKey from settings (if provided) or use default 'id'
+      const primaryKey = settings?.primaryKey || 'id';
+      
+      // Create index with primary key
+      await this.client.createIndex(indexName, { primaryKey });
 
-      // Apply custom settings if provided
+      // Apply custom settings if provided (excluding primaryKey)
       if (settings) {
-        const index = this.getIndex(physicalIndexName);
-        await index.updateSettings(settings);
+        // Remove primaryKey from settings as it's not a valid updateSettings field
+        const { primaryKey: _, ...validSettings } = settings;
+        
+        if (Object.keys(validSettings).length > 0) {
+          const index = this.getIndex(indexName);
+          await index.updateSettings(validSettings);
+        }
       }
 
-      this.logger.log(`Created index: ${physicalIndexName}`);
+      this.logger.log(`Created index: ${indexName}`);
       // Note: Meilisearch operations are asynchronous and processed in the background
-      // Note: Meilisearch does not support aliases, so only physical index is created
     } catch (error: any) {
       // Handle "index already exists" error gracefully
       if (error.code === 'index_already_exists') {
-        this.logger.debug(`Index ${physicalIndexName} already exists`);
-        // Update settings if provided
+        this.logger.debug(`Index ${indexName} already exists`);
+        // Update settings if provided (excluding primaryKey)
         if (settings) {
-          await this.getIndex(physicalIndexName).updateSettings(settings);
+          const { primaryKey: _, ...validSettings } = settings;
+          if (Object.keys(validSettings).length > 0) {
+            await this.getIndex(indexName).updateSettings(validSettings);
+          }
         }
         return;
       }
@@ -205,13 +200,7 @@ export class MeilisearchProvider implements ISearchProvider {
    */
   async deleteIndex(indexName: string): Promise<void> {
     try {
-      // Resolve base name to operational/physical name
-      // For Meilisearch (no aliases), operational name = physical name
-      const operationalName = this.namingService
-        ? this.namingService.getPhysicalIndexName(indexName)
-        : indexName;
-
-      await this.client.deleteIndex(operationalName);
+      await this.client.deleteIndex(indexName);
       this.logger.log(`Deleted index: ${indexName}`);
     } catch (error) {
       this.logger.error(`Failed to delete index ${indexName}:`, error);
@@ -240,13 +229,8 @@ export class MeilisearchProvider implements ISearchProvider {
    */
   async indexExists(indexName: string): Promise<boolean> {
     try {
-      // Resolve base name to operational name
-      const operationalName = this.namingService
-        ? this.namingService.getOperationalName(indexName)
-        : indexName;
-
       // Attempt to get index info - will throw if index doesn't exist
-      await this.getIndex(operationalName).getRawInfo();
+      await this.getIndex(indexName).getRawInfo();
       return true;
     } catch (error: any) {
       // Return false for index_not_found errors
@@ -350,12 +334,7 @@ export class MeilisearchProvider implements ISearchProvider {
    */
   async indexDocument(indexName: string, document: SearchDocument): Promise<void> {
     try {
-      // Resolve base name to operational name
-      const operationalName = this.namingService
-        ? this.namingService.getOperationalName(indexName)
-        : indexName;
-
-      const index = this.getIndex(operationalName);
+      const index = this.getIndex(indexName);
       // Add single document (wrapped in array for API consistency)
       await index.addDocuments([document]);
       this.logger.debug(`Indexed document ${document.id} in ${indexName}`);
@@ -391,12 +370,7 @@ export class MeilisearchProvider implements ISearchProvider {
     try {
       if (documents.length === 0) return;
 
-      // Resolve base name to operational name
-      const operationalName = this.namingService
-        ? this.namingService.getOperationalName(indexName)
-        : indexName;
-
-      const index = this.getIndex(operationalName);
+      const index = this.getIndex(indexName);
       // Bulk add documents
       await index.addDocuments(documents);
       this.logger.log(`Bulk indexed ${documents.length} documents in ${indexName}`);
@@ -431,12 +405,7 @@ export class MeilisearchProvider implements ISearchProvider {
     partialDocument: Partial<any>,
   ): Promise<void> {
     try {
-      // Resolve base name to operational name
-      const operationalName = this.namingService
-        ? this.namingService.getOperationalName(indexName)
-        : indexName;
-
-      const index = this.getIndex(operationalName);
+      const index = this.getIndex(indexName);
       // Update document (upsert behavior - creates if doesn't exist)
       await index.updateDocuments([{ id: documentId, ...partialDocument }]);
       this.logger.debug(`Updated document ${documentId} in ${indexName}`);
@@ -463,12 +432,7 @@ export class MeilisearchProvider implements ISearchProvider {
    */
   async deleteDocument(indexName: string, documentId: string | number): Promise<void> {
     try {
-      // Resolve base name to operational name
-      const operationalName = this.namingService
-        ? this.namingService.getOperationalName(indexName)
-        : indexName;
-
-      const index = this.getIndex(operationalName);
+      const index = this.getIndex(indexName);
       await index.deleteDocument(documentId);
       this.logger.debug(`Deleted document ${documentId} from ${indexName}`);
     } catch (error) {
@@ -517,12 +481,7 @@ export class MeilisearchProvider implements ISearchProvider {
    */
   async search(indexName: string, query: string, options?: SearchOptions): Promise<SearchResponse> {
     try {
-      // Resolve base name to operational name
-      const operationalName = this.namingService
-        ? this.namingService.getOperationalName(indexName)
-        : indexName;
-
-      const index = this.getIndex(operationalName);
+      const index = this.getIndex(indexName);
       const { limit = 20, offset = 0, searchFields, filters, sort } = options || {};
 
       // Build search options
@@ -592,12 +551,7 @@ export class MeilisearchProvider implements ISearchProvider {
    */
   async getDocument(indexName: string, documentId: string | number): Promise<any | null> {
     try {
-      // Resolve base name to operational name
-      const operationalName = this.namingService
-        ? this.namingService.getOperationalName(indexName)
-        : indexName;
-
-      const index = this.getIndex(operationalName);
+      const index = this.getIndex(indexName);
       return await index.getDocument(documentId);
     } catch (error: any) {
       // Return null for document not found errors
@@ -630,12 +584,7 @@ export class MeilisearchProvider implements ISearchProvider {
    */
   async getIndexStats(indexName: string): Promise<Record<string, any>> {
     try {
-      // Resolve base name to operational name
-      const operationalName = this.namingService
-        ? this.namingService.getOperationalName(indexName)
-        : indexName;
-
-      const index = this.getIndex(operationalName);
+      const index = this.getIndex(indexName);
       const stats = await index.getStats();
       return {
         documentCount: stats.numberOfDocuments, // Total documents in index
@@ -667,12 +616,7 @@ export class MeilisearchProvider implements ISearchProvider {
    */
   async clearIndex(indexName: string): Promise<void> {
     try {
-      // Resolve base name to operational name
-      const operationalName = this.namingService
-        ? this.namingService.getOperationalName(indexName)
-        : indexName;
-
-      const index = this.getIndex(operationalName);
+      const index = this.getIndex(indexName);
       // Delete all documents from the index
       await index.deleteAllDocuments();
       this.logger.log(`Cleared all documents from index: ${indexName}`);
@@ -715,12 +659,7 @@ export class MeilisearchProvider implements ISearchProvider {
    */
   async updateSettings(indexName: string, settings: Record<string, any>): Promise<void> {
     try {
-      // Resolve base name to operational name
-      const operationalName = this.namingService
-        ? this.namingService.getOperationalName(indexName)
-        : indexName;
-
-      const index = this.getIndex(operationalName);
+      const index = this.getIndex(indexName);
       await index.updateSettings(settings);
       this.logger.log(`Updated settings for index: ${indexName}`);
     } catch (error) {
@@ -856,21 +795,13 @@ export class MeilisearchProvider implements ISearchProvider {
         throw new Error(`Index "${indexName}" does not exist`);
       }
 
-      // Step 2: Create temporary index using naming service or timestamp
-      let tempIndexName: string;
-      if (this.namingService) {
-        // Use naming service to generate a physical index name
-        tempIndexName = this.namingService.getPhysicalIndexName(indexName);
-        this.logger.log(`Using naming service to generate temp index: ${tempIndexName}`);
-      } else {
-        // Fallback to manual timestamp
-        const timestamp = new Date()
-          .toISOString()
-          .replace(/[-:]/g, '')
-          .replace(/T/, '_')
-          .split('.')[0];
-        tempIndexName = `${indexName}_${timestamp}_temp`;
-      }
+      // Step 2: Create temporary index with timestamp
+      const timestamp = new Date()
+        .toISOString()
+        .replace(/[-:]/g, '')
+        .replace(/T/, '_')
+        .split('.')[0];
+      const tempIndexName = `${indexName}_${timestamp}_temp`;
 
       this.logger.log(`Creating temporary index: ${tempIndexName}`);
       await this.createIndex(tempIndexName, options.newSettings);

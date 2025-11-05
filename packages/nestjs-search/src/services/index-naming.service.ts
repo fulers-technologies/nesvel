@@ -23,7 +23,7 @@ import { IndexNamingStrategy } from '@/enums';
  * @example
  * ```typescript
  * // With timestamped strategy:
- * const physical = namingService.getPhysicalIndexName('products');
+ * const physical = namingService.generatePhysicalIndexName('products');
  * // => 'products_20231104_153422'
  *
  * const alias = namingService.getAliasName('products');
@@ -84,19 +84,19 @@ export class IndexNamingService {
    * @example
    * ```typescript
    * // With prefix 'nesvel' and simple strategy
-   * getPhysicalIndexName('products') // => 'nesvel_products'
+   * generatePhysicalIndexName('products') // => 'nesvel_products'
    *
    * // With prefix 'nesvel' and timestamped strategy
-   * getPhysicalIndexName('products') // => 'nesvel_products_20231104_153422'
+   * generatePhysicalIndexName('products') // => 'nesvel_products_20231104_153422'
    *
    * // With prefix 'nesvel' and versioned strategy
-   * getPhysicalIndexName('products', 2) // => 'nesvel_products_v2'
+   * generatePhysicalIndexName('products', 2) // => 'nesvel_products_v2'
    * ```
    */
-  getPhysicalIndexName(baseName: string, version?: number): string {
-    // Apply prefix first
-    const prefix = this.options.indexPrefix || 'nesvel';
-    const prefixedName = `${prefix}_${baseName}`;
+  generatePhysicalIndexName(baseName: string, version?: number): string {
+    // Apply prefix first (if provided)
+    const prefix = this.options.indexPrefix;
+    const prefixedName = prefix ? `${prefix}_${baseName}` : baseName;
 
     // Then apply naming strategy
     const strategy = this.getNamingStrategy();
@@ -131,9 +131,9 @@ export class IndexNamingService {
    * ```
    */
   getAliasName(baseName: string): string {
-    // Apply prefix to alias as well
-    const prefix = this.options.indexPrefix || 'nesvel';
-    return `${prefix}_${baseName}`;
+    // Apply prefix to alias (if provided)
+    const prefix = this.options.indexPrefix;
+    return prefix ? `${prefix}_${baseName}` : baseName;
   }
 
   /**
@@ -161,49 +161,6 @@ export class IndexNamingService {
     // For timestamped/versioned strategies, use the alias
     // For simple strategy, use the physical name (which is the same as alias)
     return this.getAliasName(baseName);
-  }
-
-  /**
-   * Generate timestamped index name
-   *
-   * Format: {baseName}_{YYYYMMDD}_{HHMMSS}
-   *
-   * @param baseName - The base index name
-   *
-   * @returns Index name with timestamp suffix
-   *
-   * @private
-   */
-  private generateTimestampedName(baseName: string): string {
-    const now = new Date();
-    const date = now.toISOString().slice(0, 10).replace(/-/g, ''); // YYYYMMDD
-    const time = now.toISOString().slice(11, 19).replace(/:/g, ''); // HHMMSS
-    return `${baseName}_${date}_${time}`;
-  }
-
-  /**
-   * Generate versioned index name
-   *
-   * Format: {baseName}_v{version}
-   *
-   * @param baseName - The base index name
-   * @param version - Optional version number (auto-increments if not provided)
-   *
-   * @returns Index name with version suffix
-   *
-   * @private
-   */
-  private generateVersionedName(baseName: string, version?: number): string {
-    if (version !== undefined) {
-      return `${baseName}_v${version}`;
-    }
-
-    // Auto-increment version
-    const currentVersion = this.versionCounter.get(baseName) || 0;
-    const nextVersion = currentVersion + 1;
-    this.versionCounter.set(baseName, nextVersion);
-
-    return `${baseName}_v${nextVersion}`;
   }
 
   /**
@@ -283,5 +240,48 @@ export class IndexNamingService {
    */
   setVersion(baseName: string, version: number): void {
     this.versionCounter.set(baseName, version);
+  }
+
+  /**
+   * Generate timestamped index name
+   *
+   * Format: {baseName}_{YYYYMMDD}_{HHMMSS}
+   *
+   * @param baseName - The base index name
+   *
+   * @returns Index name with timestamp suffix
+   *
+   * @private
+   */
+  private generateTimestampedName(baseName: string): string {
+    const now = new Date();
+    const date = now.toISOString().slice(0, 10).replace(/-/g, ''); // YYYYMMDD
+    const time = now.toISOString().slice(11, 19).replace(/:/g, ''); // HHMMSS
+    return `${baseName}_${date}_${time}`;
+  }
+
+  /**
+   * Generate versioned index name
+   *
+   * Format: {baseName}_v{version}
+   *
+   * @param baseName - The base index name
+   * @param version - Optional version number (auto-increments if not provided)
+   *
+   * @returns Index name with version suffix
+   *
+   * @private
+   */
+  private generateVersionedName(baseName: string, version?: number): string {
+    if (version !== undefined) {
+      return `${baseName}_v${version}`;
+    }
+
+    // Auto-increment version
+    const currentVersion = this.versionCounter.get(baseName) || 0;
+    const nextVersion = currentVersion + 1;
+    this.versionCounter.set(baseName, nextVersion);
+
+    return `${baseName}_v${nextVersion}`;
   }
 }

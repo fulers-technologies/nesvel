@@ -62,7 +62,7 @@ function loadConfig(configPath: string): SearchModuleOptions {
         // Dynamic import of jiti to avoid bundling it
         const jiti = require('jiti')(__filename, { esmResolve: true });
         const required = jiti(absolutePath);
-        
+
         // Extract config - check in order of preference
         // Note: jiti may add a 'default' property for module interop
         if (required.default?.connection) {
@@ -202,7 +202,6 @@ async function bootstrap(): Promise<void> {
     }
 
     // Step 5: Filter out --config from argv to prevent commander errors
-    const originalArgv = process.argv;
     if (configPath) {
       // Remove --config and its value from argv
       process.argv = process.argv.filter((arg, index, arr) => {

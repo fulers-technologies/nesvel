@@ -1,14 +1,13 @@
 import { Client } from '@elastic/elasticsearch';
-import { Injectable, Logger, Optional } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 import type {
-  ISearchProvider,
-  SearchDocument,
+  SearchResult,
   SearchOptions,
   SearchResponse,
-  SearchResult,
+  SearchDocument,
+  ISearchProvider,
 } from '@/interfaces';
-import { IndexNamingService } from '@/services/index-naming.service';
 
 /**
  * Elasticsearch Provider
@@ -103,7 +102,6 @@ export class ElasticsearchProvider implements ISearchProvider {
    *
    * @param client - The Elasticsearch client instance from @elastic/elasticsearch
    * @param logger - Optional logger instance (injected by NestJS)
-   * @param namingService - Optional IndexNamingService for generating index names
    *
    * @example
    * ```typescript
@@ -114,15 +112,7 @@ export class ElasticsearchProvider implements ISearchProvider {
    * const provider = new ElasticsearchProvider(client);
    * ```
    */
-  constructor(
-    private readonly client: Client,
-    @Optional() logger?: Logger,
-    @Optional() private readonly namingService?: IndexNamingService,
-  ) {
-    if (logger) {
-      this.logger = logger;
-    }
-  }
+  constructor(private readonly client: Client) {}
 
   /**
    * Create an Elasticsearch index
@@ -166,32 +156,21 @@ export class ElasticsearchProvider implements ISearchProvider {
    */
   async createIndex(indexName: string, settings?: Record<string, any>): Promise<void> {
     try {
-      // Delegate all naming logic to IndexNamingService
-      const physicalIndexName = this.namingService
-        ? this.namingService.getPhysicalIndexName(indexName)
-        : indexName;
-
-      // Check if physical index already exists
-      const exists = await this.indexExists(physicalIndexName);
+      // Accept index name as-is (caller should handle naming strategy)
+      // Check if index already exists
+      const exists = await this.indexExists(indexName);
       if (exists) {
-        this.logger.warn(`Index ${physicalIndexName} already exists`);
+        this.logger.warn(`Index ${indexName} already exists`);
         return;
       }
 
-      // Create the physical index
+      // Create the index
       await this.client.indices.create({
-        index: physicalIndexName,
+        index: indexName,
         body: settings,
       });
 
-      this.logger.log(`Created index: ${physicalIndexName}`);
-
-      // Create alias if using timestamped or versioned strategy
-      if (this.namingService?.shouldUseAliases()) {
-        const aliasName = this.namingService.getAliasName(indexName);
-        await this.createAlias(physicalIndexName, aliasName);
-        this.logger.log(`Created alias: ${aliasName} -> ${physicalIndexName}`);
-      }
+      this.logger.log(`Created index: ${indexName}`);
     } catch (error) {
       this.logger.error(`Failed to create index ${indexName}:`, error);
       throw error;
@@ -218,16 +197,11 @@ export class ElasticsearchProvider implements ISearchProvider {
    */
   async deleteIndex(indexName: string): Promise<void> {
     try {
-      // Resolve base name to operational name (alias for timestamped/versioned)
-      const operationalName = this.namingService
-        ? this.namingService.getOperationalName(indexName)
-        : indexName;
-
       // Try to get indices behind the alias (if it's an alias)
-      let indicesToDelete = [operationalName];
+      let indicesToDelete = [indexName];
       try {
         const aliasResponse = await this.client.indices.getAlias({
-          name: operationalName,
+          name: indexName,
         });
         // If it's an alias, delete the concrete indices
         indicesToDelete = Object.keys(aliasResponse);
@@ -270,13 +244,8 @@ export class ElasticsearchProvider implements ISearchProvider {
    */
   async indexExists(indexName: string): Promise<boolean> {
     try {
-      // Resolve base name to operational name
-      const operationalName = this.namingService
-        ? this.namingService.getOperationalName(indexName)
-        : indexName;
-
       const result = await this.client.indices.exists({
-        index: operationalName,
+        index: indexName,
       });
 
       return result === true;
@@ -284,7 +253,7 @@ export class ElasticsearchProvider implements ISearchProvider {
       // Return false for index not found errors
       if (
         error.meta?.statusCode === 404 ||
-        error.name === 'ResponseError' && error.message?.includes('index_not_found') ||
+        (error.name === 'ResponseError' && error.message?.includes('index_not_found')) ||
         error.message?.includes('no such index')
       ) {
         return false;
@@ -370,21 +339,16 @@ export class ElasticsearchProvider implements ISearchProvider {
    */
   async indexDocument(indexName: string, document: SearchDocument): Promise<void> {
     try {
-      // Resolve base name to operational name
-      const operationalName = this.namingService
-        ? this.namingService.getOperationalName(indexName)
-        : indexName;
-
       const { id, ...body } = document;
 
       await this.client.index({
-        index: operationalName,
+        index: indexName,
         id: String(id),
         body,
         refresh: 'wait_for',
       });
 
-      this.logger.debug(`Indexed document ${id} in ${operationalName}`);
+      this.logger.debug(`Indexed document ${id} in ${indexName}`);
     } catch (error) {
       this.logger.error(`Failed to index document in ${indexName}:`, error);
       throw error;
@@ -420,14 +384,9 @@ export class ElasticsearchProvider implements ISearchProvider {
     try {
       if (documents.length === 0) return;
 
-      // Resolve base name to operational name
-      const operationalName = this.namingService
-        ? this.namingService.getOperationalName(indexName)
-        : indexName;
-
       const operations = documents.flatMap((doc) => {
         const { id, ...body } = doc;
-        return [{ index: { _index: operationalName, _id: String(id) } }, body];
+        return [{ index: { _index: indexName, _id: String(id) } }, body];
       });
 
       const result = await this.client.bulk({
@@ -476,13 +435,8 @@ export class ElasticsearchProvider implements ISearchProvider {
     partialDocument: Partial<any>,
   ): Promise<void> {
     try {
-      // Resolve base name to operational name
-      const operationalName = this.namingService
-        ? this.namingService.getOperationalName(indexName)
-        : indexName;
-
       await this.client.update({
-        index: operationalName,
+        index: indexName,
         id: String(documentId),
         doc: partialDocument,
         refresh: 'wait_for',
@@ -515,13 +469,8 @@ export class ElasticsearchProvider implements ISearchProvider {
    */
   async deleteDocument(indexName: string, documentId: string | number): Promise<void> {
     try {
-      // Resolve base name to operational name
-      const operationalName = this.namingService
-        ? this.namingService.getOperationalName(indexName)
-        : indexName;
-
       await this.client.delete({
-        index: operationalName,
+        index: indexName,
         id: String(documentId),
         refresh: 'wait_for',
       });
@@ -587,17 +536,8 @@ export class ElasticsearchProvider implements ISearchProvider {
    * });
    * ```
    */
-  async search(
-    indexName: string,
-    query: string,
-    options?: SearchOptions,
-  ): Promise<SearchResponse> {
+  async search(indexName: string, query: string, options?: SearchOptions): Promise<SearchResponse> {
     try {
-      // Resolve base name to operational name
-      const operationalName = this.namingService
-        ? this.namingService.getOperationalName(indexName)
-        : indexName;
-
       const {
         limit = 20,
         offset = 0,
@@ -686,7 +626,7 @@ export class ElasticsearchProvider implements ISearchProvider {
 
       // Execute search query
       const result = await this.client.search({
-        index: operationalName,
+        index: indexName,
         body,
       });
 
@@ -742,13 +682,8 @@ export class ElasticsearchProvider implements ISearchProvider {
    */
   async getDocument(indexName: string, documentId: string | number): Promise<any | null> {
     try {
-      // Resolve base name to operational name
-      const operationalName = this.namingService
-        ? this.namingService.getOperationalName(indexName)
-        : indexName;
-
       const result = await this.client.get({
-        index: operationalName,
+        index: indexName,
         id: String(documentId),
       });
 
@@ -788,13 +723,8 @@ export class ElasticsearchProvider implements ISearchProvider {
    */
   async getIndexStats(indexName: string): Promise<Record<string, any>> {
     try {
-      // Resolve base name to operational name
-      const operationalName = this.namingService
-        ? this.namingService.getOperationalName(indexName)
-        : indexName;
-
       const stats = await this.client.indices.stats({
-        index: operationalName,
+        index: indexName,
       });
 
       return {
@@ -833,13 +763,8 @@ export class ElasticsearchProvider implements ISearchProvider {
    */
   async clearIndex(indexName: string): Promise<void> {
     try {
-      // Resolve base name to operational name
-      const operationalName = this.namingService
-        ? this.namingService.getOperationalName(indexName)
-        : indexName;
-
       await this.client.deleteByQuery({
-        index: operationalName,
+        index: indexName,
         query: {
           match_all: {},
         },
@@ -887,13 +812,8 @@ export class ElasticsearchProvider implements ISearchProvider {
    */
   async updateSettings(indexName: string, settings: Record<string, any>): Promise<void> {
     try {
-      // Resolve base name to operational name
-      const operationalName = this.namingService
-        ? this.namingService.getOperationalName(indexName)
-        : indexName;
-
       await this.client.indices.putSettings({
-        index: operationalName,
+        index: indexName,
         body: settings,
       });
       this.logger.log(`Updated settings for index: ${indexName}`);
@@ -1173,22 +1093,13 @@ export class ElasticsearchProvider implements ISearchProvider {
         }
       }
 
-      // Step 2: Create temporary index using naming service or timestamp
-      let tempIndexName: string;
-      if (this.namingService) {
-        // Use naming service to generate a physical index name
-        const baseName = isAlias ? indexName : oldPhysicalIndexName!;
-        tempIndexName = this.namingService.getPhysicalIndexName(baseName);
-        this.logger.log(`Using naming service to generate temp index: ${tempIndexName}`);
-      } else {
-        // Fallback to manual timestamp
-        const timestamp = new Date()
-          .toISOString()
-          .replace(/[-:]/g, '')
-          .replace(/T/, '_')
-          .split('.')[0];
-        tempIndexName = `${isAlias ? indexName : oldPhysicalIndexName}_${timestamp}_temp`;
-      }
+      // Step 2: Create temporary index with timestamp
+      const timestamp = new Date()
+        .toISOString()
+        .replace(/[-:]/g, '')
+        .replace(/T/, '_')
+        .split('.')[0];
+      const tempIndexName = `${isAlias ? indexName : oldPhysicalIndexName}_${timestamp}_temp`;
 
       this.logger.log(`Creating temporary index: ${tempIndexName}`);
       await this.createIndex(tempIndexName, options.newSettings);
@@ -1292,15 +1203,7 @@ export class ElasticsearchProvider implements ISearchProvider {
           await this.deleteIndex(oldPhysicalIndexName);
         }
 
-        // If using naming service with aliases, create the alias
-        if (this.namingService && this.namingService.shouldUseAliases()) {
-          const aliasName = this.namingService.getAliasName(oldPhysicalIndexName!);
-          this.logger.log(`Creating alias "${aliasName}" -> "${tempIndexName}"`);
-          await this.createAlias(tempIndexName, aliasName);
-          this.logger.log(`New index "${tempIndexName}" is now active with alias "${aliasName}"`);
-        } else {
-          this.logger.log(`New index "${tempIndexName}" is now active`);
-        }
+        this.logger.log(`New index "${tempIndexName}" is now active`);
       }
 
       const duration = Date.now() - startTime;

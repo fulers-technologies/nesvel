@@ -1,6 +1,7 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
 
 import { SEARCH_PROVIDER } from '@/constants';
+import { IndexNamingService } from './index-naming.service';
 import type { ISearchProvider, SearchDocument, SearchOptions, SearchResponse } from '@/interfaces';
 
 /**
@@ -141,6 +142,7 @@ export class SearchService {
   constructor(
     @Inject(SEARCH_PROVIDER)
     private readonly provider: ISearchProvider,
+    private readonly namingService: IndexNamingService,
   ) {}
 
   /**
@@ -166,7 +168,15 @@ export class SearchService {
    * ```
    */
   async createIndex(indexName: string, settings?: Record<string, any>): Promise<void> {
-    return this.provider.createIndex(indexName, settings);
+    // Generate physical index name (includes prefix and timestamp/version if needed)
+    const physicalName = this.namingService.generatePhysicalIndexName(indexName);
+    await this.provider.createIndex(physicalName, settings);
+    
+    // Create alias for timestamped/versioned strategies
+    if (this.namingService.shouldUseAliases()) {
+      const aliasName = this.namingService.getAliasName(indexName);
+      await this.provider.createAlias(physicalName, aliasName);
+    }
   }
 
   /**
@@ -184,7 +194,8 @@ export class SearchService {
    * ```
    */
   async deleteIndex(indexName: string): Promise<void> {
-    return this.provider.deleteIndex(indexName);
+    const operationalName = this.namingService.getOperationalName(indexName);
+    return this.provider.deleteIndex(operationalName);
   }
 
   /**
@@ -204,7 +215,8 @@ export class SearchService {
    * ```
    */
   async indexExists(indexName: string): Promise<boolean> {
-    return this.provider.indexExists(indexName);
+    const operationalName = this.namingService.getOperationalName(indexName);
+    return this.provider.indexExists(operationalName);
   }
 
   /**
@@ -228,7 +240,8 @@ export class SearchService {
    * ```
    */
   async indexDocument(indexName: string, document: SearchDocument): Promise<void> {
-    return this.provider.indexDocument(indexName, document);
+    const operationalName = this.namingService.getOperationalName(indexName);
+    return this.provider.indexDocument(operationalName, document);
   }
 
   /**
@@ -252,7 +265,8 @@ export class SearchService {
    * ```
    */
   async indexDocuments(indexName: string, documents: SearchDocument[]): Promise<void> {
-    return this.provider.indexDocuments(indexName, documents);
+    const operationalName = this.namingService.getOperationalName(indexName);
+    return this.provider.indexDocuments(operationalName, documents);
   }
 
   /**
@@ -280,7 +294,8 @@ export class SearchService {
     documentId: string | number,
     partialDocument: Partial<any>,
   ): Promise<void> {
-    return this.provider.updateDocument(indexName, documentId, partialDocument);
+    const operationalName = this.namingService.getOperationalName(indexName);
+    return this.provider.updateDocument(operationalName, documentId, partialDocument);
   }
 
   /**
@@ -299,7 +314,8 @@ export class SearchService {
    * ```
    */
   async deleteDocument(indexName: string, documentId: string | number): Promise<void> {
-    return this.provider.deleteDocument(indexName, documentId);
+    const operationalName = this.namingService.getOperationalName(indexName);
+    return this.provider.deleteDocument(operationalName, documentId);
   }
 
   /**
@@ -339,7 +355,8 @@ export class SearchService {
    * ```
    */
   async search(indexName: string, query: string, options?: SearchOptions): Promise<SearchResponse> {
-    return this.provider.search(indexName, query, options);
+    const operationalName = this.namingService.getOperationalName(indexName);
+    return this.provider.search(operationalName, query, options);
   }
 
   /**
@@ -364,7 +381,8 @@ export class SearchService {
    * ```
    */
   async getDocument(indexName: string, documentId: string | number): Promise<any | null> {
-    return this.provider.getDocument(indexName, documentId);
+    const operationalName = this.namingService.getOperationalName(indexName);
+    return this.provider.getDocument(operationalName, documentId);
   }
 
   /**
@@ -386,7 +404,8 @@ export class SearchService {
    * ```
    */
   async getIndexStats(indexName: string): Promise<Record<string, any>> {
-    return this.provider.getIndexStats(indexName);
+    const operationalName = this.namingService.getOperationalName(indexName);
+    return this.provider.getIndexStats(operationalName);
   }
 
   /**
@@ -407,7 +426,8 @@ export class SearchService {
    * ```
    */
   async clearIndex(indexName: string): Promise<void> {
-    return this.provider.clearIndex(indexName);
+    const operationalName = this.namingService.getOperationalName(indexName);
+    return this.provider.clearIndex(operationalName);
   }
 
   /**
@@ -449,7 +469,8 @@ export class SearchService {
    * ```
    */
   async count(indexName: string): Promise<number> {
-    const stats = await this.getIndexStats(indexName);
+    const operationalName = this.namingService.getOperationalName(indexName);
+    const stats = await this.getIndexStats(operationalName);
     return stats.documentCount || stats.docsCount || 0;
   }
 
@@ -502,7 +523,8 @@ export class SearchService {
    * ```
    */
   async updateSettings(indexName: string, settings: Record<string, any>): Promise<void> {
-    return this.provider.updateSettings(indexName, settings);
+    const operationalName = this.namingService.getOperationalName(indexName);
+    return this.provider.updateSettings(operationalName, settings);
   }
 
   /**
@@ -701,6 +723,7 @@ export class SearchService {
     newIndexName: string;
     duration: number;
   }> {
-    return this.provider.reindex(indexName, options);
+    const operationalName = this.namingService.getOperationalName(indexName);
+    return this.provider.reindex(operationalName, options);
   }
 }

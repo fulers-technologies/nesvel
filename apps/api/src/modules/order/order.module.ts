@@ -28,7 +28,6 @@ import { OrderController } from '@order/controllers/order.controller';
     SearchModule.registerIndex({
       // Index configuration
       name: 'orders',
-      alias: 'orders_v1', // Useful for zero-downtime reindexing
       autoCreate: true, // Auto-create index on startup
       autoUpdateSettings: false, // Don't auto-update in production
 

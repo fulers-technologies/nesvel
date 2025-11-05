@@ -122,7 +122,7 @@ export class SearchModule {
       module: SearchModule,
       global: true,
       providers: SearchModuleFactory.createProviders(options),
-      exports: [SEARCH_SERVICE],
+      exports: [SEARCH_SERVICE, IndexRegistryService],
     };
   }
 
@@ -218,7 +218,7 @@ export class SearchModule {
       global: options.isGlobal ?? true,
       imports: options.imports || [],
       providers: SearchModuleFactory.createAsyncProviders(options),
-      exports: [SEARCH_SERVICE],
+      exports: [SEARCH_SERVICE, IndexRegistryService],
     };
   }
 }

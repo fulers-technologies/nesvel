@@ -40,7 +40,7 @@ export const searchConfig: SearchConfig = {
    * @env SEARCH_CONNECTION
    */
   connection:
-    (process.env.SEARCH_CONNECTION as SearchConnectionType) || SearchConnectionType.ELASTICSEARCH,
+    (process.env.SEARCH_CONNECTION as SearchConnectionType) || SearchConnectionType.MEILISEARCH,
 
   /**
    * Default index prefix
@@ -69,8 +69,7 @@ export const searchConfig: SearchConfig = {
    * @default IndexNamingStrategy.TIME_STAMPED for Elasticsearch, IndexNamingStrategy.SIMPLE for Meilisearch
    */
   indexNamingStrategy:
-    (process.env.SEARCH_INDEX_NAMING_STRATEGY as IndexNamingStrategy) ||
-    IndexNamingStrategy.TIME_STAMPED,
+    (process.env.SEARCH_INDEX_NAMING_STRATEGY as IndexNamingStrategy) || IndexNamingStrategy.SIMPLE,
 
   /**
    * Automatic entity synchronization
