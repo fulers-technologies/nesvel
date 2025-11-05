@@ -132,14 +132,3 @@ export interface IPubSubOptions {
    */
   namespace?: string;
 }
-
-/**
- * Namespace for IPubSubOptions interface containing the symbol for dependency injection.
- */
-export namespace IPubSubOptions {
-  /**
-   * Unique symbol identifier for the IPubSubOptions interface.
-   * Used for dependency injection and type identification in the NestJS container.
-   */
-  export const $ = Symbol('IPubSubOptions');
-}
