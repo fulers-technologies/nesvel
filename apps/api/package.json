@@ -40,7 +40,8 @@
     "class-validator": "catalog:validation",
     "compression": "^1.8.1",
     "reflect-metadata": "catalog:nestjs",
-    "rxjs": "catalog:nestjs"
+    "rxjs": "catalog:nestjs",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "@nesvel/typescript-config": "workspace:*",
