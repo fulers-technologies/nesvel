@@ -15,3 +15,6 @@ export * from './pubsub-options-factory.interface';
 export * from './pubsub-async-options.interface';
 export * from './subscription-metadata.interface';
 export type { SubscribeOptions } from './subscribe-options.interface';
+
+import type { IPubSubOptions } from './pubsub-options.interface';
+export type PubSubConfig = IPubSubOptions;

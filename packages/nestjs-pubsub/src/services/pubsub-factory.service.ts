@@ -71,8 +71,11 @@ export class PubSubFactoryService {
       // Get driver class from registry
       const DriverClass = this.driverRegistry.get(driverType);
 
+      // Get driver-specific options (new pattern first, fallback to legacy driverOptions)
+      const driverOptions = this.getDriverOptions(options);
+
       // Instantiate driver with options
-      const driver = DriverClass.make(options.driverOptions || {});
+      const driver = DriverClass.make(driverOptions);
 
       this.logger.log(`Created ${driverType} driver instance`);
 
@@ -191,7 +194,30 @@ export class PubSubFactoryService {
     }
 
     // Driver-specific validation can be added here
-    this.validateDriverOptions(options.driver, options.driverOptions);
+    const driverOptions = this.getDriverOptions(options);
+    this.validateDriverOptions(options.driver, driverOptions);
+  }
+
+  /**
+   * Gets driver-specific options from configuration.
+   *
+   * This method supports both the new pattern (specific driver properties)
+   * and the legacy pattern (driverOptions property) for backward compatibility.
+   *
+   * @param options - The PubSub module configuration options
+   * @returns Driver-specific options
+   */
+  private getDriverOptions(options: IPubSubOptions): Record<string, any> {
+    switch (options.driver) {
+      case PubSubDriverType.REDIS:
+        return options.redis || options.driverOptions || {};
+      case PubSubDriverType.KAFKA:
+        return options.kafka || options.driverOptions || {};
+      case PubSubDriverType.GOOGLE_PUBSUB:
+        return options.googlePubSub || options.driverOptions || {};
+      default:
+        return options.driverOptions || {};
+    }
   }
 
   /**

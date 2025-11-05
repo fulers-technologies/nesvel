@@ -1,5 +1,8 @@
+import type { PubSubConfig } from '@interfaces';
+import type { IRedisOptions } from '@drivers/redis/redis-options.interface';
+import type { IKafkaOptions } from '@drivers/kafka/kafka-options.interface';
+import type { IGooglePubSubOptions } from '@drivers/google-pubsub/google-pubsub-options.interface';
 import { PubSubDriverType } from '@enums/pubsub-driver-type.enum';
-import type { IPubSubOptions } from '@interfaces/pubsub-options.interface';
 import { DEFAULT_PUBSUB_CONFIG } from '@constants/default-pubsub-config.constant';
 
 /**
@@ -29,7 +32,7 @@ import { DEFAULT_PUBSUB_CONFIG } from '@constants/default-pubsub-config.constant
  * const redisHost = pubsubConfig.redis?.host;
  * ```
  */
-export const pubsubConfig: IPubSubOptions = {
+export const pubsubConfig: PubSubConfig = {
   /**
    * Messaging driver type
    *
@@ -94,60 +97,77 @@ export const pubsubConfig: IPubSubOptions = {
   namespace: process.env.PUBSUB_NAMESPACE || undefined,
 
   /**
-   * Driver-specific options
+   * Redis configuration
    *
-   * Configuration options specific to the selected driver.
-   * Structure varies based on the driver type.
+   * Default configuration for Redis Pub/Sub driver.
+   * Used when driver is set to PubSubDriverType.REDIS.
+   *
+   * @env REDIS_HOST - Redis server hostname
+   * @env REDIS_PORT - Redis server port
+   * @env REDIS_PASSWORD - Redis authentication password
+   * @env REDIS_DB - Redis database index
+   * @env REDIS_KEY_PREFIX - Key prefix for Redis operations
+   * @env REDIS_USE_PATTERN_SUBSCRIBE - Use pattern-based subscriptions
    */
-  driverOptions: (() => {
-    const driver = (process.env.PUBSUB_DRIVER as PubSubDriverType) || PubSubDriverType.REDIS;
+  redis: {
+    host: process.env.REDIS_HOST || 'localhost',
+    port: parseInt(process.env.REDIS_PORT || '6379', 10),
+    password: process.env.REDIS_PASSWORD || undefined,
+    db: parseInt(process.env.REDIS_DB || '0', 10),
+    keyPrefix: process.env.REDIS_KEY_PREFIX || undefined,
+    usePatternSubscribe: process.env.REDIS_USE_PATTERN_SUBSCRIBE === 'true',
+  } as IRedisOptions,
 
-    switch (driver) {
-      case PubSubDriverType.REDIS:
-        return {
-          host: process.env.REDIS_HOST || 'localhost',
-          port: parseInt(process.env.REDIS_PORT || '6379', 10),
-          password: process.env.REDIS_PASSWORD || undefined,
-          db: parseInt(process.env.REDIS_DB || '0', 10),
-          keyPrefix: process.env.REDIS_KEY_PREFIX || undefined,
-          usePatternSubscribe: process.env.REDIS_USE_PATTERN_SUBSCRIBE === 'true',
-        };
+  /**
+   * Kafka configuration
+   *
+   * Default configuration for Kafka Pub/Sub driver.
+   * Used when driver is set to PubSubDriverType.KAFKA.
+   *
+   * @env KAFKA_CLIENT_ID - Kafka client identifier
+   * @env KAFKA_BROKERS - Comma-separated list of Kafka brokers
+   * @env KAFKA_GROUP_ID - Consumer group ID
+   * @env KAFKA_FROM_BEGINNING - Start consuming from beginning
+   * @env KAFKA_AUTO_COMMIT - Enable auto-commit
+   * @env KAFKA_SASL_MECHANISM - SASL authentication mechanism
+   * @env KAFKA_SASL_USERNAME - SASL username
+   * @env KAFKA_SASL_PASSWORD - SASL password
+   */
+  kafka: {
+    clientId: process.env.KAFKA_CLIENT_ID || 'pubsub-client',
+    brokers: process.env.KAFKA_BROKERS ? process.env.KAFKA_BROKERS.split(',') : ['localhost:9092'],
+    groupId: process.env.KAFKA_GROUP_ID || 'pubsub-consumer-group',
+    consumer: {
+      fromBeginning: process.env.KAFKA_FROM_BEGINNING === 'true',
+      autoCommit: process.env.KAFKA_AUTO_COMMIT !== 'false',
+    },
 
-      case PubSubDriverType.KAFKA:
-        const kafkaOptions: any = {
-          clientId: process.env.KAFKA_CLIENT_ID || 'pubsub-client',
-          brokers: process.env.KAFKA_BROKERS
-            ? process.env.KAFKA_BROKERS.split(',')
-            : ['localhost:9092'],
-          groupId: process.env.KAFKA_GROUP_ID || 'pubsub-consumer-group',
-          consumer: {
-            fromBeginning: process.env.KAFKA_FROM_BEGINNING === 'true',
-            autoCommit: process.env.KAFKA_AUTO_COMMIT !== 'false',
-          },
-        };
+    sasl: {
+      username: process.env.KAFKA_SASL_USERNAME,
+      password: process.env.KAFKA_SASL_PASSWORD,
+      mechanism: process.env.KAFKA_SASL_MECHANISM as any,
+    },
+  },
 
-        if (process.env.KAFKA_SASL_MECHANISM) {
-          kafkaOptions.sasl = {
-            mechanism: process.env.KAFKA_SASL_MECHANISM,
-            username: process.env.KAFKA_SASL_USERNAME,
-            password: process.env.KAFKA_SASL_PASSWORD,
-          };
-        }
-        return kafkaOptions;
-
-      case PubSubDriverType.GOOGLE_PUBSUB:
-        return {
-          projectId: process.env.GOOGLE_PUBSUB_PROJECT_ID || '',
-          keyFilename: process.env.GOOGLE_PUBSUB_KEY_FILENAME || undefined,
-          apiEndpoint: process.env.GOOGLE_PUBSUB_API_ENDPOINT || undefined,
-          autoCreateTopics: process.env.GOOGLE_PUBSUB_AUTO_CREATE_TOPICS !== 'false',
-          autoCreateSubscriptions:
-            process.env.GOOGLE_PUBSUB_AUTO_CREATE_SUBSCRIPTIONS !== 'false',
-          subscriptionPrefix: process.env.GOOGLE_PUBSUB_SUBSCRIPTION_PREFIX || 'sub-',
-        };
-
-      default:
-        return {};
-    }
-  })(),
+  /**
+   * Google Pub/Sub configuration
+   *
+   * Default configuration for Google Cloud Pub/Sub driver.
+   * Used when driver is set to PubSubDriverType.GOOGLE_PUBSUB.
+   *
+   * @env GOOGLE_PUBSUB_PROJECT_ID - GCP project ID
+   * @env GOOGLE_PUBSUB_KEY_FILENAME - Path to service account key file
+   * @env GOOGLE_PUBSUB_API_ENDPOINT - API endpoint (for emulator)
+   * @env GOOGLE_PUBSUB_AUTO_CREATE_TOPICS - Auto-create topics
+   * @env GOOGLE_PUBSUB_AUTO_CREATE_SUBSCRIPTIONS - Auto-create subscriptions
+   * @env GOOGLE_PUBSUB_SUBSCRIPTION_PREFIX - Subscription name prefix
+   */
+  googlePubSub: {
+    projectId: process.env.GOOGLE_PUBSUB_PROJECT_ID || '',
+    keyFilename: process.env.GOOGLE_PUBSUB_KEY_FILENAME || undefined,
+    apiEndpoint: process.env.GOOGLE_PUBSUB_API_ENDPOINT || undefined,
+    autoCreateTopics: process.env.GOOGLE_PUBSUB_AUTO_CREATE_TOPICS !== 'false',
+    autoCreateSubscriptions: process.env.GOOGLE_PUBSUB_AUTO_CREATE_SUBSCRIPTIONS !== 'false',
+    subscriptionPrefix: process.env.GOOGLE_PUBSUB_SUBSCRIPTION_PREFIX || 'sub-',
+  },
 };

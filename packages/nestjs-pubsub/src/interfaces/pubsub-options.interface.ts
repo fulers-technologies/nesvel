@@ -1,5 +1,8 @@
 import { PubSubDriverType } from '@enums';
 import type { IMessageSerializer } from './message-serializer.interface';
+import type { IRedisOptions } from '../drivers/redis/redis-options.interface';
+import type { IKafkaOptions } from '../drivers/kafka/kafka-options.interface';
+import type { IGooglePubSubOptions } from '../drivers/google-pubsub/google-pubsub-options.interface';
 
 /**
  * Configuration options for the PubSub module.
@@ -23,36 +26,6 @@ export interface IPubSubOptions {
    * - 'google-pubsub': Uses Google Cloud Pub/Sub
    */
   driver: PubSubDriverType | string;
-
-  /**
-   * Driver-specific configuration options.
-   *
-   * Each driver type accepts different configuration options specific to
-   * its messaging backend. These options are passed directly to the driver
-   * implementation and control connection parameters, authentication,
-   * performance tuning, and other driver-specific behaviors.
-   *
-   * @example
-   * For Redis:
-   * ```typescript
-   * {
-   *   host: 'localhost',
-   *   port: 6379,
-   *   password: 'secret',
-   *   db: 0
-   * }
-   * ```
-   *
-   * For Kafka:
-   * ```typescript
-   * {
-   *   clientId: 'my-app',
-   *   brokers: ['localhost:9092'],
-   *   groupId: 'my-consumer-group'
-   * }
-   * ```
-   */
-  driverOptions?: Record<string, any>;
 
   /**
    * Custom message serializer for encoding and decoding message payloads.
@@ -131,4 +104,67 @@ export interface IPubSubOptions {
    * publish to 'myapp:dev:user.created'
    */
   namespace?: string;
+
+  /**
+   * Redis driver configuration.
+   *
+   * Configuration options specific to the Redis driver.
+   * Used when driver is set to PubSubDriverType.REDIS.
+   *
+   * @see {@link IRedisOptions}
+   */
+  redis?: IRedisOptions;
+
+  /**
+   * Kafka driver configuration.
+   *
+   * Configuration options specific to the Kafka driver.
+   * Used when driver is set to PubSubDriverType.KAFKA.
+   *
+   * @see {@link IKafkaOptions}
+   */
+  kafka?: IKafkaOptions;
+
+  /**
+   * Google Pub/Sub driver configuration.
+   *
+   * Configuration options specific to the Google Cloud Pub/Sub driver.
+   * Used when driver is set to PubSubDriverType.GOOGLE_PUBSUB.
+   *
+   * @see {@link IGooglePubSubOptions}
+   */
+  googlePubSub?: IGooglePubSubOptions;
+
+  /**
+   * Driver-specific configuration options (legacy support).
+   *
+   * @deprecated Use specific driver properties (redis, kafka, googlePubSub) instead.
+   * This property is maintained for backward compatibility.
+   *
+   * Each driver type accepts different configuration options specific to
+   * its messaging backend. These options are passed directly to the driver
+   * implementation and control connection parameters, authentication,
+   * performance tuning, and other driver-specific behaviors.
+   *
+   * @example
+   * For Redis:
+   * ```typescript
+   * {
+   *   host: 'localhost',
+   *   port: 6379,
+   *   password: 'secret',
+   *   db: 0
+   * }
+   * ```
+   *
+   * For Kafka:
+   * ```typescript
+   * {
+   *   clientId: 'my-app',
+   *   brokers: ['localhost:9092'],
+   *   groupId: 'my-consumer-group'
+   * }
+   * ```
+   */
+  driverOptions?: Record<string, any>;
 }
