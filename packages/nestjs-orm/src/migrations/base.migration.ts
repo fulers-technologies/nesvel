@@ -2,46 +2,51 @@ import { Knex } from 'knex';
 import { Logger } from '@nestjs/common';
 import { Migration } from '@mikro-orm/migrations';
 
+import { Blueprint } from './blueprint';
+
 /**
  * Base Migration Class
  *
- * Extends MikroORM's Migration class and provides direct access to Knex schema builder.
- * All migrations should extend this class and implement the up() and optionally down() methods.
+ * Extends MikroORM's Migration class and provides Laravel-style Blueprint API
+ * for schema management. All migrations should extend this class and implement
+ * the up() and optionally down() methods.
  *
- * This simplified base class provides:
- * - Direct access to Knex schema builder via `this.schema`
+ * This base class provides:
+ * - Laravel-style Blueprint API via `create()`, `table()`, `drop()` methods
+ * - Automatic SQL queuing for proper transaction management
+ * - Logger for structured logging
  * - All MikroORM migration functionality via parent class
- * - Clean, minimal API focused on schema operations
  *
  * @example
  * ```typescript
- * // Simple migration
+ * // Create table migration
  * export class CreateUsersTable extends BaseMigration {
  *   async up(): Promise<void> {
- *     await this.schema.createTable('users', (table) => {
- *       table.increments('id').primary();
+ *     this.create('users', (table) => {
+ *       table.id();
  *       table.string('email').unique().notNullable();
  *       table.string('password').notNullable();
- *       table.timestamps(true, true);
+ *       table.rememberToken();
+ *       table.timestamps();
  *     });
  *   }
  *
  *   async down(): Promise<void> {
- *     await this.schema.dropTableIfExists('users');
+ *     this.drop('users');
  *   }
  * }
  *
- * // Migration with table alterations
+ * // Alter table migration
  * export class AddColumnsToUsers extends BaseMigration {
  *   async up(): Promise<void> {
- *     await this.schema.table('users', (table) => {
+ *     this.table('users', (table) => {
  *       table.string('phone').nullable();
  *       table.timestamp('email_verified_at').nullable();
  *     });
  *   }
  *
  *   async down(): Promise<void> {
- *     await this.schema.table('users', (table) => {
+ *     this.table('users', (table) => {
  *       table.dropColumn('phone');
  *       table.dropColumn('email_verified_at');
  *     });
@@ -69,8 +74,8 @@ export abstract class BaseMigration extends Migration {
    * ```typescript
    * async up(): Promise<void> {
    *   this.logger.log('Creating users table...');
-   *   await this.schema.createTable('users', (table) => {
-   *     table.increments('id');
+   *   this.create('users', (table) => {
+   *     table.id();
    *   });
    *   this.logger.log('Users table created successfully');
    * }
@@ -79,37 +84,94 @@ export abstract class BaseMigration extends Migration {
   protected readonly logger = new Logger(this.constructor.name);
 
   /**
-   * Get the Knex schema builder instance
+   * Create a new table using Laravel-style Blueprint API
    *
-   * Provides direct access to Knex's schema builder for table operations.
-   * This is the primary way to interact with the database schema.
-   *
-   * @returns Knex.SchemaBuilder instance
+   * @param tableName - Name of the table to create
+   * @param callback - Blueprint callback for defining table structure
+   * @returns void
    *
    * @example
    * ```typescript
-   * async up(): Promise<void> {
-   *   // Create a new table
-   *   await this.schema.createTable('posts', (table) => {
-   *     table.increments('id');
-   *     table.string('title');
-   *     table.text('content');
-   *   });
-   *
-   *   // Alter an existing table
-   *   await this.schema.table('posts', (table) => {
-   *     table.integer('user_id').unsigned();
-   *     table.foreign('user_id').references('users.id');
-   *   });
-   *
-   *   // Check if table exists
-   *   if (await this.schema.hasTable('old_posts')) {
-   *     await this.schema.dropTable('old_posts');
-   *   }
-   * }
+   * this.create('posts', (table) => {
+   *   table.id();
+   *   table.string('title').notNullable();
+   *   table.text('content');
+   *   table.foreignId('user_id').references('id').inTable('users');
+   *   table.timestamps();
+   * });
    * ```
    */
-  protected get schema(): Knex.SchemaBuilder {
-    return this.getKnex().schema;
+  protected create(tableName: string, callback: (table: Blueprint) => void): void {
+    const builder = this.getKnex().schema.createTable(
+      tableName,
+      (tableBuilder: Knex.CreateTableBuilder) => {
+        const table = new Blueprint(tableBuilder);
+        callback(table);
+      },
+    );
+    const queries = builder.toSQL();
+    queries.forEach((query) => this.addSql(query.sql));
+  }
+
+  /**
+   * Alter an existing table using Laravel-style Blueprint API
+   *
+   * @param tableName - Name of the table to alter
+   * @param callback - Blueprint callback for defining alterations
+   * @returns void
+   *
+   * @example
+   * ```typescript
+   * this.table('posts', (table) => {
+   *   table.string('slug').unique();
+   *   table.boolean('is_published').defaultTo(false);
+   * });
+   * ```
+   */
+  protected table(tableName: string, callback: (table: Blueprint) => void): void {
+    const builder = this.getKnex().schema.table(
+      tableName,
+      (tableBuilder: Knex.AlterTableBuilder) => {
+        const table = new Blueprint(tableBuilder);
+        callback(table);
+      },
+    );
+    const queries = builder.toSQL();
+    queries.forEach((query) => this.addSql(query.sql));
+  }
+
+  /**
+   * Drop a table if it exists
+   *
+   * @param tableName - Name of the table to drop
+   * @returns void
+   *
+   * @example
+   * ```typescript
+   * this.drop('posts');
+   * ```
+   */
+  protected drop(tableName: string): void {
+    const builder = this.getKnex().schema.dropTableIfExists(tableName);
+    const queries = builder.toSQL();
+    queries.forEach((query) => this.addSql(query.sql));
+  }
+
+  /**
+   * Rename a table
+   *
+   * @param oldName - Current table name
+   * @param newName - New table name
+   * @returns void
+   *
+   * @example
+   * ```typescript
+   * this.rename('posts', 'articles');
+   * ```
+   */
+  protected rename(oldName: string, newName: string): void {
+    const builder = this.getKnex().schema.renameTable(oldName, newName) as any;
+    const queries = builder.toSQL();
+    queries.forEach((query: any) => this.addSql(query.sql));
   }
 }
