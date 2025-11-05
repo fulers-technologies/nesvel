@@ -1,7 +1,4 @@
 import type { PubSubConfig } from '@interfaces';
-import type { IRedisOptions } from '@drivers/redis/redis-options.interface';
-import type { IKafkaOptions } from '@drivers/kafka/kafka-options.interface';
-import type { IGooglePubSubOptions } from '@drivers/google-pubsub/google-pubsub-options.interface';
 import { PubSubDriverType } from '@enums/pubsub-driver-type.enum';
 import { DEFAULT_PUBSUB_CONFIG } from '@constants/default-pubsub-config.constant';
 
@@ -112,11 +109,11 @@ export const pubsubConfig: PubSubConfig = {
   redis: {
     host: process.env.REDIS_HOST || 'localhost',
     port: parseInt(process.env.REDIS_PORT || '6379', 10),
-    password: process.env.REDIS_PASSWORD || undefined,
     db: parseInt(process.env.REDIS_DB || '0', 10),
+    password: process.env.REDIS_PASSWORD || undefined,
     keyPrefix: process.env.REDIS_KEY_PREFIX || undefined,
     usePatternSubscribe: process.env.REDIS_USE_PATTERN_SUBSCRIBE === 'true',
-  } as IRedisOptions,
+  },
 
   /**
    * Kafka configuration
@@ -135,13 +132,12 @@ export const pubsubConfig: PubSubConfig = {
    */
   kafka: {
     clientId: process.env.KAFKA_CLIENT_ID || 'pubsub-client',
-    brokers: process.env.KAFKA_BROKERS ? process.env.KAFKA_BROKERS.split(',') : ['localhost:9092'],
     groupId: process.env.KAFKA_GROUP_ID || 'pubsub-consumer-group',
+    brokers: process.env.KAFKA_BROKERS ? process.env.KAFKA_BROKERS.split(',') : ['localhost:9092'],
     consumer: {
-      fromBeginning: process.env.KAFKA_FROM_BEGINNING === 'true',
       autoCommit: process.env.KAFKA_AUTO_COMMIT !== 'false',
+      fromBeginning: process.env.KAFKA_FROM_BEGINNING === 'true',
     },
-
     sasl: {
       username: process.env.KAFKA_SASL_USERNAME,
       password: process.env.KAFKA_SASL_PASSWORD,
@@ -167,7 +163,7 @@ export const pubsubConfig: PubSubConfig = {
     keyFilename: process.env.GOOGLE_PUBSUB_KEY_FILENAME || undefined,
     apiEndpoint: process.env.GOOGLE_PUBSUB_API_ENDPOINT || undefined,
     autoCreateTopics: process.env.GOOGLE_PUBSUB_AUTO_CREATE_TOPICS !== 'false',
-    autoCreateSubscriptions: process.env.GOOGLE_PUBSUB_AUTO_CREATE_SUBSCRIPTIONS !== 'false',
     subscriptionPrefix: process.env.GOOGLE_PUBSUB_SUBSCRIPTION_PREFIX || 'sub-',
+    autoCreateSubscriptions: process.env.GOOGLE_PUBSUB_AUTO_CREATE_SUBSCRIPTIONS !== 'false',
   },
 };

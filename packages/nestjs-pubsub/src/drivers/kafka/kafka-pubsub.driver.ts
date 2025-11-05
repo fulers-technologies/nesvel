@@ -108,7 +108,7 @@ export class KafkaPubSubDriver implements IPubSubDriver {
 
     try {
       // Dynamically import kafkajs (peer dependency)
-      const { Kafka } = await this.loadKafkaJS();
+      const { Kafka, Partitioners } = await this.loadKafkaJS();
 
       // Create Kafka client
       this.kafka = new Kafka({
@@ -123,7 +123,13 @@ export class KafkaPubSubDriver implements IPubSubDriver {
       });
 
       // Create and connect producer
-      this.producer = this.kafka.producer(this.options.producer || {});
+      // Explicitly use DefaultPartitioner (Java-compatible, new default in v2.0.0)
+      // This silences the migration warning and ensures Java client compatibility
+      const producerOptions = {
+        createPartitioner: Partitioners.DefaultPartitioner,
+        ...this.options.producer,
+      };
+      this.producer = this.kafka.producer(producerOptions);
       await this.producer.connect();
 
       // Create consumer (will connect on first subscription)
