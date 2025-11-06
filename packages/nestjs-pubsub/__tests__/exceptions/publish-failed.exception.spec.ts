@@ -36,7 +36,7 @@ describe('PublishFailedException', () => {
       const cause = new Error('Connection timeout');
 
       // Act
-      const exception = new PublishFailedException(topic, cause);
+      const exception = PublishFailedException.make(topic, cause);
 
       // Assert
       expect(exception).toBeInstanceOf(PublishFailedException);
@@ -62,7 +62,7 @@ describe('PublishFailedException', () => {
       const messageData = { orderId: '123', amount: 99.99 };
 
       // Act
-      const exception = new PublishFailedException(topic, cause, messageData);
+      const exception = PublishFailedException.make(topic, cause, messageData);
 
       // Assert
       expect(exception.message).toContain('order.placed');
@@ -82,7 +82,7 @@ describe('PublishFailedException', () => {
       const cause = new Error('Failed to connect to Redis at localhost:6379: ECONNREFUSED');
 
       // Act
-      const exception = new PublishFailedException(topic, cause);
+      const exception = PublishFailedException.make(topic, cause);
 
       // Assert
       expect(exception.message).toContain('notification.sent');
@@ -110,7 +110,7 @@ describe('PublishFailedException', () => {
       const cause = new Error('Test error');
 
       // Act
-      const exception = new PublishFailedException(topic, cause);
+      const exception = PublishFailedException.make(topic, cause);
 
       // Assert
       expect(exception.metadata).toHaveProperty('topic', topic);
@@ -132,7 +132,7 @@ describe('PublishFailedException', () => {
       const messageData = { key: 'value', count: 42 };
 
       // Act
-      const exception = new PublishFailedException(topic, cause, messageData);
+      const exception = PublishFailedException.make(topic, cause, messageData);
 
       // Assert
       expect(exception.metadata?.messageData).toEqual(messageData);
@@ -150,7 +150,7 @@ describe('PublishFailedException', () => {
       const cause = new Error('Original error');
 
       // Act
-      const exception = new PublishFailedException(topic, cause);
+      const exception = PublishFailedException.make(topic, cause);
 
       // Assert
       expect(exception.metadata?.causeStack).toBeDefined();
@@ -182,7 +182,7 @@ describe('PublishFailedException', () => {
       };
 
       // Act
-      const exception = new PublishFailedException(topic, cause, messageData);
+      const exception = PublishFailedException.make(topic, cause, messageData);
 
       // Assert
       expect(exception.metadata?.messageData).toEqual(messageData);
@@ -210,7 +210,7 @@ describe('PublishFailedException', () => {
       const cause = new Error('Original error');
 
       // Act
-      const exception = new PublishFailedException(topic, cause);
+      const exception = PublishFailedException.make(topic, cause);
 
       // Assert
       // Note: Error.cause is a newer feature, check if it exists
@@ -233,9 +233,9 @@ describe('PublishFailedException', () => {
       const syntaxError = new SyntaxError('Invalid syntax');
 
       // Act
-      const exception1 = new PublishFailedException(topic, typeError);
-      const exception2 = new PublishFailedException(topic, rangeError);
-      const exception3 = new PublishFailedException(topic, syntaxError);
+      const exception1 = PublishFailedException.make(topic, typeError);
+      const exception2 = PublishFailedException.make(topic, rangeError);
+      const exception3 = PublishFailedException.make(topic, syntaxError);
 
       // Assert
       expect(exception1.message).toContain('Invalid type');
@@ -263,7 +263,7 @@ describe('PublishFailedException', () => {
       const cause = new Error('Test error');
 
       // Act
-      const exception = new PublishFailedException(topic, cause);
+      const exception = PublishFailedException.make(topic, cause);
 
       // Assert
       expect(exception instanceof PublishFailedException).toBe(true);
@@ -283,7 +283,7 @@ describe('PublishFailedException', () => {
       const cause = new Error('Test error');
 
       // Act
-      const exception = new PublishFailedException(topic, cause);
+      const exception = PublishFailedException.make(topic, cause);
 
       // Assert
       expect(exception.name).toBe('PublishFailedException');
@@ -309,8 +309,8 @@ describe('PublishFailedException', () => {
       const cause = new Error('Test error');
 
       // Act
-      const exception1 = new PublishFailedException(topic, cause);
-      const exception2 = new PublishFailedException(topic, cause, {
+      const exception1 = PublishFailedException.make(topic, cause);
+      const exception2 = PublishFailedException.make(topic, cause, {
         data: 'test',
       });
 
@@ -338,7 +338,7 @@ describe('PublishFailedException', () => {
       const topic = 'test.topic';
       const cause = new Error('Connection failed');
       const messageData = { id: '123' };
-      const exception = new PublishFailedException(topic, cause, messageData);
+      const exception = PublishFailedException.make(topic, cause, messageData);
 
       // Act
       const json = exception.toJSON();
@@ -377,7 +377,7 @@ describe('PublishFailedException', () => {
       };
 
       // Act
-      const exception = new PublishFailedException(topic, cause, messageData);
+      const exception = PublishFailedException.make(topic, cause, messageData);
 
       // Assert
       expect(exception.message).toContain('payment.processed');
@@ -396,7 +396,7 @@ describe('PublishFailedException', () => {
       const cause = new Error('ECONNREFUSED: Connection refused');
 
       // Act
-      const exception = new PublishFailedException(topic, cause);
+      const exception = PublishFailedException.make(topic, cause);
 
       // Assert
       expect(exception.message).toContain('ECONNREFUSED');
@@ -415,7 +415,7 @@ describe('PublishFailedException', () => {
       const messageData = { note: 'Contains circular reference' };
 
       // Act
-      const exception = new PublishFailedException(topic, cause, messageData);
+      const exception = PublishFailedException.make(topic, cause, messageData);
 
       // Assert
       expect(exception.message).toContain('circular structure');
@@ -436,7 +436,7 @@ describe('PublishFailedException', () => {
 
       // Act & Assert
       try {
-        throw new PublishFailedException(topic, cause, messageData);
+        throw PublishFailedException.make(topic, cause, messageData);
       } catch (error: Error | any) {
         expect(error).toBeInstanceOf(PublishFailedException);
         if (error instanceof PublishFailedException) {

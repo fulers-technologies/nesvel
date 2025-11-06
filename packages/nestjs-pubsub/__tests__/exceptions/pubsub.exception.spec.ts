@@ -36,7 +36,7 @@ describe('PubSubException', () => {
       const message = 'Test error message';
 
       // Act
-      const exception = new PubSubException(message);
+      const exception = PubSubException.make(message);
 
       // Assert
       expect(exception).toBeInstanceOf(Error);
@@ -58,7 +58,7 @@ describe('PubSubException', () => {
       const code = 'TEST_ERROR';
 
       // Act
-      const exception = new PubSubException(message, code);
+      const exception = PubSubException.make(message, code);
 
       // Assert
       expect(exception.message).toBe(message);
@@ -79,7 +79,7 @@ describe('PubSubException', () => {
       const metadata = { key: 'value', count: 42 };
 
       // Act
-      const exception = new PubSubException(message, code, metadata);
+      const exception = PubSubException.make(message, code, metadata);
 
       // Assert
       expect(exception.message).toBe(message);
@@ -95,7 +95,7 @@ describe('PubSubException', () => {
      */
     it('should capture stack trace', () => {
       // Arrange & Act
-      const exception = new PubSubException('Test error');
+      const exception = PubSubException.make('Test error');
 
       // Assert
       expect(exception.stack).toBeDefined();
@@ -119,7 +119,7 @@ describe('PubSubException', () => {
      */
     it('should be instance of Error', () => {
       // Arrange & Act
-      const exception = new PubSubException('Test error');
+      const exception = PubSubException.make('Test error');
 
       // Assert
       expect(exception instanceof Error).toBe(true);
@@ -133,7 +133,7 @@ describe('PubSubException', () => {
      */
     it('should be instance of PubSubException', () => {
       // Arrange & Act
-      const exception = new PubSubException('Test error');
+      const exception = PubSubException.make('Test error');
 
       // Assert
       expect(exception instanceof PubSubException).toBe(true);
@@ -147,7 +147,7 @@ describe('PubSubException', () => {
      */
     it('should have correct name property', () => {
       // Arrange & Act
-      const exception = new PubSubException('Test error');
+      const exception = PubSubException.make('Test error');
 
       // Assert
       expect(exception.name).toBe('PubSubException');
@@ -172,7 +172,7 @@ describe('PubSubException', () => {
       const message = 'Test error message';
       const code = 'TEST_ERROR';
       const metadata = { key: 'value' };
-      const exception = new PubSubException(message, code, metadata);
+      const exception = PubSubException.make(message, code, metadata);
 
       // Act
       const json = exception.toJSON();
@@ -195,7 +195,7 @@ describe('PubSubException', () => {
     it('should serialize to JSON without optional properties', () => {
       // Arrange
       const message = 'Test error message';
-      const exception = new PubSubException(message);
+      const exception = PubSubException.make(message);
 
       // Act
       const json = exception.toJSON();
@@ -216,7 +216,7 @@ describe('PubSubException', () => {
      */
     it('should be stringifiable with JSON.stringify', () => {
       // Arrange
-      const exception = new PubSubException('Test error', 'TEST_CODE');
+      const exception = PubSubException.make('Test error', 'TEST_CODE');
 
       // Act
       const jsonString = JSON.stringify(exception.toJSON());
@@ -247,7 +247,7 @@ describe('PubSubException', () => {
 
       // Act & Assert
       expect(() => {
-        throw new PubSubException(message);
+        throw PubSubException.make(message);
       }).toThrow(PubSubException);
     });
 
@@ -265,7 +265,7 @@ describe('PubSubException', () => {
 
       // Act
       try {
-        throw new PubSubException(message, code, metadata);
+        throw PubSubException.make(message, code, metadata);
       } catch (error: Error | any) {
         // Assert
         expect(error).toBeInstanceOf(PubSubException);
@@ -284,7 +284,7 @@ describe('PubSubException', () => {
     it('should be catchable as Error', () => {
       // Arrange & Act & Assert
       expect(() => {
-        throw new PubSubException('Test error');
+        throw PubSubException.make('Test error');
       }).toThrow(Error);
     });
   });
@@ -317,7 +317,7 @@ describe('PubSubException', () => {
       };
 
       // Act
-      const exception = new PubSubException('Test error', 'TEST', metadata);
+      const exception = PubSubException.make('Test error', 'TEST', metadata);
 
       // Assert
       expect(exception.metadata).toEqual(metadata);
@@ -335,7 +335,7 @@ describe('PubSubException', () => {
       const metadata = {};
 
       // Act
-      const exception = new PubSubException('Test error', 'TEST', metadata);
+      const exception = PubSubException.make('Test error', 'TEST', metadata);
 
       // Assert
       expect(exception.metadata).toEqual({});

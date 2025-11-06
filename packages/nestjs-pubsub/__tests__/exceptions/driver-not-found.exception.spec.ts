@@ -34,7 +34,7 @@ describe('DriverNotFoundException', () => {
       const driverType = 'custom-driver';
 
       // Act
-      const exception = new DriverNotFoundException(driverType);
+      const exception = DriverNotFoundException.make(driverType);
 
       // Assert
       expect(exception).toBeInstanceOf(DriverNotFoundException);
@@ -57,7 +57,7 @@ describe('DriverNotFoundException', () => {
       const availableDrivers = ['redis', 'kafka', 'google-pubsub'];
 
       // Act
-      const exception = new DriverNotFoundException(driverType, availableDrivers);
+      const exception = DriverNotFoundException.make(driverType, availableDrivers);
 
       // Assert
       expect(exception.message).toBe(
@@ -78,7 +78,7 @@ describe('DriverNotFoundException', () => {
       const availableDrivers: string[] = [];
 
       // Act
-      const exception = new DriverNotFoundException(driverType, availableDrivers);
+      const exception = DriverNotFoundException.make(driverType, availableDrivers);
 
       // Assert
       expect(exception.message).toBe(`Driver 'custom-driver' not found. Available drivers: `);
@@ -96,7 +96,7 @@ describe('DriverNotFoundException', () => {
       const availableDrivers = ['redis'];
 
       // Act
-      const exception = new DriverNotFoundException(driverType, availableDrivers);
+      const exception = DriverNotFoundException.make(driverType, availableDrivers);
 
       // Assert
       expect(exception.message).toBe(`Driver 'kafka' not found. Available drivers: redis`);
@@ -121,7 +121,7 @@ describe('DriverNotFoundException', () => {
       const driverType = 'custom-driver';
 
       // Act
-      const exception = new DriverNotFoundException(driverType);
+      const exception = DriverNotFoundException.make(driverType);
 
       // Assert
       expect(exception.metadata).toEqual({
@@ -142,7 +142,7 @@ describe('DriverNotFoundException', () => {
       const availableDrivers = ['redis', 'kafka'];
 
       // Act
-      const exception = new DriverNotFoundException(driverType, availableDrivers);
+      const exception = DriverNotFoundException.make(driverType, availableDrivers);
 
       // Assert
       expect(exception.metadata).toEqual({
@@ -167,7 +167,7 @@ describe('DriverNotFoundException', () => {
      */
     it('should maintain proper inheritance chain', () => {
       // Arrange & Act
-      const exception = new DriverNotFoundException('test-driver');
+      const exception = DriverNotFoundException.make('test-driver');
 
       // Assert
       expect(exception instanceof DriverNotFoundException).toBe(true);
@@ -183,7 +183,7 @@ describe('DriverNotFoundException', () => {
      */
     it('should have correct name property', () => {
       // Arrange & Act
-      const exception = new DriverNotFoundException('test-driver');
+      const exception = DriverNotFoundException.make('test-driver');
 
       // Assert
       expect(exception.name).toBe('DriverNotFoundException');
@@ -205,8 +205,8 @@ describe('DriverNotFoundException', () => {
      */
     it('should always use DRIVER_NOT_FOUND code', () => {
       // Arrange & Act
-      const exception1 = new DriverNotFoundException('driver1');
-      const exception2 = new DriverNotFoundException('driver2', ['redis']);
+      const exception1 = DriverNotFoundException.make('driver1');
+      const exception2 = DriverNotFoundException.make('driver2', ['redis']);
 
       // Assert
       expect(exception1.code).toBe('DRIVER_NOT_FOUND');
@@ -231,7 +231,7 @@ describe('DriverNotFoundException', () => {
       // Arrange
       const driverType = 'custom-driver';
       const availableDrivers = ['redis', 'kafka'];
-      const exception = new DriverNotFoundException(driverType, availableDrivers);
+      const exception = DriverNotFoundException.make(driverType, availableDrivers);
 
       // Act
       const json = exception.toJSON();
@@ -266,7 +266,7 @@ describe('DriverNotFoundException', () => {
       const availableDrivers = ['redis', 'kafka', 'google-pubsub'];
 
       // Act
-      const exception = new DriverNotFoundException(typoDriver, availableDrivers);
+      const exception = DriverNotFoundException.make(typoDriver, availableDrivers);
 
       // Assert
       expect(exception.message).toContain('reddis');
@@ -286,7 +286,7 @@ describe('DriverNotFoundException', () => {
       const availableDrivers = ['redis', 'kafka', 'google-pubsub'];
 
       // Act
-      const exception = new DriverNotFoundException(unsupportedDriver, availableDrivers);
+      const exception = DriverNotFoundException.make(unsupportedDriver, availableDrivers);
 
       // Assert
       expect(exception.message).toContain('rabbitmq');
@@ -306,7 +306,7 @@ describe('DriverNotFoundException', () => {
 
       // Act & Assert
       try {
-        throw new DriverNotFoundException(driverType, ['redis', 'kafka']);
+        throw DriverNotFoundException.make(driverType, ['redis', 'kafka']);
       } catch (error: Error | any) {
         expect(error).toBeInstanceOf(DriverNotFoundException);
         if (error instanceof DriverNotFoundException) {
