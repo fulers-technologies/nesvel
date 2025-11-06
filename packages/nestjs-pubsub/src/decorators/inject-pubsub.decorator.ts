@@ -1,4 +1,5 @@
 import { Inject } from '@nestjs/common';
+
 import { PUBSUB_SERVICE } from '@constants';
 
 /**

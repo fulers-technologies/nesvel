@@ -1,4 +1,4 @@
-import { MessageErrorHandler, MessageFilter } from '@/types/message-handler.type';
+import { MessageErrorHandler, MessageFilter } from '@/types';
 
 /**
  * Metadata structure for topic subscriptions.

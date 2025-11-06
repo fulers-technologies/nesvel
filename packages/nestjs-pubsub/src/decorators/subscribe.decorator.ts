@@ -1,7 +1,7 @@
 import { SetMetadata } from '@nestjs/common';
+
 import { PUBSUB_SUBSCRIBE_METADATA } from '@constants';
 import type { ISubscriptionMetadata } from '@interfaces/subscription-metadata.interface';
-import { MessageErrorHandler, MessageFilter } from '@/types/message-handler.type';
 import type { SubscribeOptions } from '@interfaces/subscribe-options.interface';
 
 /**
