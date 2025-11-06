@@ -71,7 +71,6 @@
   "dependencies": {
     "@mikro-orm/better-sqlite": "^6.5.9",
     "better-sqlite3": "^12.4.1",
-    "nestjs-paginate": "^12.8.3",
     "nestjs-pino": "^4.4.1",
     "pino": "^10.1.0",
     "pino-http": "^11.0.0",

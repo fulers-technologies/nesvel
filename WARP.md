@@ -201,7 +201,7 @@ Laravel Eloquent-inspired ORM built on MikroORM:
 - **Fluent Migrations**: Blueprint-based schema builder (like Laravel)
 - **CLI**: `nesvel-orm` or `bun orm` for migrations, seeders, factories
 - **PubSub**: Integrated event hooks
-- **Pagination**: Built-in via `nestjs-paginate`
+- **Pagination**: Built-in via native implementation
 
 #### `@nesvel/nestjs-swagger`
 

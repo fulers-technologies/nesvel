@@ -68,7 +68,7 @@ export const preset: Options = (() => {
     treeshake: true,
 
     // Mark all dependencies as external (not bundled)
-    external: externals,
+    external: ['figlet', ...externals],
 
     // Add license banner to JavaScript output
     banner: {
