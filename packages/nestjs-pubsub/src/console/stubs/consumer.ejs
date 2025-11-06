@@ -1,0 +1,85 @@
+import { Injectable } from '@nestjs/common';
+import { BaseConsumer, IPubSubMessage, PubSubService } from '@nesvel/nestjs-pubsub';
+
+/**
+ * <%= className %>Consumer
+ *
+ * Consumer for <%= topicName %> topic.
+ * Extends BaseConsumer for complex message processing with lifecycle hooks.
+ *
+ * BaseConsumer automatically:
+ * - Subscribes to the topic on module initialization
+ * - Calls onSubscribe() after subscription
+ * - Calls onUnsubscribe() on module destruction
+ *
+ * Use consumers when you need:
+ * - Complex message processing logic
+ * - Lifecycle control (onSubscribe/onUnsubscribe hooks)
+ * - Advanced error handling
+ * - State management across messages
+ *
+ * For simple subscriptions, use @Subscribe decorator instead.
+ */
+@Injectable()
+export class <%= className %>Consumer extends BaseConsumer<any> {
+  /**
+   * Constructor
+   *
+   * @param pubSubService - The PubSub service (injected automatically for auto-subscription)
+   */
+  constructor(pubSubService: PubSubService) {
+    super();
+    this.pubSubService = pubSubService;
+  }
+  /**
+   * Get the topic this consumer subscribes to
+   */
+  getTopic(): string {
+    return '<%= topicName %>';
+  }
+
+  /**
+   * Handle incoming messages from the topic
+   *
+   * @param message - The PubSub message containing data and metadata
+   */
+  async handle(message: IPubSubMessage<any>): Promise<void> {
+    // TODO: Implement message processing logic
+    console.log(`Processing <%= topicName %> message:`, message.data);
+
+    // Example: Process the message data
+    // await this.processOrder(message.data);
+
+    // Example: Transform and store
+    // const transformed = this.transformData(message.data);
+    // await this.repository.save(transformed);
+  }
+
+  /**
+   * Lifecycle hook called when consumer starts subscribing.
+   * Automatically called by BaseConsumer after subscription is established.
+   *
+   * Use this for initialization tasks like:
+   * - Setting up database connections
+   * - Loading configuration
+   * - Initializing caches
+   */
+  onSubscribe(): void {
+    this.logger.log(`<%= className %>Consumer subscribed to <%= topicName %>`);
+    // TODO: Add initialization logic if needed
+  }
+
+  /**
+   * Lifecycle hook called when consumer stops subscribing.
+   * Automatically called by BaseConsumer on module destruction.
+   *
+   * Use this for cleanup tasks like:
+   * - Closing connections
+   * - Flushing buffers
+   * - Saving state
+   */
+  onUnsubscribe(): void {
+    this.logger.log(`<%= className %>Consumer unsubscribed from <%= topicName %>`);
+    // TODO: Add cleanup logic if needed
+  }
+}
