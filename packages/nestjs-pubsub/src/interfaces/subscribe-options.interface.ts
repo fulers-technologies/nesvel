@@ -1,4 +1,4 @@
-import { MessageErrorHandler, MessageFilter } from '@/types/message-handler.type';
+import { MessageErrorHandler, MessageFilter } from '@/types';
 
 /**
  * Options for configuring a subscription via the @Subscribe decorator.

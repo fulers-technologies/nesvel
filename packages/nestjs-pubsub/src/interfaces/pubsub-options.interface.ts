@@ -1,8 +1,15 @@
 import { PubSubDriverType } from '@enums';
 import type { IMessageSerializer } from './message-serializer.interface';
-import type { IRedisOptions } from '../drivers/redis/redis-options.interface';
-import type { IKafkaOptions } from '../drivers/kafka/kafka-options.interface';
-import type { IGooglePubSubOptions } from '../drivers/google-pubsub/google-pubsub-options.interface';
+import type { IMessageValidator } from './validator.interface';
+import type { IPubSubMetrics } from './metrics.interface';
+import type { IMemoryOptions } from './memory-options.interface';
+import type { IRedisOptions } from './redis-options.interface';
+import type { IKafkaOptions } from './kafka-options.interface';
+import type { IGooglePubSubOptions } from './google-pubsub-options.interface';
+import type { IRetryOptions } from './retry-options.interface';
+import type { ICircuitBreakerOptions } from './circuit-breaker-options.interface';
+import type { IRateLimiterOptions } from './rate-limiter-options.interface';
+import type { IBackpressureOptions } from './backpressure-options.interface';
 
 /**
  * Configuration options for the PubSub module.
@@ -55,7 +62,7 @@ export interface IPubSubOptions {
    *
    * @default false
    */
-  global?: boolean;
+  isGlobal?: boolean;
 
   /**
    * Whether to automatically connect to the messaging backend on module initialization.
@@ -106,6 +113,16 @@ export interface IPubSubOptions {
   namespace?: string;
 
   /**
+   * Memory driver configuration.
+   *
+   * Configuration options specific to the Memory (EventEmitter2) driver.
+   * Used when driver is set to PubSubDriverType.MEMORY.
+   *
+   * @see {@link IMemoryOptions}
+   */
+  memory?: IMemoryOptions;
+
+  /**
    * Redis driver configuration.
    *
    * Configuration options specific to the Redis driver.
@@ -135,36 +152,205 @@ export interface IPubSubOptions {
    */
   googlePubSub?: IGooglePubSubOptions;
 
+  // ========================================
+  // Production Features
+  // ========================================
+
   /**
-   * Driver-specific configuration options (legacy support).
+   * Optional metrics collector for telemetry and monitoring.
    *
-   * @deprecated Use specific driver properties (redis, kafka, googlePubSub) instead.
-   * This property is maintained for backward compatibility.
+   * Provides integration with monitoring systems like Prometheus, DataDog, New Relic, etc.
+   * When provided, the PubSub system will automatically record metrics for:
+   * - Message publish/subscribe counts
+   * - Handler execution duration
+   * - Error rates
+   * - System health indicators
    *
-   * Each driver type accepts different configuration options specific to
-   * its messaging backend. These options are passed directly to the driver
-   * implementation and control connection parameters, authentication,
-   * performance tuning, and other driver-specific behaviors.
-   *
+   * @see {@link IPubSubMetrics}
    * @example
-   * For Redis:
    * ```typescript
    * {
-   *   host: 'localhost',
-   *   port: 6379,
-   *   password: 'secret',
-   *   db: 0
-   * }
-   * ```
-   *
-   * For Kafka:
-   * ```typescript
-   * {
-   *   clientId: 'my-app',
-   *   brokers: ['localhost:9092'],
-   *   groupId: 'my-consumer-group'
+   *   metrics: new PrometheusMetrics(registry)
    * }
    * ```
    */
-  driverOptions?: Record<string, any>;
+  metrics?: IPubSubMetrics;
+
+  /**
+   * Optional message validator for schema validation.
+   *
+   * Validates message payloads before publishing to ensure they conform to
+   * expected schemas or constraints. This prevents invalid data from propagating
+   * through the system.
+   *
+   * @see {@link IMessageValidator}
+   * @example
+   * ```typescript
+   * {
+   *   validator: new JoiValidator(schemas)
+   * }
+   * ```
+   */
+  validator?: IMessageValidator;
+
+  /**
+   * Retry configuration for failed operations.
+   *
+   * Extends the basic maxRetries and retryDelay options with advanced features
+   * like exponential backoff, error filtering, and custom retry logic.
+   *
+   * @see {@link IRetryOptions}
+   * @example
+   * ```typescript
+   * {
+   *   retry: {
+   *     maxRetries: 5,
+   *     retryDelay: 1000,
+   *     backoffMultiplier: 2,
+   *     retryableErrors: ['ECONNREFUSED', 'ETIMEDOUT']
+   *   }
+   * }
+   * ```
+   */
+  retry?: Partial<IRetryOptions>;
+
+  /**
+   * Circuit breaker configuration for fault tolerance.
+   *
+   * Implements the circuit breaker pattern to prevent cascading failures.
+   * When a driver repeatedly fails, the circuit opens and rejects operations
+   * immediately, giving the failing service time to recover.
+   *
+   * @see {@link ICircuitBreakerOptions}
+   * @example
+   * ```typescript
+   * {
+   *   circuitBreaker: {
+   *     failureThreshold: 5,
+   *     resetTimeout: 60000,
+   *     successThreshold: 2
+   *   }
+   * }
+   * ```
+   */
+  circuitBreaker?: ICircuitBreakerOptions;
+
+  /**
+   * Rate limiter configuration for controlling throughput.
+   *
+   * Limits the rate of message publishing per topic to prevent flooding
+   * and ensure fair resource allocation. Useful for protecting downstream
+   * services from overload.
+   *
+   * @see {@link IRateLimiterOptions}
+   * @example
+   * ```typescript
+   * {
+   *   rateLimiter: {
+   *     maxRequestsPerWindow: 100,
+   *     windowSize: 60000, // 1 minute
+   *     useSlidingWindow: true
+   *   }
+   * }
+   * ```
+   */
+  rateLimiter?: IRateLimiterOptions;
+
+  /**
+   * Backpressure configuration for flow control.
+   *
+   * Limits the number of concurrent operations to prevent system overload.
+   * When the limit is reached, new operations wait until capacity becomes
+   * available, implementing backpressure flow control.
+   *
+   * @see {@link IBackpressureOptions}
+   * @example
+   * ```typescript
+   * {
+   *   backpressure: {
+   *     maxInflight: 1000,
+   *     waitTimeout: 30000
+   *   }
+   * }
+   * ```
+   */
+  backpressure?: IBackpressureOptions;
+
+  /**
+   * Dead Letter Queue (DLQ) topic for failed messages.
+   *
+   * When a message handler fails repeatedly or encounters a fatal error,
+   * the message can be sent to a DLQ for manual inspection and recovery.
+   * This prevents message loss while avoiding infinite retry loops.
+   *
+   * @example
+   * ```typescript
+   * {
+   *   deadLetterQueue: 'failed-messages'
+   * }
+   * ```
+   */
+  deadLetterQueue?: string;
+
+  /**
+   * Whether to throw errors when message handlers fail.
+   *
+   * When true, handler errors are propagated to the caller.
+   * When false, errors are logged but do not halt execution.
+   *
+   * @default false
+   */
+  throwOnHandlerError?: boolean;
+
+  /**
+   * Maximum allowed message size in bytes.
+   *
+   * Messages exceeding this size will be rejected before publishing.
+   * This prevents large payloads from impacting system performance.
+   *
+   * @default undefined (no limit)
+   */
+  maxMessageSize?: number;
+
+  /**
+   * Maximum number of handlers allowed per topic.
+   *
+   * Prevents memory leaks from unbounded handler registration.
+   * When the limit is reached, new subscriptions will fail.
+   *
+   * @default 100
+   */
+  maxHandlersPerTopic?: number;
+
+  /**
+   * Maximum subscription registration failure rate before startup fails.
+   *
+   * During initialization, if more than this percentage of subscriptions
+   * fail to register, the application will refuse to start. This prevents
+   * starting in a degraded state.
+   *
+   * @default 0.1 (10%)
+   */
+  maxSubscriptionFailureRate?: number;
+
+  /**
+   * Enable correlation ID tracking for distributed tracing.
+   *
+   * When enabled, messages are tagged with correlation IDs that can be
+   * traced across services for debugging and monitoring.
+   *
+   * @default true
+   */
+  enableCorrelationId?: boolean;
+
+  /**
+   * Log sampling rate for high-volume topics (0.0 to 1.0).
+   *
+   * For topics with high message rates, this controls what percentage
+   * of messages are logged. 1.0 logs all messages, 0.1 logs 10%, etc.
+   * This prevents log flooding while maintaining visibility.
+   *
+   * @default 1.0 (log all)
+   */
+  logSamplingRate?: number;
 }

@@ -6,6 +6,11 @@
  * handling the specifics of its respective messaging system.
  */
 
-export * from './redis';
-export * from './kafka';
-export * from './google-pubsub';
+// Base driver with production features
+export * from './base.driver';
+
+// Concrete driver implementations
+export * from './memory.driver';
+export * from './redis.driver';
+export * from './kafka.driver';
+export * from './google.driver';

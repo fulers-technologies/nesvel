@@ -1,4 +1,4 @@
-import { RedisScaleReads } from '../../enums';
+import { RedisScaleReads } from '@enums/redis-scale-reads.enum';
 
 /**
  * Configuration options for the Redis PubSub driver.

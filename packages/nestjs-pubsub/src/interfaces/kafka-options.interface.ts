@@ -1,4 +1,6 @@
-import { KafkaSaslMechanism, KafkaCompression, KafkaLogLevel } from '../../enums';
+import { KafkaSaslMechanism } from '@enums/kafka-sasl-mechanism.enum';
+import { KafkaCompression } from '@enums/kafka-compression.enum';
+import { KafkaLogLevel } from '@enums/kafka-log-level.enum';
 
 /**
  * Configuration options for the Kafka PubSub driver.
