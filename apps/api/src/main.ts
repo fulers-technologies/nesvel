@@ -3,7 +3,16 @@ import { AppModule } from './app.module';
 import { SwaggerSetupService } from '@nesvel/nestjs-swagger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  // Enable debug logging if LOG_LEVEL is set
+  const logLevels: any[] = ['error', 'warn', 'log'];
+  // Temporarily force debug for subscription discovery
+  if (process.env.LOG_LEVEL === 'debug' || true) {
+    logLevels.push('debug', 'verbose');
+  }
+
+  const app = await NestFactory.create(AppModule, {
+    logger: logLevels,
+  });
 
   // Setup Swagger documentation
   const swaggerSetup = app.get(SwaggerSetupService);

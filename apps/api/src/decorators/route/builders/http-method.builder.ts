@@ -1,13 +1,5 @@
-import {
-  Get,
-  Post,
-  Put,
-  Patch,
-  Delete,
-  Options,
-  Head,
-  All,
-} from '@nestjs/common';
+import { Get, Post, Put, Patch, Delete, Options, Head, All } from '@nestjs/common';
+
 import { HttpMethod } from '../enums/http-method.enum';
 
 /**
@@ -63,7 +55,7 @@ import { HttpMethod } from '../enums/http-method.enum';
  */
 export function buildHttpMethodDecorator(
   method: HttpMethod | string,
-  path: string | string[] = '',
+  path: string | string[] = ''
 ): MethodDecorator {
   // Normalize method to uppercase for case-insensitive matching
   // Cast to HttpMethod for type-safe switch comparison
@@ -100,7 +92,7 @@ export function buildHttpMethodDecorator(
       // Fallback to GET for unknown/invalid methods
       // This ensures the decorator always returns a valid value
       console.warn(
-        `Unknown HTTP method "${method}", defaulting to GET. Use HttpMethod enum for type safety.`,
+        `Unknown HTTP method "${method}", defaulting to GET. Use HttpMethod enum for type safety.`
       );
       return Get(path);
   }

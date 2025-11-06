@@ -1,4 +1,5 @@
-import { Injectable, NestMiddleware, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, NestMiddleware, HttpStatus } from '@nestjs/common';
+import { HttpException } from '@nesvel/shared';
 import { Request, Response, NextFunction } from 'express';
 
 @Injectable()
@@ -8,7 +9,7 @@ export class TimeoutMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction): void {
     const timer = setTimeout(() => {
       if (!res.headersSent) {
-        throw new HttpException('Request timeout', HttpStatus.REQUEST_TIMEOUT);
+        throw HttpException.make('Request timeout', HttpStatus.REQUEST_TIMEOUT);
       }
     }, this.timeout);
 

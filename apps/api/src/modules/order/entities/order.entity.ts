@@ -1,4 +1,5 @@
-import { Entity, Property, BaseEntity, Enum } from '@nesvel/nestjs-orm';
+import { Entity, Property, PrimaryKey, Enum } from '@mikro-orm/core';
+import { BaseEntity } from '@nesvel/nestjs-orm';
 
 /**
  * Order Status Enum
@@ -42,6 +43,9 @@ export enum PaymentMethod {
  */
 @Entity({ tableName: 'orders' })
 export class Order extends BaseEntity {
+  @PrimaryKey()
+  id!: number;
+
   // ============================================================================
   // STRING FIELDS
   // ============================================================================
@@ -309,10 +313,7 @@ export class Order extends BaseEntity {
    * Check if order can be cancelled
    */
   canBeCancelled(): boolean {
-    return [
-      OrderStatus.PENDING,
-      OrderStatus.PROCESSING,
-    ].includes(this.status);
+    return [OrderStatus.PENDING, OrderStatus.PROCESSING].includes(this.status);
   }
 
   /**

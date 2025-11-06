@@ -2,11 +2,13 @@
 
 ## Overview
 
-Rate limiting has been implemented using `@nestjs/throttler` with global protection and per-route customization support.
+Rate limiting has been implemented using `@nestjs/throttler` with global
+protection and per-route customization support.
 
 ## Global Configuration
 
-Rate limiting is **automatically applied to all routes** via the `ThrottlerGuard` in `app.module.ts`.
+Rate limiting is **automatically applied to all routes** via the
+`ThrottlerGuard` in `app.module.ts`.
 
 Default limits (production):
 
@@ -186,7 +188,7 @@ export const rateLimitConfig: ThrottlerModuleOptions = {
       host: process.env.REDIS_HOST,
       port: parseInt(process.env.REDIS_PORT || '6379'),
       password: process.env.REDIS_PASSWORD,
-    }),
+    })
   ),
 };
 ```
@@ -231,11 +233,13 @@ export class ThrottlerExceptionFilter implements ExceptionFilter {
 
 ### Issue: Getting 429 errors in development
 
-**Solution**: Check `NODE_ENV` is set to `development`. Limits are much higher in dev mode.
+**Solution**: Check `NODE_ENV` is set to `development`. Limits are much higher
+in dev mode.
 
 ### Issue: Rate limiting not working
 
-**Solution**: Verify `ThrottlerGuard` is registered as `APP_GUARD` in `app.module.ts`.
+**Solution**: Verify `ThrottlerGuard` is registered as `APP_GUARD` in
+`app.module.ts`.
 
 ### Issue: Need per-user rate limiting instead of per-IP
 

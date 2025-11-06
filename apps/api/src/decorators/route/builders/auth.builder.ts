@@ -50,29 +50,24 @@ import { AuthOptions } from '../interfaces/auth-options.interface';
  * // Returns: [ApiOAuth2(['read:users', 'write:users'])]
  * ```
  */
-export function buildAuthDecorators(
-  auth: AuthOptions,
-): Array<ClassDecorator | MethodDecorator> {
+export function buildAuthDecorators(auth: AuthOptions): Array<ClassDecorator | MethodDecorator> {
   const decorators: Array<ClassDecorator | MethodDecorator> = [];
 
   // Build Bearer token authentication decorator
   if (auth.bearer) {
-    const bearerName =
-      typeof auth.bearer === 'string' ? auth.bearer : 'JWT-auth';
+    const bearerName = typeof auth.bearer === 'string' ? auth.bearer : 'JWT-auth';
     decorators.push(ApiBearerAuth(bearerName));
   }
 
   // Build API key authentication decorator
   if (auth.apiKey) {
-    const apiKeyName =
-      typeof auth.apiKey === 'string' ? auth.apiKey : 'api-key';
+    const apiKeyName = typeof auth.apiKey === 'string' ? auth.apiKey : 'api-key';
     decorators.push(ApiSecurity(apiKeyName));
   }
 
   // Build cookie authentication decorator
   if (auth.cookie) {
-    const cookieName =
-      typeof auth.cookie === 'string' ? auth.cookie : 'cookie-auth';
+    const cookieName = typeof auth.cookie === 'string' ? auth.cookie : 'cookie-auth';
     decorators.push(ApiCookieAuth(cookieName));
   }
 
@@ -104,9 +99,7 @@ export function buildAuthDecorators(
  * const decorator = buildBearerAuth('CustomJWT');
  * ```
  */
-export function buildBearerAuth(
-  name: string = 'JWT-auth',
-): ClassDecorator | MethodDecorator {
+export function buildBearerAuth(name: string = 'JWT-auth'): ClassDecorator | MethodDecorator {
   return ApiBearerAuth(name);
 }
 
@@ -123,9 +116,7 @@ export function buildBearerAuth(
  * const decorator = buildApiKeyAuth('X-API-KEY');
  * ```
  */
-export function buildApiKeyAuth(
-  name: string = 'api-key',
-): ClassDecorator | MethodDecorator {
+export function buildApiKeyAuth(name: string = 'api-key'): ClassDecorator | MethodDecorator {
   return ApiSecurity(name);
 }
 
@@ -142,9 +133,7 @@ export function buildApiKeyAuth(
  * const decorator = buildCookieAuth('session_id');
  * ```
  */
-export function buildCookieAuth(
-  name: string = 'cookie-auth',
-): ClassDecorator | MethodDecorator {
+export function buildCookieAuth(name: string = 'cookie-auth'): ClassDecorator | MethodDecorator {
   return ApiCookieAuth(name);
 }
 
@@ -161,9 +150,7 @@ export function buildCookieAuth(
  * const decorator = buildBasicAuth();
  * ```
  */
-export function buildBasicAuth(
-  name: string = 'basic',
-): ClassDecorator | MethodDecorator {
+export function buildBasicAuth(name: string = 'basic'): ClassDecorator | MethodDecorator {
   return ApiBasicAuth(name);
 }
 
@@ -180,8 +167,6 @@ export function buildBasicAuth(
  * const decorator = buildOAuth2Auth(['read:users', 'write:users']);
  * ```
  */
-export function buildOAuth2Auth(
-  scopes: string[] = [],
-): ClassDecorator | MethodDecorator {
+export function buildOAuth2Auth(scopes: string[] = []): ClassDecorator | MethodDecorator {
   return ApiOAuth2(scopes);
 }

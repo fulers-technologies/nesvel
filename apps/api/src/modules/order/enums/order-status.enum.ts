@@ -87,7 +87,7 @@ export function getLabel(value: OrderStatus): string {
  */
 export function getValues(): OrderStatus[] {
   return Object.values(OrderStatus).filter(
-    (value): value is OrderStatus => typeof value === 'string',
+    (value): value is OrderStatus => typeof value === 'string'
   );
 }
 
@@ -105,9 +105,7 @@ export function getValues(): OrderStatus[] {
  * ```
  */
 export function isValid(value: unknown): value is OrderStatus {
-  return (
-    typeof value === 'string' && getValues().includes(value as OrderStatus)
-  );
+  return typeof value === 'string' && getValues().includes(value as OrderStatus);
 }
 
 /**
@@ -153,7 +151,7 @@ export function getEntries(): Array<{ key: string; value: OrderStatus }> {
  */
 export function getKeys(): string[] {
   return Object.keys(OrderStatus).filter(
-    (key) => typeof OrderStatus[key as keyof typeof OrderStatus] === 'string',
+    (key) => typeof OrderStatus[key as keyof typeof OrderStatus] === 'string'
   );
 }
 
@@ -197,15 +195,11 @@ export function toDisplayString(value: OrderStatus): string {
  * OrderStatus.parse('invalid');  // Returns: undefined
  * ```
  */
-export function parse(
-  value: string | null | undefined,
-): OrderStatus | undefined {
+export function parse(value: string | null | undefined): OrderStatus | undefined {
   if (!value) return undefined;
 
   const normalized = value.toLowerCase();
-  const found = getValues().find(
-    (enumValue) => enumValue.toLowerCase() === normalized,
-  );
+  const found = getValues().find((enumValue) => enumValue.toLowerCase() === normalized);
 
   return found;
 }
@@ -229,7 +223,7 @@ export function parse(
  */
 export function parseOrDefault(
   value: string | null | undefined,
-  defaultValue: OrderStatus,
+  defaultValue: OrderStatus
 ): OrderStatus {
   return parse(value) ?? defaultValue;
 }
@@ -272,19 +266,15 @@ export function search(searchStr: string): OrderStatus | undefined {
  * try {
  *   OrderStatus.assertValid(userInput);
  *   // Value is valid, type is narrowed
- * } catch (error) {
+ * } catch (error: Error | any) {
  *   console.error('Invalid value');
  * }
  * ```
  */
-export function assertValid(
-  value: unknown,
-  message?: string,
-): asserts value is OrderStatus {
+export function assertValid(value: unknown, message?: string): asserts value is OrderStatus {
   if (!isValid(value)) {
     throw new Error(
-      message ||
-        `Invalid value: ${String(value)}. Valid values: ${getValues().join(', ')}`,
+      message || `Invalid value: ${String(value)}. Valid values: ${getValues().join(', ')}`
     );
   }
 }

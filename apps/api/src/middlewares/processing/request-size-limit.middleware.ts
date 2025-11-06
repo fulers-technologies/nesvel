@@ -1,4 +1,5 @@
-import { Injectable, NestMiddleware, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, NestMiddleware, HttpStatus } from '@nestjs/common';
+import { HttpException } from '@nesvel/shared';
 import { Request, Response, NextFunction } from 'express';
 
 @Injectable()
@@ -9,7 +10,7 @@ export class RequestSizeLimitMiddleware implements NestMiddleware {
     const contentLength = parseInt(req.headers['content-length'] || '0');
 
     if (contentLength > this.maxSize) {
-      throw new HttpException('Request payload too large', HttpStatus.PAYLOAD_TOO_LARGE);
+      throw HttpException.make('Request payload too large', HttpStatus.PAYLOAD_TOO_LARGE);
     }
 
     next();

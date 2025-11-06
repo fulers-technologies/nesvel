@@ -1,6 +1,7 @@
 # Route Decorator
 
-A comprehensive, enterprise-ready decorator for NestJS REST API endpoints that combines all necessary decorators into one.
+A comprehensive, enterprise-ready decorator for NestJS REST API endpoints that
+combines all necessary decorators into one.
 
 ## Features
 
@@ -239,7 +240,8 @@ uploadAvatar(@UploadedFile() file: Express.Multer.File) { }
 
 ## Complete Example
 
-See `example.controller.ts` for a comprehensive example with every possible option.
+See `example.controller.ts` for a comprehensive example with every possible
+option.
 
 ## Benefits
 

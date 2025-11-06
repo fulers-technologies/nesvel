@@ -7,7 +7,7 @@ import {
   ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { ApiTags } from '@nesvel/nestjs-swagger';
-// import { Route, HttpMethod, EndpointPreset } from '@/decorators/route';
+// import { Route, EndpointPreset } from '@/decorators/route';
 // import { paginate, Paginate, Paginated, type PaginateQuery } from '@nesvel/nestjs-orm';
 
 // import { OrderDto } from '../dtos/order.dto';
@@ -61,7 +61,7 @@ export class OrderController {
    *
    * @param orderService - The Order service for business logic
    */
-  constructor(private readonly orderService: OrderService) {}
+  // constructor(private readonly orderService: OrderService) {}
 
   // /**
   //  * List all orders with pagination, filtering, and search

@@ -83,7 +83,7 @@ export class AuthContextMiddleware implements NestMiddleware {
           }
         }
       }
-    } catch (error) {
+    } catch (error: Error | any) {
       // Log error but don't block request
       // Authentication guards will handle actual auth failures
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -154,7 +154,7 @@ export class AuthContextMiddleware implements NestMiddleware {
       const decoded = Buffer.from(payload, 'base64').toString('utf-8');
 
       return JSON.parse(decoded);
-    } catch (error) {
+    } catch (error: Error | any) {
       return null;
     }
   }

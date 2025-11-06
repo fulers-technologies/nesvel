@@ -1,6 +1,7 @@
 # Multiple Database Connections
 
-This guide explains how to configure and use multiple database connections in the NestJS API with MikroORM.
+This guide explains how to configure and use multiple database connections in
+the NestJS API with MikroORM.
 
 ## Table of Contents
 
@@ -43,7 +44,7 @@ export const databaseSecondaryConfig: MikroOrmModuleOptions = {
 
 ## Register Multiple Connections
 
-### In `app.module.ts`:
+### In `app.module.ts`
 
 ```typescript
 import { Module } from '@nestjs/common';
@@ -85,7 +86,7 @@ export class MyService {
 
     // Secondary database
     @InjectEntityManager('secondary')
-    private readonly emSecondary: EntityManager,
+    private readonly emSecondary: EntityManager
   ) {}
 
   async createUser() {
@@ -120,7 +121,7 @@ export class MyService {
     private readonly orm: MikroORM,
 
     @InjectMikroORM('secondary')
-    private readonly ormSecondary: MikroORM,
+    private readonly ormSecondary: MikroORM
   ) {}
 
   async getData() {
@@ -158,7 +159,7 @@ export class MyService {
 
     // Secondary database repository
     @InjectRepository(AnalyticsLog, 'secondary')
-    private readonly analyticsRepo: EntityRepository<AnalyticsLog>,
+    private readonly analyticsRepo: EntityRepository<AnalyticsLog>
   ) {}
 
   async findUsers() {
@@ -224,9 +225,10 @@ export class MyService {
 
 ### Running Migrations for Specific Connection
 
-Since the CLI uses `mikro-orm.config.ts` by default, you need separate config files:
+Since the CLI uses `mikro-orm.config.ts` by default, you need separate config
+files:
 
-#### Create `mikro-orm-secondary.config.ts`:
+#### Create `mikro-orm-secondary.config.ts`
 
 ```typescript
 import { Options } from '@mikro-orm/core';
@@ -238,7 +240,7 @@ const { autoLoadEntities, registerRequestContext, ...cliConfig } =
 export default cliConfig as Options;
 ```
 
-#### Run migrations:
+#### Run migrations
 
 ```bash
 # Primary database migrations
@@ -252,7 +254,7 @@ bun orm migrate --config=./mikro-orm-secondary.config.ts
 
 ## Environment Variables
 
-### Update `.env` file:
+### Update `.env` file
 
 ```bash
 # Primary Database
@@ -288,7 +290,7 @@ export class UserAnalyticsService {
     private readonly em: EntityManager,
 
     @InjectEntityManager('secondary')
-    private readonly analyticsEm: EntityManager,
+    private readonly analyticsEm: EntityManager
   ) {}
 
   /**
@@ -307,7 +309,7 @@ export class UserAnalyticsService {
         timestamp: new Date(),
       });
       await this.analyticsEm.persistAndFlush(log);
-    } catch (error) {
+    } catch (error: Error | any) {
       console.error('Failed to log analytics:', error);
     }
 
@@ -340,11 +342,14 @@ export class UserAnalyticsService {
 
 1. **Context Names**: Always use unique `contextName` for each connection
 2. **Request Context**: Only register request context for the primary database
-3. **Entity Organization**: Keep entities in separate directories (e.g., `entities/` and `entities/secondary/`)
-4. **Migration Separation**: Use separate migration directories for each database
+3. **Entity Organization**: Keep entities in separate directories (e.g.,
+   `entities/` and `entities/secondary/`)
+4. **Migration Separation**: Use separate migration directories for each
+   database
 5. **Error Handling**: Handle connection failures independently
 6. **Connection Pooling**: Configure appropriate pool sizes for each connection
-7. **Transactions**: Don't mix entities from different databases in the same transaction
+7. **Transactions**: Don't mix entities from different databases in the same
+   transaction
 
 ---
 

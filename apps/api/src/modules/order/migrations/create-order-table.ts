@@ -1,9 +1,9 @@
-import { BaseMigration, IRollbackable } from '@nesvel/nestjs-orm';
+import { BaseMigration, IRollbackable, Blueprint } from '@nesvel/nestjs-orm';
 
 /**
  * CreateOrderTable Migration
  *
- * Comprehensive demonstration of all Laravel Blueprint column types
+ * Comprehensive demonstration of all Laravel table column types
  * and features available in Nesvel ORM migrations.
  *
  * @description Generated migration with all column types
@@ -14,107 +14,105 @@ export class CreateOrderTable extends BaseMigration implements IRollbackable {
    * Run the migration (apply changes)
    *
    * Creates the orders table with examples of all available column types
-   * and modifiers from the Laravel-style Blueprint API.
+   * and modifiers from the Laravel-style table API.
    */
   up(): Promise<void> | void {
-    this.create('orders', (blueprint) => {
+    this.create('orders', (table: Blueprint) => {
       // ============================================================================
       // PRIMARY KEYS
       // ============================================================================
-      blueprint.id(); // Auto-incrementing BIGINT primary key
+      table.id(); // Auto-incrementing BIGINT primary key
 
       // ============================================================================
       // STRING TYPES
       // ============================================================================
-      blueprint.string('order_number', 50).unique().notNullable();
-      blueprint.string('customer_email').notNullable();
-      blueprint.text('notes').nullable();
-      blueprint.longText('long_description').nullable();
-      blueprint.char('status_code', 3).defaultTo('PEN');
+      table.string('order_number', 50).unique().notNullable();
+      table.string('customer_email').notNullable();
+      table.text('notes').nullable();
+      table.longText('long_description').nullable();
+      table.char('status_code', 3).defaultTo('PEN');
 
       // ============================================================================
       // NUMERIC TYPES
       // ============================================================================
-      blueprint.integer('quantity').defaultTo(1);
-      blueprint.bigInteger('tracking_number').nullable();
-      blueprint.decimal('subtotal', 10, 2).defaultTo(0);
-      blueprint.decimal('tax', 10, 2).defaultTo(0);
-      blueprint.decimal('total', 10, 2).notNullable();
-      blueprint.float('discount_percentage', 5, 2).nullable();
-      blueprint.unsignedInteger('priority').defaultTo(0);
+      table.integer('quantity').defaultTo(1);
+      table.bigInteger('tracking_number').nullable();
+      table.decimal('subtotal', 10, 2).defaultTo(0);
+      table.decimal('tax', 10, 2).defaultTo(0);
+      table.decimal('total', 10, 2).notNullable();
+      table.float('discount_percentage', 5, 2).nullable();
+      table.unsignedInteger('priority').defaultTo(0);
 
       // ============================================================================
       // BOOLEAN
       // ============================================================================
-      blueprint.boolean('is_paid').defaultTo(false);
-      blueprint.boolean('is_shipped').defaultTo(false);
-      blueprint.boolean('is_gift').defaultTo(false);
+      table.boolean('is_paid').defaultTo(false);
+      table.boolean('is_shipped').defaultTo(false);
+      table.boolean('is_gift').defaultTo(false);
 
       // ============================================================================
       // DATE & TIME
       // ============================================================================
-      blueprint.date('order_date').notNullable();
-      blueprint.datetime('shipped_at').nullable();
-      blueprint.timestamp('paid_at').nullable();
-      blueprint.timestamp('cancelled_at').nullable();
+      table.date('order_date').notNullable();
+      table.datetime('shipped_at').nullable();
+      table.timestamp('paid_at').nullable();
+      table.timestamp('cancelled_at').nullable();
 
       // ============================================================================
       // BINARY
       // ============================================================================
-      blueprint.binary('signature_data').nullable();
+      table.binary('signature_data').nullable();
 
       // ============================================================================
       // JSON
       // ============================================================================
-      blueprint.json('shipping_address').nullable();
-      blueprint.json('billing_address').nullable();
-      blueprint.json('metadata').nullable();
+      table.json('shipping_address').nullable();
+      table.json('billing_address').nullable();
+      table.json('metadata').nullable();
 
       // ============================================================================
       // UUID
       // ============================================================================
-      blueprint.uuid('external_id').unique();
+      table.uuid('external_id').unique();
 
       // ============================================================================
       // ENUM
       // ============================================================================
-      blueprint
+      table
         .enum('status', ['pending', 'processing', 'shipped', 'delivered', 'cancelled'])
         .defaultTo('pending');
-      blueprint
-        .enum('payment_method', ['credit_card', 'paypal', 'bank_transfer', 'cash'])
-        .nullable();
+      table.enum('payment_method', ['credit_card', 'paypal', 'bank_transfer', 'cash']).nullable();
 
       // ============================================================================
       // FOREIGN KEYS
       // ============================================================================
-      blueprint.foreignId('user_id').nullable();
+      table.foreignId('user_id').nullable();
       // .references('id')
       // .inTable('users')
       // .onDelete('CASCADE');
 
-      blueprint.foreignId('shipping_method_id').nullable();
+      table.foreignId('shipping_method_id').nullable();
 
       // ============================================================================
       // NETWORK (PostgreSQL)
       // ============================================================================
-      blueprint.ipAddress('customer_ip').nullable();
+      table.ipAddress('customer_ip').nullable();
 
       // ============================================================================
       // POLYMORPHIC RELATIONS
       // ============================================================================
-      blueprint.nullableMorphs('trackable'); // trackable_type, trackable_id
+      table.nullableMorphs('trackable'); // trackable_type, trackable_id
 
       // ============================================================================
       // SPECIAL COLUMNS
       // ============================================================================
-      blueprint.rememberToken(); // For stateless sessions
+      table.rememberToken(); // For stateless sessions
 
       // ============================================================================
       // TIMESTAMPS & SOFT DELETES
       // ============================================================================
-      blueprint.timestamps(); // created_at, updated_at
-      blueprint.softDeletes(); // deleted_at
+      table.timestamps(); // created_at, updated_at
+      table.softDeletes(); // deleted_at
     });
 
     this.logger.log('✓ Created orders table with all column types');

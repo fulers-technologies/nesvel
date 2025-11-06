@@ -142,14 +142,11 @@ export function generateOperationId(method: string, path: string): string {
   // Convert resource name to PascalCase
   const resourceParts = parsed.resource.split('-');
   const resourceName = resourceParts
-    .map((part, idx) =>
-      idx === 0 ? part : part.charAt(0).toUpperCase() + part.slice(1),
-    )
+    .map((part, idx) => (idx === 0 ? part : part.charAt(0).toUpperCase() + part.slice(1)))
     .join('');
 
   // Capitalize first letter of resource
-  const capitalizedResource =
-    resourceName.charAt(0).toUpperCase() + resourceName.slice(1);
+  const capitalizedResource = resourceName.charAt(0).toUpperCase() + resourceName.slice(1);
 
   // Add 'ById' suffix if path has parameters
   const suffix = parsed.hasParams ? 'ById' : '';
@@ -186,9 +183,7 @@ export function extractTags(path: string): string[] {
   const tags: string[] = [parsed.controller];
 
   // Add nested resource tags (non-parameter segments after first)
-  const nestedResources = parsed.segments
-    .slice(1)
-    .filter((segment) => !segment.startsWith(':'));
+  const nestedResources = parsed.segments.slice(1).filter((segment) => !segment.startsWith(':'));
 
   tags.push(...nestedResources);
 
@@ -240,7 +235,7 @@ function parsePathUncached(path: string): ParsedPath {
   // Validation: Path should start with '/' or be empty
   if (path && !path.startsWith('/') && path !== '') {
     console.warn(
-      `[Path Parser] Warning: Path "${path}" should start with "/" or be empty for controller-level routes.`,
+      `[Path Parser] Warning: Path "${path}" should start with "/" or be empty for controller-level routes.`
     );
   }
 
@@ -249,14 +244,14 @@ function parsePathUncached(path: string): ParsedPath {
   if (invalidParams) {
     throw new Error(
       `[Path Parser] Optional parameters (?) are not supported in NestJS routes: ${invalidParams.join(', ')}. ` +
-        'Use separate routes or query parameters instead.',
+        'Use separate routes or query parameters instead.'
     );
   }
 
   // Validation: Detect wildcard patterns and warn
   if (path.includes('*') && !path.endsWith('*')) {
     console.warn(
-      `[Path Parser] Warning: Wildcard (*) should typically be at the end of the path: "${path}"`,
+      `[Path Parser] Warning: Wildcard (*) should typically be at the end of the path: "${path}"`
     );
   }
 

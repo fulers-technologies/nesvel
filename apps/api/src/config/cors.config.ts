@@ -155,10 +155,7 @@ export const corsConfig = (): CorsConfig => {
       }
 
       // Development mode: allow all origins if CORS_ALLOW_ALL is enabled
-      if (
-        isDevelopment &&
-        process.env.CORS_ALLOW_ALL?.toLowerCase() === 'true'
-      ) {
+      if (isDevelopment && process.env.CORS_ALLOW_ALL?.toLowerCase() === 'true') {
         return callback(null, true);
       }
 

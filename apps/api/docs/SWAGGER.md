@@ -1,6 +1,7 @@
 # Swagger Documentation
 
-This API uses `@nesvel/nestjs-swagger` for API documentation via OpenAPI/Swagger.
+This API uses `@nesvel/nestjs-swagger` for API documentation via
+OpenAPI/Swagger.
 
 ## Accessing the Documentation
 
@@ -12,7 +13,8 @@ http://localhost:3000/api/docs
 
 ## Configuration
 
-Swagger configuration is defined in `src/config/swagger.config.ts`. You can customize:
+Swagger configuration is defined in `src/config/swagger.config.ts`. You can
+customize:
 
 - **Title**: API documentation title
 - **Description**: API description

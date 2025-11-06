@@ -14,7 +14,6 @@ import { databaseConfig } from './src/config/database.config';
  * @see https://mikro-orm.io/docs/configuration
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const { autoLoadEntities, registerRequestContext, ...cliConfig } =
-  databaseConfig;
+const { autoLoadEntities, registerRequestContext, ...cliConfig } = databaseConfig;
 
 export default cliConfig as Options;

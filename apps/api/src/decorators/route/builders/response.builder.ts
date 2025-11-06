@@ -99,9 +99,7 @@ import { DEFAULT_API_RESPONSE_HEADERS } from '../constants/default-headers.const
  * });
  * ```
  */
-export function buildResponseDecorators(
-  responses: ResponseOptions,
-): MethodDecorator[] {
+export function buildResponseDecorators(responses: ResponseOptions): MethodDecorator[] {
   // Initialize decorator array to collect all response decorators
   const decorators: MethodDecorator[] = [];
 
@@ -162,9 +160,7 @@ export function buildResponseDecorators(
 
   // 422 Unprocessable Entity - Request well-formed but semantically incorrect
   if (responses.unprocessableEntity) {
-    decorators.push(
-      buildUnprocessableEntityResponse(responses.unprocessableEntity),
-    );
+    decorators.push(buildUnprocessableEntityResponse(responses.unprocessableEntity));
   }
 
   // 429 Too Many Requests - Rate limit exceeded
@@ -184,9 +180,7 @@ export function buildResponseDecorators(
 
   // 503 Service Unavailable - Service temporarily unavailable (maintenance, overload)
   if (responses.serviceUnavailable) {
-    decorators.push(
-      buildServiceUnavailableResponse(responses.serviceUnavailable),
-    );
+    decorators.push(buildServiceUnavailableResponse(responses.serviceUnavailable));
   }
 
   // 504 Gateway Timeout - Upstream server failed to respond in time
@@ -296,9 +290,7 @@ function mergeResponseHeaders(options: ApiResponseOptions): ApiResponseOptions {
  * // Returns: Same object unchanged
  * ```
  */
-function normalizeResponse(
-  response: string | ApiResponseOptions,
-): ApiResponseOptions {
+function normalizeResponse(response: string | ApiResponseOptions): ApiResponseOptions {
   // Type guard: Check if input is a string
   // If string: wrap in description property
   // If object: return as-is (already in correct format)
@@ -329,9 +321,7 @@ function normalizeResponse(
  * ```
  */
 export function buildOkResponse(options: ApiResponseOptions): MethodDecorator {
-  return ApiOkResponse(
-    mergeResponseHeaders({ status: HttpStatus.OK, ...options }),
-  );
+  return ApiOkResponse(mergeResponseHeaders({ status: HttpStatus.OK, ...options }));
 }
 
 /**
@@ -357,12 +347,8 @@ export function buildOkResponse(options: ApiResponseOptions): MethodDecorator {
  * });
  * ```
  */
-export function buildCreatedResponse(
-  options: ApiResponseOptions,
-): MethodDecorator {
-  return ApiCreatedResponse(
-    mergeResponseHeaders({ status: HttpStatus.CREATED, ...options }),
-  );
+export function buildCreatedResponse(options: ApiResponseOptions): MethodDecorator {
+  return ApiCreatedResponse(mergeResponseHeaders({ status: HttpStatus.CREATED, ...options }));
 }
 
 /**
@@ -388,12 +374,8 @@ export function buildCreatedResponse(
  * });
  * ```
  */
-export function buildAcceptedResponse(
-  options: ApiResponseOptions,
-): MethodDecorator {
-  return ApiAcceptedResponse(
-    mergeResponseHeaders({ status: HttpStatus.ACCEPTED, ...options }),
-  );
+export function buildAcceptedResponse(options: ApiResponseOptions): MethodDecorator {
+  return ApiAcceptedResponse(mergeResponseHeaders({ status: HttpStatus.ACCEPTED, ...options }));
 }
 
 /**
@@ -415,12 +397,8 @@ export function buildAcceptedResponse(
  * });
  * ```
  */
-export function buildNoContentResponse(
-  options: ApiResponseOptions,
-): MethodDecorator {
-  return ApiNoContentResponse(
-    mergeResponseHeaders({ status: HttpStatus.NO_CONTENT, ...options }),
-  );
+export function buildNoContentResponse(options: ApiResponseOptions): MethodDecorator {
+  return ApiNoContentResponse(mergeResponseHeaders({ status: HttpStatus.NO_CONTENT, ...options }));
 }
 
 // ============================================================================
@@ -449,9 +427,7 @@ export function buildNoContentResponse(
  * });
  * ```
  */
-export function buildMovedPermanentlyResponse(
-  options: ApiResponseOptions,
-): MethodDecorator {
+export function buildMovedPermanentlyResponse(options: ApiResponseOptions): MethodDecorator {
   return ApiMovedPermanentlyResponse({
     status: HttpStatus.MOVED_PERMANENTLY,
     ...options,
@@ -480,9 +456,7 @@ export function buildMovedPermanentlyResponse(
  * });
  * ```
  */
-export function buildFoundResponse(
-  options: ApiResponseOptions,
-): MethodDecorator {
+export function buildFoundResponse(options: ApiResponseOptions): MethodDecorator {
   return ApiFoundResponse({ status: HttpStatus.FOUND, ...options });
 }
 
@@ -520,9 +494,7 @@ export function buildFoundResponse(
  * });
  * ```
  */
-export function buildBadRequestResponse(
-  response: string | ApiResponseOptions,
-): MethodDecorator {
+export function buildBadRequestResponse(response: string | ApiResponseOptions): MethodDecorator {
   return ApiBadRequestResponse({
     status: HttpStatus.BAD_REQUEST,
     ...normalizeResponse(response),
@@ -548,9 +520,7 @@ export function buildBadRequestResponse(
  * const decorator = buildUnauthorizedResponse('Authentication required');
  * ```
  */
-export function buildUnauthorizedResponse(
-  response: string | ApiResponseOptions,
-): MethodDecorator {
+export function buildUnauthorizedResponse(response: string | ApiResponseOptions): MethodDecorator {
   return ApiUnauthorizedResponse({
     status: HttpStatus.UNAUTHORIZED,
     ...normalizeResponse(response),
@@ -576,9 +546,7 @@ export function buildUnauthorizedResponse(
  * const decorator = buildForbiddenResponse('Admin access required');
  * ```
  */
-export function buildForbiddenResponse(
-  response: string | ApiResponseOptions,
-): MethodDecorator {
+export function buildForbiddenResponse(response: string | ApiResponseOptions): MethodDecorator {
   return ApiForbiddenResponse({
     status: HttpStatus.FORBIDDEN,
     ...normalizeResponse(response),
@@ -604,9 +572,7 @@ export function buildForbiddenResponse(
  * const decorator = buildNotFoundResponse('User not found');
  * ```
  */
-export function buildNotFoundResponse(
-  response: string | ApiResponseOptions,
-): MethodDecorator {
+export function buildNotFoundResponse(response: string | ApiResponseOptions): MethodDecorator {
   return ApiNotFoundResponse({
     status: HttpStatus.NOT_FOUND,
     ...normalizeResponse(response),
@@ -632,9 +598,7 @@ export function buildNotFoundResponse(
  * const decorator = buildConflictResponse('Email already exists');
  * ```
  */
-export function buildConflictResponse(
-  response: string | ApiResponseOptions,
-): MethodDecorator {
+export function buildConflictResponse(response: string | ApiResponseOptions): MethodDecorator {
   return ApiConflictResponse({
     status: HttpStatus.CONFLICT,
     ...normalizeResponse(response),
@@ -663,7 +627,7 @@ export function buildConflictResponse(
  * ```
  */
 export function buildUnprocessableEntityResponse(
-  response: string | ApiResponseOptions,
+  response: string | ApiResponseOptions
 ): MethodDecorator {
   return ApiUnprocessableEntityResponse({
     status: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -698,7 +662,7 @@ export function buildUnprocessableEntityResponse(
  * ```
  */
 export function buildTooManyRequestsResponse(
-  response: string | ApiResponseOptions,
+  response: string | ApiResponseOptions
 ): MethodDecorator {
   return ApiTooManyRequestsResponse({
     status: HttpStatus.TOO_MANY_REQUESTS,
@@ -733,9 +697,7 @@ export function buildTooManyRequestsResponse(
  * );
  * ```
  */
-export function buildInternalErrorResponse(
-  response: string | ApiResponseOptions,
-): MethodDecorator {
+export function buildInternalErrorResponse(response: string | ApiResponseOptions): MethodDecorator {
   return ApiInternalServerErrorResponse({
     status: HttpStatus.INTERNAL_SERVER_ERROR,
     ...normalizeResponse(response),
@@ -763,9 +725,7 @@ export function buildInternalErrorResponse(
  * );
  * ```
  */
-export function buildBadGatewayResponse(
-  response: string | ApiResponseOptions,
-): MethodDecorator {
+export function buildBadGatewayResponse(response: string | ApiResponseOptions): MethodDecorator {
   return ApiBadGatewayResponse({
     status: HttpStatus.BAD_GATEWAY,
     ...normalizeResponse(response),
@@ -799,7 +759,7 @@ export function buildBadGatewayResponse(
  * ```
  */
 export function buildServiceUnavailableResponse(
-  response: string | ApiResponseOptions,
+  response: string | ApiResponseOptions
 ): MethodDecorator {
   return ApiServiceUnavailableResponse({
     status: HttpStatus.SERVICE_UNAVAILABLE,
@@ -831,7 +791,7 @@ export function buildServiceUnavailableResponse(
  * ```
  */
 export function buildGatewayTimeoutResponse(
-  response: string | ApiResponseOptions,
+  response: string | ApiResponseOptions
 ): MethodDecorator {
   return ApiGatewayTimeoutResponse({
     status: HttpStatus.GATEWAY_TIMEOUT,
@@ -862,9 +822,7 @@ export function buildGatewayTimeoutResponse(
  * });
  * ```
  */
-export function buildDefaultResponse(
-  options: ApiResponseOptions,
-): MethodDecorator {
+export function buildDefaultResponse(options: ApiResponseOptions): MethodDecorator {
   return ApiDefaultResponse(options);
 }
 
@@ -908,13 +866,13 @@ export function buildDefaultResponse(
  * ```
  */
 export function buildCustomResponses(
-  custom: Record<number, ApiResponseOptions>,
+  custom: Record<number, ApiResponseOptions>
 ): MethodDecorator[] {
   // Convert the status code map into an array of decorators
   return Object.entries(custom).map(([statusCode, config]) =>
     // Create a generic ApiResponse with the specified status code
     // Number() ensures status is numeric (TypeScript safety)
-    ApiResponse({ status: Number(statusCode), ...config }),
+    ApiResponse({ status: Number(statusCode), ...config })
   );
 }
 
@@ -968,7 +926,7 @@ export function buildCustomResponses(
  */
 export function addCacheHeaders(
   options: ApiResponseOptions,
-  cacheControl: string,
+  cacheControl: string
 ): ApiResponseOptions {
   return {
     ...options,
@@ -1000,10 +958,7 @@ export function addCacheHeaders(
  * );
  * ```
  */
-export function addETagHeader(
-  options: ApiResponseOptions,
-  example?: string,
-): ApiResponseOptions {
+export function addETagHeader(options: ApiResponseOptions, example?: string): ApiResponseOptions {
   return {
     ...options,
     headers: {
@@ -1032,9 +987,7 @@ export function addETagHeader(
  * );
  * ```
  */
-export function addLastModifiedHeader(
-  options: ApiResponseOptions,
-): ApiResponseOptions {
+export function addLastModifiedHeader(options: ApiResponseOptions): ApiResponseOptions {
   return {
     ...options,
     headers: {

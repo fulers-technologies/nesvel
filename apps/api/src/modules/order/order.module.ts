@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
-import { OrmModule } from '@nesvel/nestjs-orm';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { SearchModule } from '@nesvel/nestjs-search';
+import { PubSubModule } from '@nesvel/nestjs-pubsub';
 
 import { Order } from '@order/entities/order.entity';
 import { OrderService } from '@order/services/order.service';
@@ -22,7 +23,10 @@ import { OrderController } from '@order/controllers/order.controller';
    */
   imports: [
     // Register Order entity
-    OrmModule.forFeature([Order]),
+    MikroOrmModule.forFeature([Order]),
+
+    // Import PubSubModule for OrderSubscriber
+    PubSubModule,
 
     // Register orders search index with comprehensive configuration
     SearchModule.registerIndex({
@@ -353,12 +357,14 @@ import { OrderController } from '@order/controllers/order.controller';
    * Providers
    * Service layer and repository for Order business logic
    */
-  providers: [OrderService, OrderSubscriber],
+  providers: [/* OrderService, */ OrderSubscriber],
 
   /**
    * Exports
    * Make OrderService available to other modules
    */
-  exports: [OrderService],
+  exports: [
+    /* OrderService */
+  ],
 })
 export class OrderModule {}

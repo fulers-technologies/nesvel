@@ -139,10 +139,7 @@ export interface RateLimitConfig {
    */
   errorMessage?:
     | string
-    | ((
-        context: ExecutionContext,
-        throttlerLimitDetail: ThrottlerLimitDetail,
-      ) => string);
+    | ((context: ExecutionContext, throttlerLimitDetail: ThrottlerLimitDetail) => string);
 
   /**
    * Custom storage implementation for rate limit data

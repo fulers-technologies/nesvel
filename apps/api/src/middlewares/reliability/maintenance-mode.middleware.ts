@@ -1,4 +1,5 @@
-import { Injectable, NestMiddleware, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, NestMiddleware, HttpStatus } from '@nestjs/common';
+import { HttpException } from '@nesvel/shared';
 import { Request, Response, NextFunction } from 'express';
 
 @Injectable()
@@ -8,7 +9,7 @@ export class MaintenanceModeMiddleware implements NestMiddleware {
     const allowedPaths = ['/health', '/healthz', '/ready', '/live'];
 
     if (isMaintenanceMode && !allowedPaths.includes(req.path)) {
-      throw new HttpException(
+      throw HttpException.make(
         {
           statusCode: HttpStatus.SERVICE_UNAVAILABLE,
           message: 'Service is currently under maintenance',

@@ -1,4 +1,5 @@
-import { Injectable, NestMiddleware, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, NestMiddleware, HttpStatus } from '@nestjs/common';
+import { HttpException } from '@nesvel/shared';
 import { Request, Response, NextFunction } from 'express';
 
 /**
@@ -91,7 +92,7 @@ export class IpFilterMiddleware implements NestMiddleware {
 
     // Check blacklist first (takes precedence)
     if (this.isBlacklisted(clientIp)) {
-      throw new HttpException(
+      throw HttpException.make(
         {
           statusCode: HttpStatus.FORBIDDEN,
           message: 'Access denied: IP address is blacklisted',
@@ -103,7 +104,7 @@ export class IpFilterMiddleware implements NestMiddleware {
 
     // If whitelist is configured, check if IP is whitelisted
     if (this.whitelist.length > 0 && !this.isWhitelisted(clientIp)) {
-      throw new HttpException(
+      throw HttpException.make(
         {
           statusCode: HttpStatus.FORBIDDEN,
           message: 'Access denied: IP address not whitelisted',

@@ -33,9 +33,7 @@ import { Type } from '@nestjs/common';
  * @param options - Operation documentation options
  * @returns ApiOperation decorator
  */
-export function buildApiOperation(
-  options: ApiOperationOptions,
-): MethodDecorator {
+export function buildApiOperation(options: ApiOperationOptions): MethodDecorator {
   return ApiOperation(options);
 }
 
@@ -102,9 +100,7 @@ export function buildApiQueries(queries: ApiQueryOptions[]): MethodDecorator[] {
  * });
  * ```
  */
-export function buildApiBody<T = any>(
-  body: ApiBodyOptions | Type<T>,
-): MethodDecorator {
+export function buildApiBody<T = any>(body: ApiBodyOptions | Type<T>): MethodDecorator {
   // If body is a class (DTO), wrap it in type configuration
   if (typeof body === 'function') {
     return ApiBody({ type: body });
@@ -130,9 +126,7 @@ export function buildApiBody<T = any>(
  * ]);
  * ```
  */
-export function buildApiHeaders(
-  headers: ApiHeaderOptions[],
-): MethodDecorator[] {
+export function buildApiHeaders(headers: ApiHeaderOptions[]): MethodDecorator[] {
   return headers.map((header) => ApiHeader(header));
 }
 
@@ -193,12 +187,8 @@ export function buildApiProduces(produces: string[]): MethodDecorator {
  * });
  * ```
  */
-export function buildApiExtensions(
-  extensions: Record<string, any>,
-): MethodDecorator[] {
-  return Object.entries(extensions).map(([key, value]) =>
-    ApiExtension(key, value),
-  );
+export function buildApiExtensions(extensions: Record<string, any>): MethodDecorator[] {
+  return Object.entries(extensions).map(([key, value]) => ApiExtension(key, value));
 }
 
 /**

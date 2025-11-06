@@ -12,10 +12,7 @@ import { RouteOptions } from '../interfaces/api-endpoint-options.interface';
  *
  * @internal
  */
-function deepMerge<T extends Record<string, any>>(
-  target: T,
-  source: Partial<T>,
-): T {
+function deepMerge<T extends Record<string, any>>(target: T, source: Partial<T>): T {
   const result = { ...target };
 
   for (const key in source) {
@@ -41,7 +38,7 @@ function deepMerge<T extends Record<string, any>>(
         // Type assertion: we know both are objects from the checks above
         (result[key] as Record<string, unknown>) = deepMerge(
           targetValue as Record<string, unknown>,
-          sourceValue as Record<string, unknown>,
+          sourceValue as Record<string, unknown>
         );
       }
       // Handle primitive values and null
@@ -90,9 +87,7 @@ function deepMerge<T extends Record<string, any>>(
  * // Result: { headers: [{ name: 'X-Default' }, { name: 'X-Custom' }] }
  * ```
  */
-export function mergeOptions(
-  ...options: Partial<RouteOptions>[]
-): Partial<RouteOptions> {
+export function mergeOptions(...options: Partial<RouteOptions>[]): Partial<RouteOptions> {
   // Start with empty object
   let result: Partial<RouteOptions> = {};
 
@@ -137,7 +132,7 @@ export function mergeOptions(
  */
 export function mergeWithDefaults(
   defaults: Partial<RouteOptions>,
-  userOptions: Partial<RouteOptions>,
+  userOptions: Partial<RouteOptions>
 ): Partial<RouteOptions> {
   // If defaults are disabled, return only user options
   if (userOptions.disableDefaults === true) {

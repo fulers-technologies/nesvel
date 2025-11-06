@@ -55,8 +55,8 @@ export class OrderSubscriber extends BaseSubscriber<Order> {
    *
    * @param pubsub - PubSub service for event publishing
    */
-  constructor(@InjectPubSub() pubsub: PubSubService) {
-    super(pubsub, {
+  constructor(@InjectPubSub() pubsubService: PubSubService) {
+    super(pubsubService, {
       enabled: true, // Enable event publishing
       logEvents: false, // Disable logging to prevent spam
       publishLoadEvents: false, // Don't publish load events

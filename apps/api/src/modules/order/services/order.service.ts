@@ -1,6 +1,5 @@
-import { EntityRepository } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { BaseService, InjectRepository } from '@nesvel/nestjs-orm';
+import { BaseService } from '@nesvel/nestjs-orm';
 
 import { Order } from '@order/entities/order.entity';
 
@@ -18,13 +17,12 @@ export class OrderService extends BaseService<Order> {
    *
    * @param em - The EntityManager
    */
-  constructor(
-    @InjectRepository(Order)
-    private readonly orderRepository: EntityRepository<Order>,
-  ) {
-    super(orderRepository);
-  }
-
+  // constructor(
+  //   @InjectRepository(Order)
+  //   private readonly orderRepository: EntityRepository<Order>
+  // ) {
+  //   // super(orderRepository);
+  // }
   /**
    * Add custom service methods here
    *

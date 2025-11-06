@@ -44,12 +44,7 @@ export const DEFAULT_CORS: CorsOptions = {
    * Response headers exposed to the client.
    * Allows access to pagination and tracing headers.
    */
-  exposedHeaders: [
-    'X-Request-ID',
-    'X-Total-Count',
-    'X-Page-Count',
-    'X-Per-Page',
-  ],
+  exposedHeaders: ['X-Request-ID', 'X-Total-Count', 'X-Page-Count', 'X-Per-Page'],
 
   /**
    * Allow credentials (cookies, authorization headers) in requests.

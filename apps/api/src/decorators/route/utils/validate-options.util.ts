@@ -9,7 +9,7 @@ import { RouteOptions } from '../interfaces/api-endpoint-options.interface';
 export class RouteOptionsValidationError extends Error {
   constructor(
     message: string,
-    public readonly conflictingOptions: string[],
+    public readonly conflictingOptions: string[]
   ) {
     super(message);
     this.name = 'RouteOptionsValidationError';
@@ -56,7 +56,7 @@ export function validateRouteOptions(options: RouteOptions): void {
     throw new RouteOptionsValidationError(
       'Server-Sent Events (SSE) endpoints cannot have request bodies. ' +
         'SSE is for server-to-client streaming only.',
-      ['sse', 'body'],
+      ['sse', 'body']
     );
   }
 
@@ -65,7 +65,7 @@ export function validateRouteOptions(options: RouteOptions): void {
   if ((options.file || options.files) && options.body) {
     console.warn(
       '[Route Decorator] Warning: File upload endpoints typically should not specify a body DTO. ' +
-        'File upload data is handled separately from the body. Consider removing the body option.',
+        'File upload data is handled separately from the body. Consider removing the body option.'
     );
   }
 
@@ -73,7 +73,7 @@ export function validateRouteOptions(options: RouteOptions): void {
   if (options.redirect && options.responses) {
     console.warn(
       '[Route Decorator] Warning: Redirect endpoints should not have response documentation. ' +
-        'The response is handled by the redirect itself.',
+        'The response is handled by the redirect itself.'
     );
   }
 
@@ -82,19 +82,15 @@ export function validateRouteOptions(options: RouteOptions): void {
     throw new RouteOptionsValidationError(
       'Server-Sent Events (SSE) endpoints cannot have redirects. ' +
         'SSE requires maintaining a persistent connection.',
-      ['sse', 'redirect'],
+      ['sse', 'redirect']
     );
   }
 
   // Validation 5: SSE endpoints should have specific produces content type
-  if (
-    options.sse &&
-    options.produces &&
-    !options.produces.includes('text/event-stream')
-  ) {
+  if (options.sse && options.produces && !options.produces.includes('text/event-stream')) {
     console.warn(
       '[Route Decorator] Warning: SSE endpoints should produce "text/event-stream". ' +
-        'The current produces configuration may not work correctly.',
+        'The current produces configuration may not work correctly.'
     );
   }
 
@@ -103,7 +99,7 @@ export function validateRouteOptions(options: RouteOptions): void {
     if (!options.consumes.includes('multipart/form-data')) {
       console.warn(
         '[Route Decorator] Warning: File upload endpoints should consume "multipart/form-data". ' +
-          'The current consumes configuration may not work correctly.',
+          'The current consumes configuration may not work correctly.'
       );
     }
   }
@@ -113,7 +109,7 @@ export function validateRouteOptions(options: RouteOptions): void {
     throw new RouteOptionsValidationError(
       'Template rendering (render) cannot be used with Server-Sent Events (SSE). ' +
         'These are mutually exclusive response types.',
-      ['render', 'sse'],
+      ['render', 'sse']
     );
   }
 
@@ -122,19 +118,15 @@ export function validateRouteOptions(options: RouteOptions): void {
     throw new RouteOptionsValidationError(
       'Cannot specify both "file" (single file) and "files" (multiple files) options. ' +
         'Choose one based on whether you need single or multiple file upload.',
-      ['file', 'files'],
+      ['file', 'files']
     );
   }
 
   // Validation 9: Cache should not be used with non-GET methods (warning only)
-  if (
-    options.cache?.enabled &&
-    options.method &&
-    options.method.toUpperCase() !== 'GET'
-  ) {
+  if (options.cache?.enabled && options.method && options.method.toUpperCase() !== 'GET') {
     console.warn(
       '[Route Decorator] Warning: Caching is typically only used with GET requests. ' +
-        `Current method is ${options.method}. Ensure this is intentional.`,
+        `Current method is ${options.method}. Ensure this is intentional.`
     );
   }
 
@@ -143,7 +135,7 @@ export function validateRouteOptions(options: RouteOptions): void {
     if (options.httpCode < 300 || options.httpCode >= 400) {
       console.warn(
         '[Route Decorator] Warning: Redirect endpoints typically use 3xx status codes. ' +
-          `Current httpCode is ${options.httpCode}.`,
+          `Current httpCode is ${options.httpCode}.`
       );
     }
   }
@@ -168,7 +160,7 @@ export function validateCacheConfig(cache: any): void {
     if (typeof cache.ttl !== 'number' || cache.ttl <= 0) {
       throw new Error(
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        `Invalid cache TTL: ${cache.ttl}. TTL must be a positive number (milliseconds).`,
+        `Invalid cache TTL: ${cache.ttl}. TTL must be a positive number (milliseconds).`
       );
     }
   }
@@ -177,7 +169,7 @@ export function validateCacheConfig(cache: any): void {
   if (cache.key && typeof cache.key !== 'string') {
     throw new Error(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      `Invalid cache key: ${cache.key}. Cache key must be a string.`,
+      `Invalid cache key: ${cache.key}. Cache key must be a string.`
     );
   }
 }
@@ -201,7 +193,7 @@ export function validateThrottleConfig(throttle: any): void {
     if (typeof throttle.limit !== 'number' || throttle.limit <= 0) {
       throw new Error(
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        `Invalid throttle limit: ${throttle.limit}. Limit must be a positive number.`,
+        `Invalid throttle limit: ${throttle.limit}. Limit must be a positive number.`
       );
     }
   }
@@ -212,7 +204,7 @@ export function validateThrottleConfig(throttle: any): void {
     if (typeof throttle.ttl !== 'number' || throttle.ttl <= 0) {
       throw new Error(
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        `Invalid throttle TTL: ${throttle.ttl}. TTL must be a positive number (seconds).`,
+        `Invalid throttle TTL: ${throttle.ttl}. TTL must be a positive number (seconds).`
       );
     }
   }

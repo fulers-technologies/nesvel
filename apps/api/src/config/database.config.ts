@@ -1,11 +1,6 @@
-import {
-  LoadStrategy,
-  BaseRepository,
-  DatabaseConfig,
-  UnderscoreNamingStrategy,
-} from '@nesvel/nestjs-orm';
 import { Migrator } from '@mikro-orm/migrations';
 import { SqliteDriver } from '@mikro-orm/sqlite';
+import { LoadStrategy, DatabaseConfig, UnderscoreNamingStrategy } from '@nesvel/nestjs-orm';
 
 /**
  * Database Configuration for NestJS + MikroORM
@@ -53,9 +48,10 @@ export const databaseConfig: DatabaseConfig = {
   /**
    * Entity discovery settings
    * Entities are auto-discovered from the specified paths
+   * Uses explicit src/dist paths to avoid picking up entities from node_modules
    */
-  entities: ['./dist/**/*.entity.js'],
   entitiesTs: ['./src/**/*.entity.ts'],
+  entities: ['./dist/src/**/*.entity.js'],
 
   /**
    * Migration settings
@@ -125,9 +121,10 @@ export const databaseConfig: DatabaseConfig = {
 
   /**
    * NestJS-specific: Auto-load entities from modules
-   * Recommended for NestJS applications
+   * Disabled because we're using explicit entity paths to avoid duplicates
+   * When using explicit entity globs, set this to false
    */
-  autoLoadEntities: true,
+  autoLoadEntities: false,
 
   /**
    * NestJS-specific: Register request context automatically
@@ -210,13 +207,7 @@ export const databaseConfig: DatabaseConfig = {
    * Custom base repository class for all entities
    * Can be set to your custom EntityRepository class
    */
-  entityRepository: BaseRepository,
-
-  /**
-   * Context name for request context
-   * Unique identifier for the request context
-   */
-  contextName: 'default',
+  entityRepository: undefined,
 
   /**
    * Identity map settings

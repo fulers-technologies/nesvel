@@ -1,21 +1,18 @@
 import * as path from 'path';
 
 import {
-  AcceptLanguageResolver,
+  I18nConfig,
+  COOKIE_OPTIONS,
+  QueryResolver,
   CookieResolver,
   HeaderResolver,
   I18nJsonLoader,
-  QueryResolver,
-} from 'nestjs-i18n';
-
-import {
-  I18nConfig,
-  COOKIE_OPTIONS,
-  DEFAULT_COOKIE_NAME,
   DEFAULT_LANGUAGE,
-  DEFAULT_QUERY_PARAM,
   FALLBACK_LANGUAGES,
+  DEFAULT_COOKIE_NAME,
+  DEFAULT_QUERY_PARAM,
   SUPPORTED_LANGUAGES,
+  AcceptLanguageResolver,
 } from '@nesvel/nestjs-i18n';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
@@ -140,10 +137,3 @@ export const i18nConfig: I18nConfig = {
    */
   throwOnMissingKey: isDevelopment,
 };
-
-/**
- * Cookie Configuration for Language Persistence
- *
- * Export cookie options for setting language cookie in controllers
- */
-export const languageCookieOptions = COOKIE_OPTIONS;
