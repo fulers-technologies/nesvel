@@ -23,7 +23,7 @@ function runTests() {
       ['Bob Johnson', 'bob@example.com', 'Viewer'],
     ],
     {
-      head: ['Name', 'Email', 'Role'],
+      header: ['Name', 'Email', 'Role'],
     },
   );
 
@@ -37,7 +37,7 @@ function runTests() {
       ['Q4 2024', 210000, 89],
     ],
     {
-      head: ['Period', 'Revenue ($)', 'Growth (%)'],
+      header: ['Period', 'Revenue ($)', 'Growth (%)'],
     },
   );
 
@@ -51,7 +51,7 @@ function runTests() {
       ['Worker', 'Stopped', '95.5%', '0.1 GB'],
     ],
     {
-      head: ['Service', 'Status', 'Uptime', 'Memory'],
+      header: ['Service', 'Status', 'Uptime', 'Memory'],
     },
   );
 
@@ -73,7 +73,7 @@ function runTests() {
       ['Caching', 'No'],
     ],
     {
-      head: ['Feature', 'Status'],
+      header: ['Feature', 'Status'],
     },
   );
   info('Table generated as string:');

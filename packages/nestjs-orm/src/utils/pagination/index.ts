@@ -1,12 +1,13 @@
 /**
- * Pagination Utilities
+ * Laravel-style Pagination System
  *
- * This module provides utilities for working with pagination in a fluent,
- * chainable manner. The builder pattern makes it easy to configure complex
- * pagination settings incrementally.
- *
- * @module pagination
+ * Export all pagination classes, interfaces, and utilities
  */
 
+// Helper utilities
 export * from './pagination';
-export * from './pagination.builder';
+
+// Paginator classes
+export * from './length-aware-paginator';
+export * from './simple-paginator';
+export * from './cursor-paginator';

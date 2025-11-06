@@ -1,4 +1,5 @@
-import { Command, CommandRunner } from 'nest-commander';
+import { Command, Group } from '@nesvel/nestjs-console';
+import { CommandRunner } from 'nest-commander';
 import { MikroORM } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
 
@@ -16,6 +17,7 @@ import { Injectable, Logger } from '@nestjs/common';
   name: 'orm:info',
   description: 'Show ORM configuration',
 })
+@Group('ORM Utilities')
 export class OrmInfoCommand extends CommandRunner {
   private readonly logger = new Logger(OrmInfoCommand.name);
 

@@ -2,9 +2,9 @@
  * Table Options
  */
 export interface TableOptions {
-  head?: string[];
+  header?: string[];
   style?: {
-    head?: string[];
+    header?: string[];
     border?: string[];
   };
 }

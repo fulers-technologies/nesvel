@@ -55,9 +55,9 @@ export class IndexRegistryService implements OnModuleInit {
   constructor(
     @InjectSearchService()
     private readonly searchService: SearchService,
-    private readonly namingService: IndexNamingService,
     @Inject(SEARCH_OPTIONS)
     private readonly options: SearchModuleOptions,
+    private readonly namingService: IndexNamingService,
   ) {}
 
   /**
@@ -205,7 +205,7 @@ export class IndexRegistryService implements OnModuleInit {
       } else {
         this.logger.debug(`Skipping auto-create for index: ${name}`);
       }
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(
         `Failed to initialize index: ${name}`,
         error instanceof Error ? error.stack : error,
@@ -453,7 +453,7 @@ export class IndexRegistryService implements OnModuleInit {
             'These are only applied during index creation.',
         );
       }
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(
         `Failed to apply Elasticsearch settings for index ${name}:`,
         error instanceof Error ? error.stack : error,
@@ -551,7 +551,7 @@ export class IndexRegistryService implements OnModuleInit {
       } else {
         this.logger.debug(`No Meilisearch settings to apply for index: ${name}`);
       }
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(
         `Failed to apply Meilisearch settings for index ${name}:`,
         error instanceof Error ? error.stack : error,

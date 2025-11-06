@@ -232,7 +232,7 @@ export class ValidationException extends BaseException {
     entity?: string,
   ): ValidationException {
     const errors = new Map([[field, messages]]);
-    return new ValidationException(errors, entity);
+    return ValidationException.make(errors, entity);
   }
 
   /**

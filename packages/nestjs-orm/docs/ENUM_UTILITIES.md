@@ -208,7 +208,7 @@ async findByStatus(@Query('status') statusString: string) {
   const status = parse(statusString);
 
   if (!status) {
-    throw new BadRequestException('Invalid status');
+    throw BadRequestException.make('Invalid status');
   }
 
   return this.orderService.findByStatus(status);
@@ -295,7 +295,7 @@ Asserts that a value is valid, throwing an error if not. Provides TypeScript typ
 try {
   assertValid('pending');
   // Type is now narrowed to OrderStatus
-} catch (error) {
+} catch (error: Error | any) {
   // Throws: Invalid OrderStatus value: xyz. Valid values: pending, processing, completed, cancelled
 }
 
@@ -391,7 +391,7 @@ export class OrderController {
     const status = statusString ? parse(statusString) : undefined;
 
     if (statusString && !status) {
-      throw new BadRequestException(`Invalid status. Valid values: ${getValues().join(', ')}`);
+      throw BadRequestException.make(`Invalid status. Valid values: ${getValues().join(', ')}`);
     }
 
     return this.orderService.findAll(status);

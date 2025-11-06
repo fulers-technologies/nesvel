@@ -253,7 +253,7 @@ displayTable(
     ['Jane Smith', 'jane@example.com', 'Editor'],
   ],
   {
-    head: ['Name', 'Email', 'Role'],
+    header: ['Name', 'Email', 'Role'],
   },
 );
 ```

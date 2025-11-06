@@ -1,4 +1,4 @@
-import { Command } from '@nesvel/nestjs-console';
+import { Command, Group } from '@nesvel/nestjs-console';
 import { BaseOrmMakeCommand } from '../base-orm-make.command';
 
 /**
@@ -52,6 +52,7 @@ import { BaseOrmMakeCommand } from '../base-orm-make.command';
   arguments: '<name>',
   description: 'Create a new TypeScript enum',
 })
+@Group('Code Generation')
 export class MakeEnumCommand extends BaseOrmMakeCommand {
   /**
    * Execute the make:enum command
@@ -110,9 +111,9 @@ export class MakeEnumCommand extends BaseOrmMakeCommand {
     await this.generateFromStub(
       name,
       {
+        suffix: 'enum',
         stubName: 'enum',
         outputDir: 'src/enums',
-        suffix: 'enum',
       },
       {
         enumName,

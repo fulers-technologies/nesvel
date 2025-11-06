@@ -20,7 +20,7 @@ import type { TableOptions } from '@/interfaces/table-options.interface';
  *     ['Jane Smith', 'user', 'active'],
  *   ],
  *   {
- *     head: ['Name', 'Role', 'Status'],
+ *     header: ['Name', 'Role', 'Status'],
  *   }
  * );
  *
@@ -30,9 +30,9 @@ import type { TableOptions } from '@/interfaces/table-options.interface';
 export function table(rows: Array<Array<string | number>>, options: TableOptions = {}): string {
   const theme = getTheme();
   const tableInstance = new Table({
-    head: options.head?.map((h) => theme.highlight(theme.primary(h))),
+    head: options.header?.map((h) => theme.highlight(theme.primary(h))),
     style: {
-      head: [],
+      header: [],
       border: ['gray'],
       ...options.style,
     },
@@ -62,7 +62,7 @@ export function table(rows: Array<Array<string | number>>, options: TableOptions
  *     ['Camera 2', 'inactive', '2025-01-02'],
  *   ],
  *   {
- *     head: ['Name', 'Status', 'Created'],
+ *     header: ['Name', 'Status', 'Created'],
  *   }
  * );
  * ```

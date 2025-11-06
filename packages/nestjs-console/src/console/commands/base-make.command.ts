@@ -1,13 +1,13 @@
-import { Injectable, Optional } from '@nestjs/common';
-import { Option } from 'nest-commander';
-import { ModuleRef } from '@nestjs/core';
-import * as ejs from 'ejs';
 import * as fs from 'fs';
+import * as ejs from 'ejs';
 import * as path from 'path';
-import { success, error as errorLog } from '@/messages';
+import { Option } from 'nest-commander';
+import { Injectable } from '@nestjs/common';
+
 import { spinner } from '@/prompts';
-import type { MakeCommandOptions } from '@/interfaces/make-command-options.interface';
 import { BaseCommand } from './base.command';
+import { success, error as errorLog } from '@/messages';
+import type { MakeCommandOptions } from '@/interfaces/make-command-options.interface';
 
 /**
  * Base Make Command
@@ -142,7 +142,7 @@ export abstract class BaseMakeCommand extends BaseCommand {
       return (
         tsconfig.compilerOptions?.paths && Object.keys(tsconfig.compilerOptions.paths).length > 0
       );
-    } catch (error) {
+    } catch (error: Error | any) {
       return false;
     }
   }
@@ -343,6 +343,131 @@ export abstract class BaseMakeCommand extends BaseCommand {
   protected toVariableName(str: string): string {
     const className = this.toClassName(str);
     return className.charAt(0).toLowerCase() + className.slice(1);
+  }
+
+  /**
+   * Convert string to kebab-case format.
+   *
+   * Transforms input strings into kebab-case by converting to lowercase
+   * and separating words with hyphens. This is an alias for toFileName
+   * for clarity when the output isn't specifically a file name.
+   *
+   * @param str - The string to convert
+   * @returns kebab-case formatted string
+   *
+   * @example
+   * toKebabCase('UserProfile') // returns 'user-profile'
+   * toKebabCase('postComment') // returns 'post-comment'
+   * toKebabCase('API_KEY') // returns 'api-key'
+   */
+  protected toKebabCase(str: string): string {
+    return this.toFileName(str);
+  }
+
+  /**
+   * Convert string to snake_case format.
+   *
+   * Transforms input strings into snake_case by converting to lowercase
+   * and separating words with underscores. Commonly used for database
+   * column names, environment variables, or constants.
+   *
+   * @param str - The string to convert
+   * @returns snake_case formatted string
+   *
+   * @example
+   * toSnakeCase('UserProfile') // returns 'user_profile'
+   * toSnakeCase('postComment') // returns 'post_comment'
+   * toSnakeCase('API-KEY') // returns 'api_key'
+   */
+  protected toSnakeCase(str: string): string {
+    return str
+      .replace(/([A-Z])/g, '_$1')
+      .toLowerCase()
+      .replace(/^_/, '')
+      .replace(/-/g, '_');
+  }
+
+  /**
+   * Convert string to CONSTANT_CASE format.
+   *
+   * Transforms input strings into CONSTANT_CASE by converting to uppercase
+   * and separating words with underscores. Used for constants, environment
+   * variables, and enum values.
+   *
+   * @param str - The string to convert
+   * @returns CONSTANT_CASE formatted string
+   *
+   * @example
+   * toConstantCase('userProfile') // returns 'USER_PROFILE'
+   * toConstantCase('post-comment') // returns 'POST_COMMENT'
+   * toConstantCase('api_key') // returns 'API_KEY'
+   */
+  protected toConstantCase(str: string): string {
+    return this.toSnakeCase(str).toUpperCase();
+  }
+
+  /**
+   * Convert string to PascalCase format.
+   *
+   * This is an alias for toClassName for clarity when the output
+   * isn't specifically a class name but needs PascalCase formatting.
+   *
+   * @param str - The string to convert
+   * @returns PascalCase formatted string
+   *
+   * @example
+   * toPascalCase('user-profile') // returns 'UserProfile'
+   * toPascalCase('post_comment') // returns 'PostComment'
+   */
+  protected toPascalCase(str: string): string {
+    return this.toClassName(str);
+  }
+
+  /**
+   * Convert string to camelCase format.
+   *
+   * This is an alias for toVariableName for clarity when the output
+   * isn't specifically a variable name but needs camelCase formatting.
+   *
+   * @param str - The string to convert
+   * @returns camelCase formatted string
+   *
+   * @example
+   * toCamelCase('user-profile') // returns 'userProfile'
+   * toCamelCase('PostComment') // returns 'postComment'
+   */
+  protected toCamelCase(str: string): string {
+    return this.toVariableName(str);
+  }
+
+  /**
+   * Convert string to Title Case format.
+   *
+   * Transforms input strings into Title Case by capitalizing the first
+   * letter of each word and separating with spaces. Useful for display
+   * names, titles, and human-readable labels.
+   *
+   * @param str - The string to convert
+   * @returns Title Case formatted string
+   *
+   * @example
+   * toTitleCase('user-profile') // returns 'User Profile'
+   * toTitleCase('postComment') // returns 'Post Comment'
+   * toTitleCase('API_KEY') // returns 'Api Key'
+   */
+  protected toTitleCase(str: string): string {
+    return str
+      .split(/[-_]/) // Split on hyphens and underscores
+      .map((part) => {
+        // Handle camelCase by inserting spaces before capitals
+        return part
+          .replace(/([A-Z])/g, ' $1')
+          .trim()
+          .split(' ')
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+          .join(' ');
+      })
+      .join(' ');
   }
 
   /**

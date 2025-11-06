@@ -172,7 +172,7 @@ function demonstrateThemeWithTable() {
         ['Custom Colors', 'Yes'],
       ],
       {
-        head: ['Setting', 'Status'],
+        header: ['Setting', 'Status'],
       },
     );
   }

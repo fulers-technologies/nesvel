@@ -1,4 +1,4 @@
-import { Command } from '@nesvel/nestjs-console';
+import { Command, Group } from '@nesvel/nestjs-console';
 import { BaseOrmMakeCommand } from '../base-orm-make.command';
 
 /**
@@ -24,6 +24,7 @@ import { BaseOrmMakeCommand } from '../base-orm-make.command';
   arguments: '<name>',
   description: 'Create a new repository',
 })
+@Group('Code Generation')
 export class MakeRepositoryCommand extends BaseOrmMakeCommand {
   /**
    * Execute the make:repository command
@@ -49,9 +50,9 @@ export class MakeRepositoryCommand extends BaseOrmMakeCommand {
     await this.generateFromStub(
       name,
       {
+        suffix: 'repository',
         stubName: 'repository',
         outputDir: 'src/repositories',
-        suffix: 'repository',
       },
       {
         modelName,

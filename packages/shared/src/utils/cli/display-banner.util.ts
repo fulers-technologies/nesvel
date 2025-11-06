@@ -1,4 +1,4 @@
-import * as figlet from 'figlet';
+import figlet from 'figlet';
 
 /**
  * Display CLI Banner

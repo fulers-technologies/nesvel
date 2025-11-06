@@ -253,7 +253,7 @@ export class SearchableSubscriber<T extends BaseEntity = BaseEntity> implements 
       });
 
       this.logger.debug(`Indexed entity ${entity.constructor.name} with id ${(entity as any).id}`);
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(`Failed to index entity after create:`, error);
       // Don't throw - allow entity creation to succeed even if indexing fails
       // This ensures database operations are never blocked by search engine issues
@@ -323,7 +323,7 @@ export class SearchableSubscriber<T extends BaseEntity = BaseEntity> implements 
           `Removed entity ${entity.constructor.name} with id ${entityId} (no longer searchable)`,
         );
       }
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(`Failed to update entity in search index:`, error);
       // Don't throw - allow entity update to succeed even if search sync fails
     }
@@ -377,7 +377,7 @@ export class SearchableSubscriber<T extends BaseEntity = BaseEntity> implements 
       // Remove document from search engine
       await this.searchService!.deleteDocument(indexName, entityId);
       this.logger.debug(`Deleted entity ${entity.constructor.name} with id ${entityId} from index`);
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(`Failed to delete entity from search index:`, error);
       // Don't throw - allow entity deletion to succeed even if search removal fails
       // The document may not exist in search engine (already deleted or never indexed)

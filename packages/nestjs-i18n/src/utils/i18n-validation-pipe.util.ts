@@ -1,7 +1,8 @@
-import type { ValidationError } from '@nestjs/common';
 import { ValidationPipe } from '@nestjs/common';
+import type { ValidationError } from '@nestjs/common';
 import type { ValidationPipeOptions } from '@nestjs/common';
-import { I18nContext, I18nValidationException, I18nValidationExceptionFilter } from 'nestjs-i18n';
+
+import { I18nValidationException, I18nValidationExceptionFilter } from '@/exceptions';
 
 /**
  * I18n Validation Pipe
@@ -43,7 +44,7 @@ export function createI18nValidationPipe(options?: ValidationPipeOptions): Valid
   return new ValidationPipe({
     ...options,
     exceptionFactory: (errors: ValidationError[]) => {
-      return new I18nValidationException(errors);
+      return I18nValidationException.make(errors);
     },
   });
 }

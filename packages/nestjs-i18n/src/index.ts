@@ -23,13 +23,15 @@
 export { I18nContext, I18nService, I18n, I18nLang, I18nJsonLoader, I18nLoader } from 'nestjs-i18n';
 
 export type {
-  I18nResolver,
-  I18nOptions,
-  I18nOptionsWithoutResolvers,
-  TranslateOptions,
   Path,
   PathValue,
+  I18nOptions,
+  I18nResolver,
+  TranslateOptions,
+  I18nOptionsWithoutResolvers,
 } from 'nestjs-i18n';
+
+export { QueryResolver, CookieResolver, HeaderResolver, AcceptLanguageResolver } from 'nestjs-i18n';
 
 // Module (our custom wrapper)
 export * from './i18n.module';
@@ -42,3 +44,6 @@ export * from './interfaces';
 
 // Utilities
 export * from './utils';
+
+// Exceptions
+export * from './exceptions';

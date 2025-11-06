@@ -1,7 +1,7 @@
 #!/usr/bin/env ts-node
 /**
  * Test script for Search CLI commands
- * 
+ *
  * This script tests both Meilisearch and Elasticsearch providers.
  */
 
@@ -40,41 +40,44 @@ async function testProvider(providerName: string, searchService: SearchService):
     // Test 3: Create a test index with documents
     const testIndexName = `test_${providerName.toLowerCase()}_products`;
     console.log(`\nTest 3: Creating test index "${testIndexName}" with documents...`);
-    
+
     try {
       // Check if index exists and delete it first
       // Note: Skip this check for Meilisearch since indices are created async
-      if (providerName !== 'Meilisearch' && await searchService.indexExists(testIndexName)) {
+      if (providerName !== 'Meilisearch' && (await searchService.indexExists(testIndexName))) {
         console.log('⚠  Index already exists, deleting it first...');
         await searchService.deleteIndex(testIndexName);
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 500));
       }
 
       // Create index with provider-specific settings
-      const settings = providerName === 'Elasticsearch' ? {
-        // Elasticsearch uses mappings instead of Meilisearch-style attributes
-        mappings: {
-          properties: {
-            id: { type: 'keyword' },
-            name: { type: 'text' },
-            description: { type: 'text' },
-            category: { type: 'keyword' },
-            price: { type: 'float' },
-          },
-        },
-      } : {
-        // Meilisearch settings
-        searchableAttributes: ['name', 'description'],
-        filterableAttributes: ['category', 'price'],
-        sortableAttributes: ['price', 'name'],
-      };
-      
+      const settings =
+        providerName === 'Elasticsearch'
+          ? {
+              // Elasticsearch uses mappings instead of Meilisearch-style attributes
+              mappings: {
+                properties: {
+                  id: { type: 'keyword' },
+                  name: { type: 'text' },
+                  description: { type: 'text' },
+                  category: { type: 'keyword' },
+                  price: { type: 'float' },
+                },
+              },
+            }
+          : {
+              // Meilisearch settings
+              searchableAttributes: ['name', 'description'],
+              filterableAttributes: ['category', 'price'],
+              sortableAttributes: ['price', 'name'],
+            };
+
       await searchService.createIndex(testIndexName, settings);
       console.log('✓ Test index created');
-      
+
       // Wait for index to be ready (Meilisearch is async, Elasticsearch is sync)
       const waitTime = providerName === 'Meilisearch' ? 2000 : 1000;
-      await new Promise(resolve => setTimeout(resolve, waitTime));
+      await new Promise((resolve) => setTimeout(resolve, waitTime));
       console.log(`⏳ Waited ${waitTime}ms for index to be ready`);
 
       // Index some test documents
@@ -282,7 +285,7 @@ async function testProvider(providerName: string, searchService: SearchService):
       return true;
     } catch (error: any) {
       console.error(`\n❌ Test failed for ${providerName}:`, error.message);
-      
+
       // Try to clean up
       try {
         if (await searchService.indexExists(testIndexName)) {
@@ -292,7 +295,7 @@ async function testProvider(providerName: string, searchService: SearchService):
       } catch (cleanupError) {
         console.error('Failed to clean up:', cleanupError);
       }
-      
+
       return false;
     }
   } catch (error: any) {
@@ -308,7 +311,7 @@ async function checkService(name: string, url: string): Promise<boolean> {
   try {
     const response = await fetch(url);
     return response.ok;
-  } catch (error) {
+  } catch (error: Error | any) {
     return false;
   }
 }
@@ -319,13 +322,13 @@ async function checkService(name: string, url: string): Promise<boolean> {
 async function main() {
   console.log('Search Provider Test Suite');
   console.log('='.repeat(60));
-  
+
   const results: { provider: string; success: boolean }[] = [];
 
   // Test Meilisearch
   console.log('\nChecking Meilisearch availability...');
   const meilisearchAvailable = await checkService('Meilisearch', 'http://localhost:7700/health');
-  
+
   if (meilisearchAvailable) {
     console.log('✓ Meilisearch is running');
     try {
@@ -334,7 +337,7 @@ async function main() {
       });
       const provider = new MeilisearchProvider(client);
       const searchService = new SearchService(provider);
-      
+
       const success = await testProvider('Meilisearch', searchService);
       results.push({ provider: 'Meilisearch', success });
     } catch (error: any) {
@@ -349,7 +352,7 @@ async function main() {
   // Test Elasticsearch
   console.log('\n\nChecking Elasticsearch availability...');
   const elasticsearchAvailable = await checkService('Elasticsearch', 'http://localhost:9200');
-  
+
   if (elasticsearchAvailable) {
     console.log('✓ Elasticsearch is running');
     try {
@@ -358,7 +361,7 @@ async function main() {
       });
       const provider = new ElasticsearchProvider(client);
       const searchService = new SearchService(provider);
-      
+
       const success = await testProvider('Elasticsearch', searchService);
       results.push({ provider: 'Elasticsearch', success });
     } catch (error: any) {
@@ -367,14 +370,16 @@ async function main() {
     }
   } else {
     console.log('⚠  Elasticsearch is not running at http://localhost:9200');
-    console.log('   Start it with: docker run -p 9200:9200 -e "discovery.type=single-node" elasticsearch:8.11.0');
+    console.log(
+      '   Start it with: docker run -p 9200:9200 -e "discovery.type=single-node" elasticsearch:8.11.0',
+    );
   }
 
   // Print summary
   console.log('\n\n' + '='.repeat(60));
   console.log('Test Summary');
   console.log('='.repeat(60));
-  
+
   if (results.length === 0) {
     console.log('⚠  No search providers were tested');
     console.log('   Please start Meilisearch or Elasticsearch and try again');
@@ -386,8 +391,8 @@ async function main() {
     console.log(`${status} - ${provider}`);
   });
 
-  const allPassed = results.every(r => r.success);
-  
+  const allPassed = results.every((r) => r.success);
+
   console.log('\n' + '='.repeat(60));
   if (allPassed) {
     console.log('✅ All tests passed!');

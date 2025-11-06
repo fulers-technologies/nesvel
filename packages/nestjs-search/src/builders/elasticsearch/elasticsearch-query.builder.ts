@@ -69,7 +69,6 @@ import type { SearchOptions } from '@/interfaces/search-options.interface';
  * ```
  */
 export class ElasticsearchQueryBuilder<T = any> extends BaseQueryBuilder<T> {
-
   /**
    * Get the raw Elasticsearch DSL query
    *

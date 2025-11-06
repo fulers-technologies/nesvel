@@ -146,7 +146,7 @@ export class MeilisearchProvider implements ISearchProvider {
     try {
       // Extract primaryKey from settings (if provided) or use default 'id'
       const primaryKey = settings?.primaryKey || 'id';
-      
+
       // Create index with primary key
       await this.client.createIndex(indexName, { primaryKey });
 
@@ -154,7 +154,7 @@ export class MeilisearchProvider implements ISearchProvider {
       if (settings) {
         // Remove primaryKey from settings as it's not a valid updateSettings field
         const { primaryKey: _, ...validSettings } = settings;
-        
+
         if (Object.keys(validSettings).length > 0) {
           const index = this.getIndex(indexName);
           await index.updateSettings(validSettings);
@@ -202,7 +202,7 @@ export class MeilisearchProvider implements ISearchProvider {
     try {
       await this.client.deleteIndex(indexName);
       this.logger.log(`Deleted index: ${indexName}`);
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(`Failed to delete index ${indexName}:`, error);
       throw error;
     }
@@ -287,7 +287,7 @@ export class MeilisearchProvider implements ISearchProvider {
               documentCount: stats.numberOfDocuments,
               isIndexing: stats.isIndexing,
             };
-          } catch (error) {
+          } catch (error: Error | any) {
             // If we can't get stats, return basic info
             return {
               uid: indexInfo.uid,
@@ -304,7 +304,7 @@ export class MeilisearchProvider implements ISearchProvider {
 
       this.logger.debug(`Listed ${indices.length} indices`);
       return indices;
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error('Failed to list indices:', error);
       throw error;
     }
@@ -338,7 +338,7 @@ export class MeilisearchProvider implements ISearchProvider {
       // Add single document (wrapped in array for API consistency)
       await index.addDocuments([document]);
       this.logger.debug(`Indexed document ${document.id} in ${indexName}`);
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(`Failed to index document in ${indexName}:`, error);
       throw error;
     }
@@ -374,7 +374,7 @@ export class MeilisearchProvider implements ISearchProvider {
       // Bulk add documents
       await index.addDocuments(documents);
       this.logger.log(`Bulk indexed ${documents.length} documents in ${indexName}`);
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(`Failed to bulk index documents in ${indexName}:`, error);
       throw error;
     }
@@ -409,7 +409,7 @@ export class MeilisearchProvider implements ISearchProvider {
       // Update document (upsert behavior - creates if doesn't exist)
       await index.updateDocuments([{ id: documentId, ...partialDocument }]);
       this.logger.debug(`Updated document ${documentId} in ${indexName}`);
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(`Failed to update document ${documentId} in ${indexName}:`, error);
       throw error;
     }
@@ -435,7 +435,7 @@ export class MeilisearchProvider implements ISearchProvider {
       const index = this.getIndex(indexName);
       await index.deleteDocument(documentId);
       this.logger.debug(`Deleted document ${documentId} from ${indexName}`);
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(`Failed to delete document ${documentId} from ${indexName}:`, error);
       throw error;
     }
@@ -522,7 +522,7 @@ export class MeilisearchProvider implements ISearchProvider {
         processingTimeMs: result.processingTimeMs, // Query execution time
         query, // Original query string
       };
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(`Failed to search in ${indexName}:`, error);
       throw error;
     }
@@ -590,7 +590,7 @@ export class MeilisearchProvider implements ISearchProvider {
         documentCount: stats.numberOfDocuments, // Total documents in index
         ...stats, // Include all Meilisearch stats
       };
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(`Failed to get stats for index ${indexName}:`, error);
       throw error;
     }
@@ -620,7 +620,7 @@ export class MeilisearchProvider implements ISearchProvider {
       // Delete all documents from the index
       await index.deleteAllDocuments();
       this.logger.log(`Cleared all documents from index: ${indexName}`);
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(`Failed to clear index ${indexName}:`, error);
       throw error;
     }
@@ -662,7 +662,7 @@ export class MeilisearchProvider implements ISearchProvider {
       const index = this.getIndex(indexName);
       await index.updateSettings(settings);
       this.logger.log(`Updated settings for index: ${indexName}`);
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(`Failed to update settings for index ${indexName}:`, error);
       throw error;
     }
@@ -837,7 +837,7 @@ export class MeilisearchProvider implements ISearchProvider {
               await this.indexDocuments(tempIndexName, batch);
               indexedDocuments += batch.length;
               this.logger.debug(`Indexed batch: ${indexedDocuments}/${totalDocuments}`);
-            } catch (error) {
+            } catch (error: Error | any) {
               failedDocuments += batch.length;
               this.logger.error(`Failed to index batch:`, error);
             }
@@ -850,7 +850,7 @@ export class MeilisearchProvider implements ISearchProvider {
           try {
             await this.indexDocuments(tempIndexName, batch);
             indexedDocuments += batch.length;
-          } catch (error) {
+          } catch (error: Error | any) {
             failedDocuments += batch.length;
             this.logger.error(`Failed to index final batch:`, error);
           }
@@ -868,7 +868,7 @@ export class MeilisearchProvider implements ISearchProvider {
             await this.indexDocuments(tempIndexName, batch);
             indexedDocuments += batch.length;
             this.logger.debug(`Indexed ${indexedDocuments}/${totalDocuments} documents`);
-          } catch (error) {
+          } catch (error: Error | any) {
             failedDocuments += batch.length;
             this.logger.error(`Failed to index batch ${i}-${i + batch.length}:`, error);
           }
@@ -917,7 +917,7 @@ export class MeilisearchProvider implements ISearchProvider {
         newIndexName: tempIndexName,
         duration,
       };
-    } catch (error) {
+    } catch (error: Error | any) {
       const duration = Date.now() - startTime;
       this.logger.error(`Reindex failed after ${duration}ms:`, error);
 

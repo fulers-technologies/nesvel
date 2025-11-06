@@ -7,6 +7,7 @@ import {
   warning,
   newLine,
   confirm,
+  Group,
 } from '@nesvel/nestjs-console';
 import { Injectable } from '@nestjs/common';
 import { Command, Option } from 'nest-commander';
@@ -47,6 +48,7 @@ import { InjectSearchService } from '@/decorators';
     index: 'Name of the index to clear',
   },
 })
+@Group('Index Management')
 export class IndexClearCommand extends BaseCommand {
   /**
    * Skip confirmation prompt
@@ -161,7 +163,7 @@ export class IndexClearCommand extends BaseCommand {
       info(`${documentCount} document(s) were removed.`);
       newLine();
       info('Use "index:status ' + indexName + '" to verify the index is empty.');
-    } catch (err) {
+    } catch (err: Error | any) {
       if (spinnerInstance) spinnerInstance.stop();
 
       error(`Failed to clear index: ${err instanceof Error ? err.message : 'Unknown error'}`);

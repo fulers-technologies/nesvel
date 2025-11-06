@@ -1,4 +1,5 @@
-import { Command, CommandRunner } from 'nest-commander';
+import { Command, Group } from '@nesvel/nestjs-console';
+import { CommandRunner } from 'nest-commander';
 import { MikroORM } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
 
@@ -12,6 +13,7 @@ import { Injectable, Logger } from '@nestjs/common';
   arguments: '<query>',
   description: 'Explain query execution plan',
 })
+@Group('Query Analysis')
 export class QueryExplainCommand extends CommandRunner {
   private readonly logger = new Logger(QueryExplainCommand.name);
   constructor(private readonly orm: MikroORM) {

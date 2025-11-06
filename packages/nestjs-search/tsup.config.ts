@@ -46,7 +46,6 @@ export default defineConfig([
       'reflect-metadata',
       'rxjs',
       'reflect-metadata',
-      'figlet',
     ],
   },
 

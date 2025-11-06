@@ -7,11 +7,9 @@
  * @module utils
  */
 
-// CLI help formatter
-export * from './cli-help-formatter.util';
-
 // Pagination utilities
 export * from './pagination';
 
 // Exception utilities
 export * from './exception.util';
+export * from './database-exception-handler.util';

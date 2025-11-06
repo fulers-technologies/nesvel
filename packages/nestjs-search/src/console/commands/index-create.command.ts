@@ -1,5 +1,3 @@
-import { Command, Option } from 'nest-commander';
-import { Injectable } from '@nestjs/common';
 import {
   BaseCommand,
   spinner,
@@ -9,9 +7,13 @@ import {
   warning,
   newLine,
   confirm,
+  Group,
 } from '@nesvel/nestjs-console';
-import { InjectSearchService } from '@/decorators';
+import { Injectable } from '@nestjs/common';
+import { Command, Option } from 'nest-commander';
+
 import { SearchService } from '@/services';
+import { InjectSearchService } from '@/decorators';
 
 /**
  * Index Create Command
@@ -44,6 +46,7 @@ import { SearchService } from '@/services';
     index: 'Name of the index to create',
   },
 })
+@Group('Index Management')
 export class IndexCreateCommand extends BaseCommand {
   /**
    * Index settings (JSON string)
@@ -153,7 +156,7 @@ export class IndexCreateCommand extends BaseCommand {
       newLine();
       info('Use "index:status ' + indexName + '" to view index details.');
       info('Or start indexing with "index:reindex ' + indexName + '".');
-    } catch (err) {
+    } catch (err: Error | any) {
       error(`Failed to create index: ${err instanceof Error ? err.message : 'Unknown error'}`);
 
       if (err instanceof Error && err.message.includes('already exists')) {

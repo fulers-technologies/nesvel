@@ -18,6 +18,7 @@ export * from './query.exception';
 export * from './database.exception';
 export * from './model-not-found.exception';
 export * from './mass-assignment.exception';
+export * from './invalid-argument.exception';
 
 // Relationship and Validation Exceptions
 export * from './validation.exception';

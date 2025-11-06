@@ -1,5 +1,3 @@
-import { Command } from 'nest-commander';
-import { Injectable } from '@nestjs/common';
 import {
   BaseCommand,
   spinner,
@@ -7,11 +5,15 @@ import {
   error,
   info,
   warning,
-  displayTable,
   newLine,
+  Group,
+  displayTable,
 } from '@nesvel/nestjs-console';
-import { InjectSearchService } from '@/decorators';
+import { Command } from 'nest-commander';
+import { Injectable } from '@nestjs/common';
+
 import { SearchService } from '@/services';
+import { InjectSearchService } from '@/decorators';
 
 /**
  * Index Status Command
@@ -43,6 +45,7 @@ import { SearchService } from '@/services';
     index: 'Name of the index to check',
   },
 })
+@Group('Index Management')
 export class IndexStatusCommand extends BaseCommand {
   constructor(
     @InjectSearchService()
@@ -92,7 +95,7 @@ export class IndexStatusCommand extends BaseCommand {
       let aliases: string[] = [];
       try {
         aliases = await this.searchService.getAliases(indexName);
-      } catch (err) {
+      } catch (err: Error | any) {
         // Silently ignore errors (e.g., for Meilisearch or system indices)
       }
 
@@ -121,7 +124,7 @@ export class IndexStatusCommand extends BaseCommand {
 
       // Display stats table
       displayTable(statsData, {
-        head: ['Property', 'Value'],
+        header: ['Property', 'Value'],
       });
 
       // Show additional provider-specific information if available
@@ -144,7 +147,7 @@ export class IndexStatusCommand extends BaseCommand {
       newLine();
       info('To clear all documents: index:clear ' + indexName);
       info('To reindex: index:reindex ' + indexName);
-    } catch (err) {
+    } catch (err: Error | any) {
       spinnerInstance.stop();
 
       error(`Failed to get index status: ${err instanceof Error ? err.message : 'Unknown error'}`);

@@ -64,7 +64,7 @@ export abstract class BaseOrmMakeCommand extends BaseMakeCommand {
       try {
         await this.callSilent('make:tsconfig', []);
         console.log('\n✓ Created tsconfig.json with path aliases\n');
-      } catch (error) {
+      } catch (error: Error | any) {
         // If command fails, log a warning but continue
         console.warn('⚠️  Could not create tsconfig.json automatically');
       }
@@ -83,7 +83,7 @@ export abstract class BaseOrmMakeCommand extends BaseMakeCommand {
             '   Run `make:tsconfig` to add path aliases.\n',
         );
       }
-    } catch (error) {
+    } catch (error: Error | any) {
       // Invalid JSON or read error, just skip
       return;
     }

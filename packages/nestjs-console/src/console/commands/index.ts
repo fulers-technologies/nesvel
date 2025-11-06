@@ -7,3 +7,4 @@
 export * from './make';
 export * from './base.command';
 export * from './base-make.command';
+export * from './base-helper.command';

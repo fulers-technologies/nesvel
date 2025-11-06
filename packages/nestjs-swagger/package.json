@@ -28,7 +28,8 @@
     "format": "prettier --write \"src/**/*.ts\""
   },
   "dependencies": {
-    "nestjs-swagger-dto": "^3.8.5"
+    "nestjs-swagger-dto": "^3.8.5",
+    "swagger-themes": "^1.4.3"
   },
   "peerDependencies": {
     "@nestjs/common": "^11.0.0",

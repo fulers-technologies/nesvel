@@ -1,4 +1,4 @@
-import { Command } from '@nesvel/nestjs-console';
+import { Command, Group } from '@nesvel/nestjs-console';
 import { BaseOrmMakeCommand } from '../base-orm-make.command';
 import { Injectable } from '@nestjs/common';
 
@@ -25,6 +25,7 @@ import { Injectable } from '@nestjs/common';
   arguments: '<name>',
   description: 'Create a new REST API controller',
 })
+@Group('Code Generation')
 export class MakeControllerCommand extends BaseOrmMakeCommand {
   /**
    * Execute the make:controller command
@@ -62,9 +63,9 @@ export class MakeControllerCommand extends BaseOrmMakeCommand {
     await this.generateFromStub(
       name,
       {
+        suffix: 'controller',
         stubName: 'controller',
         outputDir: 'src/controllers',
-        suffix: 'controller',
       },
       {
         modelName,

@@ -20,7 +20,7 @@ import { RelationNotFoundException } from '@/exceptions/relation-not-found.excep
  * ```typescript
  * try {
  *   await repository.findOrFail(id);
- * } catch (error) {
+ * } catch (error: Error | any) {
  *   if (isOrmException(error)) {
  *     console.log('ORM Error:', error.message);
  *     console.log('API Message:', getOrmExceptionApiMessage(error));
@@ -58,7 +58,7 @@ export function isOrmException(error: any): error is OrmException {
  * ```typescript
  * try {
  *   await repository.findOrFail(999);
- * } catch (error) {
+ * } catch (error: Error | any) {
  *   if (isOrmException(error)) {
  *     return res.status(404).json({
  *       message: getOrmExceptionApiMessage(error)
@@ -110,7 +110,7 @@ export function getOrmExceptionApiMessage(error: OrmException): string {
  * ```typescript
  * try {
  *   await repository.create(invalidData);
- * } catch (error) {
+ * } catch (error: Error | any) {
  *   if (isOrmException(error)) {
  *     const details = getOrmExceptionLogDetails(error);
  *     logger.error('ORM operation failed', details);

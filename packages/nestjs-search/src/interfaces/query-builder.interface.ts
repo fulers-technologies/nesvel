@@ -227,7 +227,6 @@ export interface IQueryBuilder<T = any> {
    */
   aggregate(name: string, field: string, type?: string): this;
 
-
   /**
    * Build and return the raw query object (provider-specific)
    * Alias for toQuery()

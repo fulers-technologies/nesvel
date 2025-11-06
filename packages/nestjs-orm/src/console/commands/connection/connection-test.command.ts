@@ -1,4 +1,5 @@
-import { Command, CommandRunner } from 'nest-commander';
+import { Command, Group } from '@nesvel/nestjs-console';
+import { CommandRunner } from 'nest-commander';
 import { MikroORM } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
 
@@ -11,6 +12,7 @@ import { Injectable, Logger } from '@nestjs/common';
   name: 'connection:test',
   description: 'Test database connection',
 })
+@Group('Connection Management')
 export class ConnectionTestCommand extends CommandRunner {
   private readonly logger = new Logger(ConnectionTestCommand.name);
   constructor(private readonly orm: MikroORM) {

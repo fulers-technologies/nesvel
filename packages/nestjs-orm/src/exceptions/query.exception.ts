@@ -297,7 +297,7 @@ export class QueryException extends BaseException {
    */
   static forConnectionTimeout(connectionName: string, timeout: number): QueryException {
     const message = `Connection timeout after ${timeout}ms on connection '${connectionName}'`;
-    return new QueryException(connectionName, '', [], undefined, message, 'TIMEOUT', 'ERROR');
+    return QueryException.make(connectionName, '', [], undefined, message, 'TIMEOUT', 'ERROR');
   }
 
   /**
@@ -316,7 +316,7 @@ export class QueryException extends BaseException {
     syntaxError: Error,
   ): QueryException {
     const message = `SQL syntax error: ${syntaxError.message}`;
-    return new QueryException(
+    return QueryException.make(
       connectionName,
       sql,
       bindings,

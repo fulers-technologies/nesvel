@@ -116,7 +116,7 @@ async function fullExamples() {
     // Display selected features in a table
     const tableData = features.map((f) => [f, 'Enabled', '✓']);
     displayTable(tableData, {
-      head: ['Feature', 'Status', 'Active'],
+      header: ['Feature', 'Status', 'Active'],
     });
 
     // Example 3: Number Input with Validation
@@ -177,7 +177,7 @@ async function fullExamples() {
         ['Worker Queue', 'Idle', '98.5%', '128 MB', '✓'],
       ],
       {
-        head: ['Service', 'Status', 'Uptime', 'Memory', 'Health'],
+        header: ['Service', 'Status', 'Uptime', 'Memory', 'Health'],
       },
     );
 

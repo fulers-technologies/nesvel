@@ -599,12 +599,8 @@ export class Blueprint {
         .notNullable()
         .defaultTo(this.client.raw('CURRENT_TIMESTAMP'));
     } else {
-      this.table
-        .timestamp('created_at', { precision, useTz: true })
-        .notNullable();
-      this.table
-        .timestamp('updated_at', { precision, useTz: true })
-        .notNullable();
+      this.table.timestamp('created_at', { precision, useTz: true }).notNullable();
+      this.table.timestamp('updated_at', { precision, useTz: true }).notNullable();
     }
   }
 
@@ -1089,10 +1085,7 @@ export class Blueprint {
    * @param constraintName - Optional constraint name
    * @returns void
    */
-  primary(
-    columns: string | readonly string[],
-    constraintName?: string,
-  ): Knex.TableBuilder {
+  primary(columns: string | readonly string[], constraintName?: string): Knex.TableBuilder {
     const cols = Array.isArray(columns) ? columns : [columns];
     return this.table.primary(cols, constraintName);
   }
@@ -1174,10 +1167,7 @@ export class Blueprint {
    * @param indexName - Optional index name
    * @returns void
    */
-  dropUnique(
-    columns: string | readonly string[],
-    indexName?: string,
-  ): Knex.TableBuilder {
+  dropUnique(columns: string | readonly string[], indexName?: string): Knex.TableBuilder {
     const cols = Array.isArray(columns) ? columns : [columns];
     return this.table.dropUnique(cols, indexName);
   }

@@ -1,4 +1,4 @@
-import { Command } from '@nesvel/nestjs-console';
+import { Command, Group } from '@nesvel/nestjs-console';
 import { BaseOrmMakeCommand } from '../base-orm-make.command';
 
 /**
@@ -24,6 +24,7 @@ import { BaseOrmMakeCommand } from '../base-orm-make.command';
   arguments: '<name>',
   description: 'Create a new service',
 })
+@Group('Code Generation')
 export class MakeServiceCommand extends BaseOrmMakeCommand {
   async run(inputs: string[]): Promise<void> {
     const [name] = inputs;
@@ -52,9 +53,9 @@ export class MakeServiceCommand extends BaseOrmMakeCommand {
     await this.generateFromStub(
       name,
       {
+        suffix: 'service',
         stubName: 'service',
         outputDir: 'src/services',
-        suffix: 'service',
       },
       {
         modelName,

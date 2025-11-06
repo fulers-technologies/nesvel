@@ -1,152 +1,353 @@
-import { FilterQuery, Loaded, QueryOrderMap } from '@mikro-orm/core';
+import type { Request } from 'express';
+import { EntityData, EntityManager, FilterQuery, FindOptions, Primary } from '@mikro-orm/core';
 
-import type { IRepository } from './repository.interface';
+import { BaseEntity } from '@/entities';
+import { BaseRepository } from '@/repositories';
+import { PaginationConfig } from './pagination';
+import type { SimplePaginator, CursorPaginator, LengthAwarePaginator } from '@/utils/pagination';
 
 /**
- * Base service interface with business logic methods
+ * Base service interface with complete CRUD operations
+ *
+ * Provides a comprehensive service layer interface that delegates all data operations
+ * to the repository while adding convenience methods for business logic operations.
+ *
+ * @template T - Entity type extending BaseEntity
  */
-export interface IService<T extends object> {
+export interface IService<T extends BaseEntity> {
+  // ============================================================================
+  // CORE SERVICE METHODS
+  // ============================================================================
+
   /**
-   * Get the repository instance
+   * Get the underlying repository instance
+   *
+   * Provides direct access to repository for operations not covered by service methods
+   * or when you need repository-specific functionality.
+   *
+   * @returns Repository instance for the entity
    */
-  getRepository(): IRepository<T>;
+  getRepository(): BaseRepository<T>;
 
-  // /**
-  //  * Find all records with optional filtering and pagination
-  //  */
-  // findAll(options?: {
-  //   where?: FilterQuery<T>;
-  //   orderBy?: QueryOrderMap<T>;
-  //   limit?: number;
-  //   offset?: number;
-  //   populate?: string[];
-  // }): Promise<Loaded<T, never>[]>;
+  /**
+   * Execute operations within a database transaction
+   *
+   * Provides automatic transaction management with commit on success
+   * and rollback on error. Essential for multi-step operations that
+   * need to maintain data consistency.
+   *
+   * @param callback - Function to execute within transaction context
+   * @returns Result of the callback function
+   *
+   * @example
+   * ```typescript
+   * await userService.transaction(async (em) => {
+   *   const user = await em.findOne(User, userId);
+   *   user.balance -= 100;
+   *   const order = em.create(Order, { userId, total: 100 });
+   *   await em.flush();
+   * });
+   * ```
+   */
+  transaction<R>(callback: (em: EntityManager) => Promise<R>): Promise<R>;
 
-  // /**
-  //  * Find a single record by ID
-  //  */
-  // findOne(id: string | number, populate?: string[]): Promise<Loaded<T, never> | null>;
+  // ============================================================================
+  // READ OPERATIONS (delegated to repository)
+  // ============================================================================
 
-  // /**
-  //  * Find a single record by ID or throw exception
-  //  */
-  // findOneOrFail(id: string | number, populate?: string[]): Promise<Loaded<T, never>>;
+  /**
+   * Find all entities
+   *
+   * @returns Promise resolving to array of all entities
+   */
+  findAll(options?: FindOptions<T>): Promise<T[]>;
 
-  // /**
-  //  * Find records by criteria
-  //  */
-  // findBy(criteria: FilterQuery<T>, populate?: string[]): Promise<Loaded<T, never>[]>;
+  /**
+   * Find entity by primary key
+   *
+   * @param id - Primary key value
+   * @returns Promise resolving to entity or null
+   */
+  findById(id: Primary<T>): Promise<T | null>;
 
-  // /**
-  //  * Get count of records
-  //  */
-  // count(criteria?: FilterQuery<T>): Promise<number>;
+  /**
+   * Find entity by primary key or throw error
+   *
+   * @param id - Primary key value
+   * @returns Promise resolving to entity
+   * @throws EntityNotFoundException if not found
+   */
+  findByIdOrFail(id: Primary<T>): Promise<T>;
 
-  // /**
-  //  * Check if records exist
-  //  */
-  // exists(criteria: FilterQuery<T>): Promise<boolean>;
+  /**
+   * Find single entity by criteria
+   *
+   * @param where - Filter criteria
+   * @param options - Find options
+   * @returns Promise resolving to entity or null
+   */
+  findOne(where: FilterQuery<T>, options?: FindOptions<T>): Promise<T | null>;
 
-  // /**
-  //  * Create a single record
-  //  */
-  // create(data: Partial<T>): Promise<Loaded<T, never>>;
+  /**
+   * Find single entity by criteria or throw error
+   *
+   * @param where - Filter criteria
+   * @param options - Find options
+   * @returns Promise resolving to entity
+   * @throws EntityNotFoundException if not found
+   */
+  findOneOrFail(where: FilterQuery<T>, options?: FindOptions<T>): Promise<T>;
 
-  // /**
-  //  * Create multiple records (batch operation, returns entities)
-  //  */
-  // createBy(data: Partial<T>[]): Promise<Loaded<T, never>[]>;
+  /**
+   * Find multiple entities by criteria
+   *
+   * @param where - Filter criteria
+   * @param options - Find options
+   * @returns Promise resolving to array of entities
+   */
+  find(where: FilterQuery<T>, options?: FindOptions<T>): Promise<T[]>;
 
-  // /**
-  //  * Create many records efficiently (batched processing for huge datasets)
-  //  */
-  // createMany(data: Partial<T>[], batchSize?: number): Promise<void>;
+  /**
+   * Find entities by multiple IDs
+   *
+   * @param ids - Array of primary key values
+   * @returns Promise resolving to array of entities
+   */
+  findByIds(ids: Primary<T>[]): Promise<T[]>;
 
-  // /**
-  //  * Update a single record by ID
-  //  */
-  // update(id: string | number, data: Partial<T>): Promise<Loaded<T, never>>;
+  /**
+   * Get first entity
+   *
+   * @returns Promise resolving to first entity or null
+   */
+  first(): Promise<T | null>;
 
-  // /**
-  //  * Update multiple records by criteria
-  //  */
-  // updateBy(criteria: FilterQuery<T>, data: Partial<T>): Promise<number>;
+  /**
+   * Get all entities (alias for findAll)
+   *
+   * @returns Promise resolving to array of all entities
+   */
+  all(): Promise<T[]>;
 
-  // /**
-  //  * Update multiple records by IDs (batch operation with entity loading)
-  //  */
-  // updateMany(
-  //   updates: Array<{ id: string | number; data: Partial<T> }>,
-  // ): Promise<Loaded<T, never>[]>;
+  // ============================================================================
+  // COUNT & EXISTENCE
+  // ============================================================================
 
-  // /**
-  //  * Delete a single record by ID
-  //  */
-  // delete(id: string | number): Promise<boolean>;
+  /**
+   * Count entities matching criteria
+   *
+   * @param where - Filter criteria (optional)
+   * @returns Promise resolving to count
+   */
+  count(where?: FilterQuery<T>): Promise<number>;
 
-  // /**
-  //  * Delete multiple records by criteria
-  //  */
-  // deleteBy(criteria: FilterQuery<T>): Promise<number>;
+  /**
+   * Check if entity exists matching criteria
+   *
+   * @param where - Filter criteria
+   * @returns Promise resolving to boolean
+   */
+  exists(where: FilterQuery<T>): Promise<boolean>;
 
-  // /**
-  //  * Delete multiple records by IDs (batch operation)
-  //  */
-  // deleteMany(ids: Array<string | number>): Promise<number>;
+  // ============================================================================
+  // CREATE OPERATIONS (delegated to repository)
+  // ============================================================================
 
-  // /**
-  //  * Soft delete a single record
-  //  */
-  // softDelete(id: string | number): Promise<boolean>;
+  /**
+   * Create a new entity
+   *
+   * @param data - Entity data
+   * @returns Promise resolving to created entity
+   */
+  create(data: EntityData<T>): Promise<T>;
 
-  // /**
-  //  * Soft delete multiple records by criteria
-  //  */
-  // softDeleteBy(criteria: FilterQuery<T>): Promise<number>;
+  /**
+   * Create multiple entities
+   *
+   * @param data - Array of entity data
+   * @returns Promise resolving to array of created entities
+   */
+  createMany(data: EntityData<T>[]): Promise<T[]>;
 
-  // /**
-  //  * Restore a single soft-deleted record
-  //  */
-  // restore(id: string | number): Promise<Loaded<T, never>>;
+  // ============================================================================
+  // UPDATE OPERATIONS (delegated to repository)
+  // ============================================================================
 
-  // /**
-  //  * Restore multiple soft-deleted records by criteria
-  //  */
-  // restoreBy(criteria: FilterQuery<T>): Promise<number>;
+  /**
+   * Update entity by ID
+   *
+   * @param id - Primary key value
+   * @param data - Update data
+   * @returns Promise resolving to updated entity
+   */
+  update(id: Primary<T>, data: EntityData<T>): Promise<T>;
 
-  // /**
-  //  * Get only soft-deleted records
-  //  */
-  // onlyTrashed(): Promise<Loaded<T, never>[]>;
+  /**
+   * Update multiple entities by criteria
+   *
+   * @param where - Filter criteria
+   * @param data - Update data
+   * @returns Promise resolving to number of updated entities
+   */
+  updateMany(where: FilterQuery<T>, data: EntityData<T>): Promise<number>;
 
-  // /**
-  //  * Get records including soft-deleted ones
-  //  */
-  // withTrashed(): Promise<Loaded<T, never>[]>;
+  /**
+   * Upsert (insert or update) entity
+   *
+   * @param where - Criteria to find existing entity
+   * @param data - Entity data to insert or update
+   * @returns Promise resolving to upserted entity
+   */
+  upsert(where: FilterQuery<T>, data: EntityData<T>): Promise<T>;
 
-  // /**
-  //  * Get paginated results
-  //  */
-  // paginate(options: {
-  //   page: number;
-  //   limit: number;
-  //   where?: FilterQuery<T>;
-  //   orderBy?: QueryOrderMap<T>;
-  //   populate?: string[];
-  // }): Promise<{
-  //   data: Loaded<T, never>[];
-  //   meta: {
-  //     total: number;
-  //     page: number;
-  //     limit: number;
-  //     totalPages: number;
-  //     hasNext: boolean;
-  //     hasPrev: boolean;
-  //   };
-  // }>;
+  // ============================================================================
+  // DELETE OPERATIONS (delegated to repository)
+  // ============================================================================
 
-  // /**
-  //  * Execute a transaction
-  //  */
-  // transaction<R>(callback: (em: any) => Promise<R>): Promise<R>;
+  /**
+   * Delete entity by ID
+   *
+   * @param id - Primary key value
+   * @returns Promise resolving to boolean (true if deleted)
+   */
+  delete(id: Primary<T>): Promise<boolean>;
+
+  /**
+   * Delete multiple entities by criteria
+   *
+   * @param where - Filter criteria
+   * @returns Promise resolving to number of deleted entities
+   */
+  deleteMany(where: FilterQuery<T>): Promise<number>;
+
+  // ============================================================================
+  // AGGREGATIONS (delegated to repository)
+  // ============================================================================
+
+  /**
+   * Calculate sum of numeric field
+   *
+   * @param field - Field name
+   * @param where - Filter criteria (optional)
+   * @returns Promise resolving to sum
+   */
+  sum(field: keyof T, where?: FilterQuery<T>): Promise<number>;
+
+  /**
+   * Calculate average of numeric field
+   *
+   * @param field - Field name
+   * @param where - Filter criteria (optional)
+   * @returns Promise resolving to average
+   */
+  avg(field: keyof T, where?: FilterQuery<T>): Promise<number>;
+
+  /**
+   * Find minimum value of field
+   *
+   * @param field - Field name
+   * @param where - Filter criteria (optional)
+   * @returns Promise resolving to minimum value
+   */
+  min(field: keyof T, where?: FilterQuery<T>): Promise<number>;
+
+  /**
+   * Find maximum value of field
+   *
+   * @param field - Field name
+   * @param where - Filter criteria (optional)
+   * @returns Promise resolving to maximum value
+   */
+  max(field: keyof T, where?: FilterQuery<T>): Promise<number>;
+
+  // ============================================================================
+  // PAGINATION (delegated to repository)
+  // ============================================================================
+
+  /**
+   * Full pagination with total count (Laravel's paginate())
+   *
+   * Creates a LengthAwarePaginator with complete pagination metadata including
+   * total count, last page, and page links. Best for UI with page numbers.
+   *
+   * @param perPage - Items per page (default: 15)
+   * @param request - Express request object (optional)
+   * @param config - Pagination configuration
+   * @returns Promise resolving to LengthAwarePaginator instance
+   */
+  paginate(
+    perPage?: number,
+    request?: Request,
+    config?: Partial<PaginationConfig>,
+  ): Promise<LengthAwarePaginator<T>>;
+
+  /**
+   * Simple pagination without total count (Laravel's simplePaginate())
+   *
+   * Creates a SimplePaginator without counting total items. More performant
+   * when you don't need total count or page numbers.
+   *
+   * @param perPage - Items per page (default: 15)
+   * @param request - Express request object (optional)
+   * @param config - Pagination configuration
+   * @returns Promise resolving to SimplePaginator instance
+   */
+  simplePaginate(
+    perPage?: number,
+    request?: Request,
+    config?: Partial<PaginationConfig>,
+  ): Promise<SimplePaginator<T>>;
+
+  /**
+   * Cursor-based pagination (Laravel's cursorPaginate())
+   *
+   * Creates a CursorPaginator for efficient pagination of large datasets.
+   * Best for infinite scroll and real-time feeds.
+   *
+   * @param perPage - Items per page (default: 15)
+   * @param request - Express request object (optional)
+   * @param config - Pagination configuration
+   * @returns Promise resolving to CursorPaginator instance
+   */
+  cursorPaginate(
+    perPage?: number,
+    request?: Request,
+    config?: Partial<PaginationConfig>,
+  ): Promise<CursorPaginator<T>>;
+
+  // ============================================================================
+  // UTILITY METHODS (delegated to repository)
+  // ============================================================================
+
+  /**
+   * Get fresh copy of entity from database
+   *
+   * @param entity - Entity to refresh
+   * @returns Promise resolving to fresh entity or null
+   */
+  fresh(entity: T): Promise<T | null>;
+
+  /**
+   * Refresh entity in place from database
+   *
+   * @param entity - Entity to refresh
+   * @returns Promise resolving to refreshed entity
+   */
+  refresh(entity: T): Promise<T>;
+
+  /**
+   * Process entities in chunks
+   *
+   * @param chunkSize - Number of entities per chunk
+   * @param callback - Function to process each chunk
+   * @returns Promise that resolves when all chunks processed
+   */
+  chunk(chunkSize: number, callback: (entities: T[]) => Promise<void>): Promise<void>;
+
+  /**
+   * Flush pending changes to database
+   *
+   * @returns Promise that resolves when flush complete
+   */
+  flush(): Promise<void>;
 }

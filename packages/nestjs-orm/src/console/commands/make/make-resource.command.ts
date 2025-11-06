@@ -1,4 +1,4 @@
-import { Command } from '@nesvel/nestjs-console';
+import { Command, Group } from '@nesvel/nestjs-console';
 import { BaseOrmMakeCommand } from '../base-orm-make.command';
 import { spinner, success } from '@nesvel/nestjs-console';
 
@@ -34,6 +34,7 @@ import { spinner, success } from '@nesvel/nestjs-console';
   description:
     'Create a complete CRUD resource (model, repository, service, controller, module, DTOs)',
 })
+@Group('Code Generation')
 export class MakeResourceCommand extends BaseOrmMakeCommand {
   async run(inputs: string[], options?: Record<string, any>): Promise<void> {
     const [name] = inputs;

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { DocumentBuilder } from '@nestjs/swagger';
 
 import { AUTH_SCHEMES, DEFAULT_AUTH_CONFIGS } from '../constants';
@@ -9,6 +9,8 @@ import type { SwaggerConfig } from '../interfaces';
  */
 @Injectable()
 export class SwaggerBuilderService {
+  private readonly logger = new Logger(SwaggerBuilderService.name);
+
   /**
    * Build Swagger document configuration
    *
@@ -43,13 +45,41 @@ export class SwaggerBuilderService {
     // Add authentication schemes
     this.addAuthenticationSchemes(builder);
 
-    // Add server
-    builder.addServer(config.serverUrl || 'http://localhost:3000', 'Current environment');
+    // Add servers
+    this.addServers(builder, config);
 
     // Add tags
     this.addTags(builder, config.tags);
 
-    return builder.build();
+    const document = builder.build();
+
+    // Debug: Log server configuration
+    this.logger.debug('Swagger servers configured:');
+    this.logger.debug(JSON.stringify(document.servers, null, 2));
+
+    return document;
+  }
+
+  /**
+   * Add servers to the document builder
+   *
+   * @param builder - DocumentBuilder instance
+   * @param config - Swagger configuration object
+   */
+  private addServers(builder: DocumentBuilder, config: SwaggerConfig): void {
+    // Add main server
+    const mainServerUrl = config.serverUrl || 'http://localhost:3000';
+    builder.addServer(mainServerUrl, 'Current environment');
+
+    this.logger.debug(`Added main server: ${mainServerUrl}`);
+
+    // Add additional servers
+    if (config.additionalServers && config.additionalServers.length > 0) {
+      config.additionalServers.forEach((server) => {
+        builder.addServer(server.url, server.description);
+        this.logger.debug(`Added additional server: ${server.url} - ${server.description}`);
+      });
+    }
   }
 
   /**

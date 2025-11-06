@@ -1,22 +1,20 @@
-import { Module, DynamicModule } from '@nestjs/common';
+import { Module, DynamicModule, Provider } from '@nestjs/common';
 
 import type {
   SearchModuleOptions,
   SearchModuleAsyncOptions,
+  SearchModuleOptionsFactory,
   IndexRegistrationOptions,
 } from '@/interfaces';
 
+import { ConsoleModule } from '@/console/console.module';
+import { SEARCH_OPTIONS, SEARCH_PROVIDER, SEARCH_SERVICE } from '@/constants';
 import {
-  IndexListCommand,
-  IndexStatusCommand,
-  IndexClearCommand,
-  IndexCreateCommand,
-  IndexDeleteCommand,
-  IndexReindexCommand,
-} from '@/console/commands';
-import { SEARCH_SERVICE } from '@/constants';
-import { SearchModuleFactory } from '@/factories';
-import { IndexRegistryService, SearchService } from '@/services';
+  IndexRegistryService,
+  SearchService,
+  SearchFactoryService,
+  IndexNamingService,
+} from '@/services';
 
 /**
  * Search Module
@@ -114,15 +112,34 @@ export class SearchModule {
   /**
    * Register the search module with synchronous configuration
    *
+   * Creates a dynamic module with the provided options.
+   * The configuration is available immediately and doesn't depend on
+   * other providers or services.
+   *
    * @param options - Module configuration options
    * @returns Dynamic module definition
+   *
+   * @example
+   * ```typescript
+   * SearchModule.forRoot({
+   *   connection: SearchConnectionType.ELASTICSEARCH,
+   *   elasticsearch: {
+   *     node: 'http://localhost:9200'
+   *   },
+   *   global: true
+   * })
+   * ```
    */
   static forRoot(options: SearchModuleOptions): DynamicModule {
+    // Create providers
+    const providers = this.createProviders(options);
+
     return {
       module: SearchModule,
-      global: true,
-      providers: SearchModuleFactory.createProviders(options),
-      exports: [SEARCH_SERVICE, IndexRegistryService],
+      global: options.isGlobal ?? true,
+      imports: [ConsoleModule],
+      providers,
+      exports: [SEARCH_SERVICE, SearchService, IndexRegistryService],
     };
   }
 
@@ -211,14 +228,192 @@ export class SearchModule {
 
   /**
    * Register the search module with asynchronous configuration
+   *
+   * Creates a dynamic module where the configuration is provided asynchronously,
+   * typically through a factory function that depends on other providers like ConfigService.
+   *
+   * Supports three configuration patterns:
+   * - useFactory: Factory function with dependency injection
+   * - useClass: Class implementing SearchModuleOptionsFactory
+   * - useExisting: Existing provider implementing SearchModuleOptionsFactory
+   *
+   * @param options - Asynchronous configuration options
+   * @returns Dynamic module definition
+   *
+   * @example
+   * Using factory:
+   * ```typescript
+   * SearchModule.forRootAsync({
+   *   useFactory: (config: ConfigService) => ({
+   *     connection: config.get('SEARCH_CONNECTION'),
+   *     elasticsearch: { node: config.get('ES_NODE') }
+   *   }),
+   *   inject: [ConfigService]
+   * })
+   * ```
    */
   static forRootAsync(options: SearchModuleAsyncOptions): DynamicModule {
+    // Create async providers
+    const asyncProviders = this.createAsyncProviders(options);
+
+    // Create core providers
+    const coreProviders = this.createCoreProviders();
+
     return {
       module: SearchModule,
       global: options.isGlobal ?? true,
-      imports: options.imports || [],
-      providers: SearchModuleFactory.createAsyncProviders(options),
-      exports: [SEARCH_SERVICE, IndexRegistryService],
+      imports: [ConsoleModule, ...(options.imports || [])],
+      providers: [...asyncProviders, ...coreProviders],
+      exports: [SEARCH_SERVICE, SearchService, IndexRegistryService],
     };
+  }
+
+  /**
+   * Creates the core providers for the module
+   *
+   * These providers include:
+   * - Options provider (configuration)
+   * - Provider (search backend)
+   * - Service provider (main Search service)
+   * - Factory service (provider factory)
+   * - Registry and naming services
+   *
+   * @param options - The module configuration options
+   * @returns An array of providers
+   *
+   * @private
+   */
+  private static createProviders(options: SearchModuleOptions): Provider[] {
+    return [
+      // Options provider
+      {
+        provide: SEARCH_OPTIONS,
+        useValue: options,
+      },
+
+      // Factory service
+      SearchFactoryService,
+      IndexNamingService,
+      IndexRegistryService,
+
+      // Provider
+      {
+        provide: SEARCH_PROVIDER,
+        useFactory: (factory: SearchFactoryService) => {
+          factory.validateOptions(options);
+          return factory.createProvider(options);
+        },
+        inject: [SearchFactoryService],
+      },
+
+      // Service provider
+      {
+        provide: SEARCH_SERVICE,
+        useClass: SearchService,
+      },
+
+      // Export service with class token as well
+      {
+        provide: SearchService,
+        useExisting: SEARCH_SERVICE,
+      },
+    ];
+  }
+
+  /**
+   * Creates the core providers without options (for async configuration)
+   *
+   * These providers depend on the async options provider created separately.
+   *
+   * @returns An array of providers
+   *
+   * @private
+   */
+  private static createCoreProviders(): Provider[] {
+    return [
+      // Factory service
+      SearchFactoryService,
+      IndexNamingService,
+      IndexRegistryService,
+
+      // Provider
+      {
+        provide: SEARCH_PROVIDER,
+        useFactory: (options: SearchModuleOptions, factory: SearchFactoryService) => {
+          factory.validateOptions(options);
+          return factory.createProvider(options);
+        },
+        inject: [SEARCH_OPTIONS, SearchFactoryService],
+      },
+
+      // Service provider
+      {
+        provide: SEARCH_SERVICE,
+        useClass: SearchService,
+      },
+
+      // Export service with class token as well
+      {
+        provide: SearchService,
+        useExisting: SEARCH_SERVICE,
+      },
+    ];
+  }
+
+  /**
+   * Creates async providers for module configuration
+   *
+   * Handles three configuration patterns:
+   * - useFactory: Creates options using a factory function
+   * - useClass: Creates options using a factory class
+   * - useExisting: Uses an existing factory provider
+   *
+   * @param options - The async configuration options
+   * @returns An array of providers
+   *
+   * @private
+   */
+  private static createAsyncProviders(options: SearchModuleAsyncOptions): Provider[] {
+    if (options.useFactory) {
+      return [
+        {
+          provide: SEARCH_OPTIONS,
+          useFactory: options.useFactory,
+          inject: options.inject || [],
+        },
+      ];
+    }
+
+    if (options.useClass) {
+      return [
+        {
+          provide: SEARCH_OPTIONS,
+          useFactory: async (factory: SearchModuleOptionsFactory) => {
+            return factory.createSearchModuleOptions();
+          },
+          inject: [options.useClass],
+        },
+        {
+          provide: options.useClass,
+          useClass: options.useClass,
+        },
+      ];
+    }
+
+    if (options.useExisting) {
+      return [
+        {
+          provide: SEARCH_OPTIONS,
+          useFactory: async (factory: SearchModuleOptionsFactory) => {
+            return factory.createSearchModuleOptions();
+          },
+          inject: [options.useExisting],
+        },
+      ];
+    }
+
+    throw new Error(
+      'Invalid async configuration. Must provide useFactory, useClass, or useExisting.',
+    );
   }
 }

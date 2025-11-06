@@ -1,4 +1,5 @@
-import { Command, CommandRunner } from 'nest-commander';
+import { Command, Group } from '@nesvel/nestjs-console';
+import { CommandRunner } from 'nest-commander';
 import { MikroORM } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
 
@@ -41,6 +42,7 @@ import { Injectable, Logger } from '@nestjs/common';
   name: 'schema:validate',
   description: 'Validate database schema matches entities',
 })
+@Group('Schema Management')
 export class SchemaValidateCommand extends CommandRunner {
   private readonly logger = new Logger(SchemaValidateCommand.name);
 

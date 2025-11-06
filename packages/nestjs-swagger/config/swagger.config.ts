@@ -1,3 +1,6 @@
+import { SwaggerThemeNameEnum } from '../src/enums/swagger-theme-name.enum';
+import type { SwaggerConfig } from '../src/interfaces/swagger-config.interface';
+
 /**
  * Swagger Configuration
  *
@@ -7,7 +10,7 @@
  * @see {@link https://docs.nestjs.com/openapi/introduction | NestJS OpenAPI}
  * @see {@link https://swagger.io/specification/ | OpenAPI Specification}
  */
-export const swaggerConfig = {
+export const swaggerConfig: SwaggerConfig = {
   /**
    * API Title
    * @env SWAGGER_TITLE
@@ -157,6 +160,8 @@ Production-ready RESTful API for the Nesvel platform.
      */
     oauth2: {
       enabled: process.env.OAUTH2_ENABLED === 'true',
+      name: 'oauth2',
+      description: 'OAuth2 authentication',
       authorizationUrl: process.env.OAUTH2_AUTH_URL || '',
       tokenUrl: process.env.OAUTH2_TOKEN_URL || '',
       scopes: {
@@ -290,6 +295,14 @@ Production-ready RESTful API for the Nesvel platform.
    * Custom Branding
    */
   branding: {
+    /**
+     * Swagger UI Theme
+     * @env SWAGGER_THEME
+     * @optional
+     * @example 'dark', 'dracula', 'monokai', 'material', etc.
+     */
+    theme: (process.env.SWAGGER_THEME as SwaggerThemeNameEnum) || SwaggerThemeNameEnum.CLASSIC,
+
     /**
      * Custom site title
      * @env SWAGGER_SITE_TITLE

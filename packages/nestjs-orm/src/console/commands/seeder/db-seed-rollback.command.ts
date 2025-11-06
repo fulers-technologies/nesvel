@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Command, CommandRunner } from 'nest-commander';
+import { Command, Group } from '@nesvel/nestjs-console';
+import { CommandRunner } from 'nest-commander';
 
 /**
  * Database Seed Rollback Command
@@ -39,6 +40,7 @@ import { Command, CommandRunner } from 'nest-commander';
   name: 'db:seed:rollback',
   description: 'Rollback the last batch of database seeders',
 })
+@Group('Database Seeding')
 export class DbSeedRollbackCommand extends CommandRunner {
   private readonly logger = new Logger(DbSeedRollbackCommand.name);
 

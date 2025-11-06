@@ -171,7 +171,7 @@ export class ElasticsearchProvider implements ISearchProvider {
       });
 
       this.logger.log(`Created index: ${indexName}`);
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(`Failed to create index ${indexName}:`, error);
       throw error;
     }
@@ -216,7 +216,7 @@ export class ElasticsearchProvider implements ISearchProvider {
         });
         this.logger.log(`Deleted index: ${index}`);
       }
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(`Failed to delete index ${indexName}:`, error);
       throw error;
     }
@@ -306,7 +306,7 @@ export class ElasticsearchProvider implements ISearchProvider {
 
       this.logger.debug(`Listed ${indices.length} indices`);
       return indices;
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error('Failed to list indices:', error);
       throw error;
     }
@@ -349,7 +349,7 @@ export class ElasticsearchProvider implements ISearchProvider {
       });
 
       this.logger.debug(`Indexed document ${id} in ${indexName}`);
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(`Failed to index document in ${indexName}:`, error);
       throw error;
     }
@@ -399,7 +399,7 @@ export class ElasticsearchProvider implements ISearchProvider {
       }
 
       this.logger.log(`Bulk indexed ${documents.length} documents in ${indexName}`);
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(`Failed to bulk index documents in ${indexName}:`, error);
       throw error;
     }
@@ -443,7 +443,7 @@ export class ElasticsearchProvider implements ISearchProvider {
       });
 
       this.logger.debug(`Updated document ${documentId} in ${indexName}`);
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(`Failed to update document ${documentId} in ${indexName}:`, error);
       throw error;
     }
@@ -476,7 +476,7 @@ export class ElasticsearchProvider implements ISearchProvider {
       });
 
       this.logger.debug(`Deleted document ${documentId} from ${indexName}`);
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(`Failed to delete document ${documentId} from ${indexName}:`, error);
       throw error;
     }
@@ -651,7 +651,7 @@ export class ElasticsearchProvider implements ISearchProvider {
       };
 
       return response;
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(`Failed to search in ${indexName}:`, error);
       throw error;
     }
@@ -732,7 +732,7 @@ export class ElasticsearchProvider implements ISearchProvider {
         size: stats._all?.primaries?.store?.size_in_bytes || 0,
         ...stats,
       };
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(`Failed to get stats for index ${indexName}:`, error);
       throw error;
     }
@@ -772,7 +772,7 @@ export class ElasticsearchProvider implements ISearchProvider {
       });
 
       this.logger.log(`Cleared all documents from index: ${indexName}`);
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(`Failed to clear index ${indexName}:`, error);
       throw error;
     }
@@ -817,7 +817,7 @@ export class ElasticsearchProvider implements ISearchProvider {
         body: settings,
       });
       this.logger.log(`Updated settings for index: ${indexName}`);
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(`Failed to update settings for index ${indexName}:`, error);
       throw error;
     }
@@ -847,7 +847,7 @@ export class ElasticsearchProvider implements ISearchProvider {
         name: aliasName,
       });
       this.logger.log(`Created alias: ${aliasName} -> ${indexName}`);
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(`Failed to create alias ${aliasName} for index ${indexName}:`, error);
       throw error;
     }
@@ -948,7 +948,7 @@ export class ElasticsearchProvider implements ISearchProvider {
       });
 
       this.logger.log(`Updated alias: ${aliasName} -> ${newIndexName}`);
-    } catch (error) {
+    } catch (error: Error | any) {
       this.logger.error(
         `Failed to update alias ${aliasName} from ${oldIndexName || 'N/A'} to ${newIndexName}:`,
         error,
@@ -1132,7 +1132,7 @@ export class ElasticsearchProvider implements ISearchProvider {
               await this.indexDocuments(tempIndexName, batch);
               indexedDocuments += batch.length;
               this.logger.debug(`Indexed batch: ${indexedDocuments}/${totalDocuments}`);
-            } catch (error) {
+            } catch (error: Error | any) {
               failedDocuments += batch.length;
               this.logger.error(`Failed to index batch:`, error);
             }
@@ -1145,7 +1145,7 @@ export class ElasticsearchProvider implements ISearchProvider {
           try {
             await this.indexDocuments(tempIndexName, batch);
             indexedDocuments += batch.length;
-          } catch (error) {
+          } catch (error: Error | any) {
             failedDocuments += batch.length;
             this.logger.error(`Failed to index final batch:`, error);
           }
@@ -1163,7 +1163,7 @@ export class ElasticsearchProvider implements ISearchProvider {
             await this.indexDocuments(tempIndexName, batch);
             indexedDocuments += batch.length;
             this.logger.debug(`Indexed ${indexedDocuments}/${totalDocuments} documents`);
-          } catch (error) {
+          } catch (error: Error | any) {
             failedDocuments += batch.length;
             this.logger.error(`Failed to index batch ${i}-${i + batch.length}:`, error);
           }
@@ -1221,7 +1221,7 @@ export class ElasticsearchProvider implements ISearchProvider {
         newIndexName: tempIndexName,
         duration,
       };
-    } catch (error) {
+    } catch (error: Error | any) {
       const duration = Date.now() - startTime;
       this.logger.error(`Reindex failed after ${duration}ms:`, error);
 

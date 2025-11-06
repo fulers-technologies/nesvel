@@ -236,7 +236,7 @@ export class ModelNotFoundException extends BaseException {
    * @returns New ModelNotFoundException instance
    */
   static forId(model: string, id: string | number): ModelNotFoundException {
-    return new ModelNotFoundException(model, [id]);
+    return ModelNotFoundException.make(model, [id]);
   }
 
   /**
@@ -247,7 +247,7 @@ export class ModelNotFoundException extends BaseException {
    * @returns New ModelNotFoundException instance
    */
   static forIds(model: string, ids: (string | number)[]): ModelNotFoundException {
-    return new ModelNotFoundException(model, ids);
+    return ModelNotFoundException.make(model, ids);
   }
 
   /**
@@ -258,7 +258,7 @@ export class ModelNotFoundException extends BaseException {
    * @returns New ModelNotFoundException instance
    */
   static forConditions(model: string, conditions: Record<string, any>): ModelNotFoundException {
-    return new ModelNotFoundException(model, [], conditions);
+    return ModelNotFoundException.make(model, [], conditions);
   }
 
   /**
@@ -276,7 +276,7 @@ export class ModelNotFoundException extends BaseException {
     ids?: (string | number)[],
     conditions?: Record<string, any>,
   ): ModelNotFoundException {
-    return new ModelNotFoundException(model, ids || [], conditions, context);
+    return ModelNotFoundException.make(model, ids || [], conditions, context);
   }
 
   /**
@@ -286,7 +286,7 @@ export class ModelNotFoundException extends BaseException {
    * @returns New ModelNotFoundException instance
    */
   static forEmptyResult(model: string): ModelNotFoundException {
-    return new ModelNotFoundException(
+    return ModelNotFoundException.make(
       model,
       [],
       undefined,

@@ -171,7 +171,7 @@ export class SearchService {
     // Generate physical index name (includes prefix and timestamp/version if needed)
     const physicalName = this.namingService.generatePhysicalIndexName(indexName);
     await this.provider.createIndex(physicalName, settings);
-    
+
     // Create alias for timestamped/versioned strategies
     if (this.namingService.shouldUseAliases()) {
       const aliasName = this.namingService.getAliasName(indexName);

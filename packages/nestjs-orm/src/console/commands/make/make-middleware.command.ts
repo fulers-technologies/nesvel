@@ -1,4 +1,4 @@
-import { Command } from '@nesvel/nestjs-console';
+import { Command, Group } from '@nesvel/nestjs-console';
 import { BaseOrmMakeCommand } from '../base-orm-make.command';
 
 /**
@@ -39,6 +39,7 @@ import { BaseOrmMakeCommand } from '../base-orm-make.command';
   arguments: '<name>',
   description: 'Create a new middleware class',
 })
+@Group('Code Generation')
 export class MakeMiddlewareCommand extends BaseOrmMakeCommand {
   /**
    * Execute the make:middleware command
@@ -88,9 +89,9 @@ export class MakeMiddlewareCommand extends BaseOrmMakeCommand {
     await this.generateFromStub(
       baseName, // Use baseName without Middleware suffix
       {
+        suffix: 'middleware',
         stubName: 'middleware',
         outputDir: 'src/middlewares',
-        suffix: 'middleware',
       },
       {
         className: middlewareName,

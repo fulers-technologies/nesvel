@@ -1,5 +1,3 @@
-import { Command } from 'nest-commander';
-import { Injectable } from '@nestjs/common';
 import {
   BaseCommand,
   spinner,
@@ -7,11 +5,15 @@ import {
   error,
   info,
   warning,
-  displayTable,
   newLine,
+  Group,
+  displayTable,
 } from '@nesvel/nestjs-console';
-import { InjectSearchService } from '@/decorators';
+import { Command } from 'nest-commander';
+import { Injectable } from '@nestjs/common';
+
 import { SearchService } from '@/services';
+import { InjectSearchService } from '@/decorators';
 
 /**
  * Index List Command
@@ -38,6 +40,7 @@ import { SearchService } from '@/services';
   name: 'index:list',
   description: 'List all search indices with statistics',
 })
+@Group('Index Management')
 export class IndexListCommand extends BaseCommand {
   constructor(
     @InjectSearchService()
@@ -99,7 +102,7 @@ export class IndexListCommand extends BaseCommand {
           let aliases: string[] = [];
           try {
             aliases = await this.searchService.getAliases(name);
-          } catch (err) {
+          } catch (err: Error | any) {
             // Silently ignore errors (e.g., for Meilisearch or system indices)
           }
 
@@ -115,14 +118,14 @@ export class IndexListCommand extends BaseCommand {
 
       // Display the table
       displayTable(tableData, {
-        head: ['Index Name', 'Documents', 'Size', 'Status', 'Aliases'],
+        header: ['Index Name', 'Documents', 'Size', 'Status', 'Aliases'],
       });
 
       // Additional helpful info
       newLine();
       info('To view detailed stats for an index, use:');
       info('  nesvel-search index:status <index-name>');
-    } catch (err) {
+    } catch (err: Error | any) {
       spinnerInstance.stop();
 
       // Check if it's a "not implemented" error

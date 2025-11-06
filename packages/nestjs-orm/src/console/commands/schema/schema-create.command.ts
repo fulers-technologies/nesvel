@@ -1,4 +1,5 @@
-import { Command, CommandRunner, Option } from 'nest-commander';
+import { Command, Group } from '@nesvel/nestjs-console';
+import { CommandRunner, Option } from 'nest-commander';
 import { MikroORM } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
 
@@ -40,6 +41,7 @@ import { Injectable, Logger } from '@nestjs/common';
   name: 'schema:create',
   description: 'Create database schema from entities',
 })
+@Group('Schema Management')
 export class SchemaCreateCommand extends CommandRunner {
   private readonly logger = new Logger(SchemaCreateCommand.name);
 

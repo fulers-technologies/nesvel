@@ -7,6 +7,5 @@
  * @since 1.0.0
  */
 
-export { SwaggerAuthType } from './swagger-auth-type.enum';
-export { SwaggerAuthLocation } from './swagger-auth-location.enum';
 export { SwaggerDocExpansion } from './swagger-doc-expansion.enum';
+export { SwaggerThemeNameEnum } from './swagger-theme-name.enum';

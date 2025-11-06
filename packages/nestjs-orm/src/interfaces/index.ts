@@ -8,8 +8,8 @@
  */
 
 export type { IRollbackable } from './rollbackable.interface';
-export type { IRepository } from './repository.interface';
 export type { IService } from './service.interface';
+export * from './database-operation-context.interface';
 
 // Export mixin interfaces
 export type { IHasUserstamps } from './has-user-stamps.interface';
@@ -31,10 +31,12 @@ export * from './has-user-stamps.interface';
 export * from './has-uuid.interface';
 export * from './has-searchable.interface';
 export * from './searchable-config.interface';
-export * from './repository.interface';
 export * from './rollbackable.interface';
 export * from './service.interface';
 export * from './subscriber-options.interface';
+
+// Export pagination interfaces
+export * from './pagination';
 
 /**
  * Type Aliases

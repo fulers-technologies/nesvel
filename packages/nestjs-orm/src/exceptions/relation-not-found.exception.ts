@@ -118,7 +118,7 @@ export class RelationNotFoundException extends BaseException {
    * @returns New RelationNotFoundException instance
    */
   static forUndefinedRelation(model: string, relation: string): RelationNotFoundException {
-    return new RelationNotFoundException(
+    return RelationNotFoundException.make(
       model,
       relation,
       `Call to undefined relationship [${relation}] on model [${model}]`,
@@ -133,7 +133,7 @@ export class RelationNotFoundException extends BaseException {
    * @returns New RelationNotFoundException instance
    */
   static forEmptyRelation(model: string, relation: string): RelationNotFoundException {
-    return new RelationNotFoundException(
+    return RelationNotFoundException.make(
       model,
       relation,
       `No results found for relationship [${relation}] on model [${model}]`,

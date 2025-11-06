@@ -9,6 +9,7 @@ All CLI command files and the index-registry service have been updated to be pro
 ### 1. Console Command Pattern Changes
 
 **Before:**
+
 ```typescript
 import { ConsolePrompts } from '@nesvel/nestjs-console';
 
@@ -24,6 +25,7 @@ async run() {
 ```
 
 **After:**
+
 ```typescript
 import {
   spinner,
@@ -52,34 +54,36 @@ async run() {
 ### 2. Error Handling Improvements
 
 #### Added Comprehensive Try-Catch Blocks
+
 - All commands now have proper error handling
 - Graceful degradation for unsupported features
 - User-friendly error messages
 - Debug mode support with `process.env.DEBUG`
 
-#### Example Error Handling Pattern:
+#### Example Error Handling Pattern
+
 ```typescript
 try {
   // Command logic
-} catch (err) {
+} catch (err: Error | any) {
   spinnerInstance.stop();
-  
+
   // Check for specific error types
   if (err instanceof Error && err.message.includes('not implemented')) {
     error('Feature not yet supported...');
-    info('Here\'s what you can do instead:');
+    info("Here's what you can do instead:");
     return; // Graceful exit, don't throw
   }
-  
+
   // Generic error handling
   error(`Failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
-  
+
   // Debug information
   if (process.env.DEBUG) {
     newLine();
     console.error(err);
   }
-  
+
   throw err; // Re-throw for CLI framework
 }
 ```
@@ -87,15 +91,17 @@ try {
 ### 3. User Guidance Enhancements
 
 All commands now provide:
+
 - Clear usage instructions when arguments are missing
 - Helpful suggestions for next steps
 - Links to related commands
 - Warnings for destructive operations
 - Confirmation prompts for safety
 
-#### Examples:
+#### Examples
 
 **Missing Arguments:**
+
 ```typescript
 if (!indexName) {
   error('Index name is required');
@@ -105,6 +111,7 @@ if (!indexName) {
 ```
 
 **Index Not Found:**
+
 ```typescript
 if (!exists) {
   warning(`Index "${indexName}" does not exist.`);
@@ -116,6 +123,7 @@ if (!exists) {
 ```
 
 **After Success:**
+
 ```typescript
 success(`Index "${indexName}" created successfully!`);
 newLine();
@@ -125,6 +133,7 @@ info('Use "index:status ' + indexName + '" to view index details.');
 ### 4. Safety Features
 
 #### Confirmation Prompts
+
 All destructive operations require confirmation (unless `--force` flag is used):
 
 ```typescript
@@ -133,7 +142,7 @@ if (!force) {
     `Are you sure you want to delete index "${indexName}"?`,
     false, // default to no for safety
   );
-  
+
   if (!confirmed) {
     info('Operation cancelled');
     return;
@@ -142,6 +151,7 @@ if (!force) {
 ```
 
 #### Warning Messages
+
 ```typescript
 warning('⚠️  Warning: This will permanently delete all data!');
 newLine();
@@ -150,6 +160,7 @@ newLine();
 ### 5. Edge Case Handling
 
 #### Not Implemented Features
+
 ```typescript
 if (err instanceof Error && err.message.includes('not yet implemented')) {
   error('Feature not yet supported by your search provider.');
@@ -162,6 +173,7 @@ if (err instanceof Error && err.message.includes('not yet implemented')) {
 ```
 
 #### Index Already Exists
+
 ```typescript
 if (err instanceof Error && err.message.includes('already exists')) {
   warning(`Index "${indexName}" already exists.`);
@@ -170,6 +182,7 @@ if (err instanceof Error && err.message.includes('already exists')) {
 ```
 
 #### Index Not Found
+
 ```typescript
 if (err instanceof Error && err.message.includes('not found')) {
   warning(`Index "${indexName}" was not found.`);
@@ -181,6 +194,7 @@ if (err instanceof Error && err.message.includes('not found')) {
 ## Files Updated
 
 ### CLI Commands (All Production-Ready)
+
 1. ✅ `index-list.command.ts` - Updated with direct imports and error handling
 2. ✅ `index-status.command.ts` - Needs update (same pattern as index-list)
 3. ✅ `index-create.command.ts` - Needs update (same pattern as index-list)
@@ -189,6 +203,7 @@ if (err instanceof Error && err.message.includes('not found')) {
 6. ✅ `index-reindex.command.ts` - Needs update (same pattern as index-list)
 
 ### Services
+
 - ✅ `search.service.ts` - Added missing methods (`count`, `listIndices`, `deleteAllDocuments`, `reindex`)
 - ⏳ `index-registry.service.ts` - Already production-ready with proper error handling
 
@@ -214,7 +229,9 @@ import { InjectSearchService } from '@/decorators';
 import { SearchService } from '@/services';
 
 @Injectable()
-@Command({ /* config */ })
+@Command({
+  /* config */
+})
 export class MyCommand extends BaseCommand {
   constructor(
     @InjectSearchService()
@@ -238,15 +255,14 @@ export class MyCommand extends BaseCommand {
     try {
       // 3. Do work
       const result = await this.searchService.someMethod();
-      
+
       spinnerInstance.stop();
 
       // 4. Show success
       success('Operation completed!');
       newLine();
       info('Next steps: ...');
-      
-    } catch (err) {
+    } catch (err: Error | any) {
       spinnerInstance.stop();
 
       // 5. Handle specific errors
@@ -283,11 +299,13 @@ export class MyCommand extends BaseCommand {
 For each command, test:
 
 ### Normal Operation
+
 - ✅ Command runs successfully with valid inputs
 - ✅ Success messages are displayed
 - ✅ Helpful next-step guidance provided
 
 ### Error Cases
+
 - ✅ Missing required arguments handled gracefully
 - ✅ Index not found shows helpful message
 - ✅ Index already exists handled properly
@@ -296,12 +314,14 @@ For each command, test:
 - ✅ Permission errors explained clearly
 
 ### Safety Features
+
 - ✅ Destructive operations require confirmation
 - ✅ Warning messages displayed for irreversible actions
 - ✅ `--force` flag skips confirmations
 - ✅ Cancelled operations exit gracefully
 
 ### User Experience
+
 - ✅ Spinners show during async operations
 - ✅ Tables display data clearly
 - ✅ Color-coded messages (success=green, error=red, warning=yellow, info=blue)
@@ -317,13 +337,15 @@ DEBUG=1 nesvel-search index:list
 ```
 
 This will show:
+
 - Full stack traces
 - Detailed error objects
 - Internal state information
 
 ## Production Deployment
 
-### Before Deploying:
+### Before Deploying
+
 1. ✅ All commands tested with valid inputs
 2. ✅ All error cases tested
 3. ✅ Confirmation prompts working
@@ -333,7 +355,8 @@ This will show:
 7. ✅ Build succeeds: `bun run build`
 8. ✅ CLI executable works: `node dist/cli.js index:list`
 
-### After Deploying:
+### After Deploying
+
 1. Test in production-like environment
 2. Verify permissions work correctly
 3. Test with actual search provider (Elasticsearch/Meilisearch)
@@ -357,19 +380,22 @@ This will show:
 
 ## Benefits of These Changes
 
-### For Users:
+### For Users
+
 - Clear, actionable error messages
 - Guided through recovery steps
 - Protected from accidental destructive operations
 - Better understanding of available options
 
-### For Developers:
+### For Developers
+
 - Easier to debug issues
 - Consistent error handling across all commands
 - Reduced support burden
 - Better code maintainability
 
-### For Production:
+### For Production
+
 - Graceful degradation
 - No unhandled exceptions
 - Proper logging
@@ -378,6 +404,7 @@ This will show:
 ## Conclusion
 
 All files are now production-ready with:
+
 - ✅ Proper error handling
 - ✅ User-friendly messages
 - ✅ Safety features

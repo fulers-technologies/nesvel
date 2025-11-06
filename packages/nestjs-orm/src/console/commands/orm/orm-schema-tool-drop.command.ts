@@ -1,4 +1,5 @@
-import { Command, CommandRunner } from 'nest-commander';
+import { Command, Group } from '@nesvel/nestjs-console';
+import { CommandRunner } from 'nest-commander';
 import { MikroORM } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
 
@@ -10,6 +11,7 @@ import { Injectable, Logger } from '@nestjs/common';
   name: 'orm:schema-tool:drop',
   description: 'Drop database schema',
 })
+@Group('ORM Utilities')
 export class OrmSchemaToolDropCommand extends CommandRunner {
   private readonly logger = new Logger(OrmSchemaToolDropCommand.name);
   constructor(private readonly orm: MikroORM) {

@@ -140,10 +140,3 @@ export const i18nConfig: I18nOptions = {
    */
   throwOnMissingKey: isDevelopment,
 };
-
-/**
- * Cookie Configuration for Language Persistence
- *
- * Export cookie options for setting language cookie in controllers
- */
-export const languageCookieOptions = COOKIE_OPTIONS;

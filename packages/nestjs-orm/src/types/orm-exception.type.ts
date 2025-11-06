@@ -29,7 +29,7 @@ import type { RelationNotFoundException } from '@/exceptions/relation-not-found.
  * // In a try-catch with type narrowing
  * try {
  *   await repository.findOrFail(id);
- * } catch (error) {
+ * } catch (error: Error | any) {
  *   if (isOrmException(error)) {
  *     // error is typed as OrmException here
  *     const apiMessage = getOrmExceptionApiMessage(error);

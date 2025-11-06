@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Command, CommandRunner, Option } from 'nest-commander';
+import { Command, Group } from '@nesvel/nestjs-console';
+import { CommandRunner, Option } from 'nest-commander';
 
 /**
  * Database Seed Refresh Command
@@ -41,6 +42,7 @@ import { Command, CommandRunner, Option } from 'nest-commander';
   name: 'db:seed:refresh',
   description: 'Rollback all seeders and re-run them',
 })
+@Group('Database Seeding')
 export class DbSeedRefreshCommand extends CommandRunner {
   private readonly logger = new Logger(DbSeedRefreshCommand.name);
 

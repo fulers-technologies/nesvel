@@ -105,7 +105,7 @@ async function multiStepWizard() {
       ['Framework', framework],
       ['Features', features.join(', ')],
     ],
-    { head: ['Setting', 'Value'] },
+    { header: ['Setting', 'Value'] },
   );
 
   const confirmed = await confirm('Create project with these settings?', {

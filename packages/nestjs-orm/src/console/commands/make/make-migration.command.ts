@@ -1,4 +1,4 @@
-import { Command } from '@nesvel/nestjs-console';
+import { Command, Group } from '@nesvel/nestjs-console';
 import { BaseOrmMakeCommand } from '../base-orm-make.command';
 
 /**
@@ -24,6 +24,7 @@ import { BaseOrmMakeCommand } from '../base-orm-make.command';
   arguments: '<name>',
   description: 'Create a new database migration',
 })
+@Group('Code Generation')
 export class MakeMigrationCommand extends BaseOrmMakeCommand {
   async run(inputs: string[]): Promise<void> {
     const [name] = inputs;
@@ -52,6 +53,7 @@ export class MakeMigrationCommand extends BaseOrmMakeCommand {
     await this.generateFromStub(
       name,
       {
+        suffix: 'migration',
         stubName: 'migration',
         outputDir: 'src/migrations',
       },

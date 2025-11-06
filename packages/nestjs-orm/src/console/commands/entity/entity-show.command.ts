@@ -1,4 +1,5 @@
-import { Command, CommandRunner } from 'nest-commander';
+import { Command, Group } from '@nesvel/nestjs-console';
+import { CommandRunner } from 'nest-commander';
 import { MikroORM } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
 
@@ -24,6 +25,7 @@ import { Injectable, Logger } from '@nestjs/common';
   arguments: '<name>',
   description: 'Show detailed information about an entity',
 })
+@Group('Entity Inspection')
 export class EntityShowCommand extends CommandRunner {
   private readonly logger = new Logger(EntityShowCommand.name);
 

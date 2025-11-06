@@ -272,7 +272,7 @@ export function search(searchStr: string): <%= enumName %> | undefined {
  * try {
  *   <%= enumName %>.assertValid(userInput);
  *   // Value is valid, type is narrowed
- * } catch (error) {
+ * } catch (error: Error | any) {
  *   console.error('Invalid value');
  * }
  * ```

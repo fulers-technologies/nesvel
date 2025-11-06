@@ -1,4 +1,4 @@
-import { Command } from '@nesvel/nestjs-console';
+import { Command, Group } from '@nesvel/nestjs-console';
 import { BaseOrmMakeCommand } from '../base-orm-make.command';
 
 /**
@@ -55,6 +55,7 @@ import { BaseOrmMakeCommand } from '../base-orm-make.command';
   arguments: '<name>',
   description: 'Create a new entity subscriber class',
 })
+@Group('Code Generation')
 export class MakeSubscriberCommand extends BaseOrmMakeCommand {
   /**
    * Execute the make:subscriber command
@@ -123,14 +124,14 @@ export class MakeSubscriberCommand extends BaseOrmMakeCommand {
     await this.generateFromStub(
       name,
       {
+        suffix: 'subscriber',
         stubName: 'subscriber',
         outputDir: 'src/subscribers',
-        suffix: 'subscriber',
       },
       {
         className,
         fileName,
-        entityName, // Entity class name (without Subscriber suffix)
+        entityName,
       },
     );
   }

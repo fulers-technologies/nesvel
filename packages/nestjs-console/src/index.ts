@@ -48,4 +48,8 @@ export {
   CommandFactory,
   Question,
   QuestionSet,
+  RootCommand,
 } from 'nest-commander';
+
+// Export our custom Group decorator for organizing commands
+export { Group, getCommandGroup } from './console/decorators/group.decorator';

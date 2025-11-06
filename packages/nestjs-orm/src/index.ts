@@ -20,6 +20,12 @@
 // Core Entities and Base Classes
 export * from './entities';
 
+// Action Pattern
+export * from './actions';
+
+// Event Pattern
+export * from './events';
+
 // Repository Pattern
 export * from './repositories';
 
@@ -118,30 +124,6 @@ export {
   type MikroOrmModuleOptions,
   type MikroOrmModuleOptions as OrmModuleOptions,
 } from '@mikro-orm/nestjs';
-
-// Re-export pagination utilities from nestjs-paginate (excluding paginate function)
-export {
-  // Core types and classes
-  Paginated,
-  PaginationType,
-  PaginationLimit,
-  type PaginateConfig,
-  type PaginateQuery,
-
-  // Decorators
-  Paginate,
-  ApiOkPaginatedResponse,
-  ApiPaginationQuery,
-  PaginatedSwaggerDocs,
-
-  // Global config
-  updateGlobalConfig,
-  type NestjsPaginateGlobalConfig,
-
-  // Filter operators
-  FilterOperator,
-  FilterSuffix,
-} from 'nestjs-paginate';
 
 // Utility functions and helpers
 export * from './utils';

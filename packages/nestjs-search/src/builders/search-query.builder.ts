@@ -83,7 +83,6 @@ import type { IQueryBuilder } from '@/interfaces/query-builder.interface';
  * No dependencies, no execution logic
  */
 export class SearchQueryBuilder {
-
   /**
    * Create Elasticsearch query builder
    *

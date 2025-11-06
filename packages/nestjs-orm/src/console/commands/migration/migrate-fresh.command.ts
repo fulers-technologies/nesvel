@@ -1,4 +1,5 @@
-import { Command, CommandRunner, Option } from 'nest-commander';
+import { Command, Group } from '@nesvel/nestjs-console';
+import { CommandRunner, Option } from 'nest-commander';
 import { MikroORM } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
 
@@ -27,6 +28,7 @@ import { Injectable, Logger } from '@nestjs/common';
   name: 'migrate:fresh',
   description: 'Drop all tables and re-run all migrations',
 })
+@Group('Database Migrations')
 export class MigrateFreshCommand extends CommandRunner {
   private readonly logger = new Logger(MigrateFreshCommand.name);
 

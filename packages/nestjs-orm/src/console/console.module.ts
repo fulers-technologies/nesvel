@@ -16,6 +16,8 @@ import {
   MakeResourceCommand,
   MakeMiddlewareCommand,
   MakeEnumCommand,
+  MakeActionCommand,
+  MakeEventCommand,
 
   // Migration commands
   MigrateCommand,
@@ -104,6 +106,8 @@ import { HelpCommand } from './commands/help.command';
     // Additional generators
     MakeMiddlewareCommand,
     MakeEnumCommand,
+    MakeActionCommand,
+    MakeEventCommand,
 
     // Convenience generators
     MakeResourceCommand,

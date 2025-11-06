@@ -25,7 +25,7 @@ import {
 describe('ORM Exceptions', () => {
   describe('DatabaseException', () => {
     it('should create database exception with message and connection', () => {
-      const error = new DatabaseException(
+      const error = DatabaseException.make(
         'CONNECTION_FAILED',
         'Connection failed',
         undefined,
@@ -38,7 +38,7 @@ describe('ORM Exceptions', () => {
 
     it('should include original error when provided', () => {
       const originalError = new Error('Original error');
-      const error = new DatabaseException(
+      const error = DatabaseException.make(
         'CONNECTION_FAILED',
         'Wrapper error',
         undefined,
@@ -51,14 +51,14 @@ describe('ORM Exceptions', () => {
 
   describe('ModelNotFoundException', () => {
     it('should create model not found exception', () => {
-      const error = new ModelNotFoundException('User', ['user-123']);
+      const error = ModelNotFoundException.make('User', ['user-123']);
       expect(error).toBeInstanceOf(ModelNotFoundException);
       expect(error.model).toBe('User');
       expect(error.ids).toEqual(['user-123']);
     });
 
     it('should handle custom error messages', () => {
-      const error = new ModelNotFoundException('Post', ['post-456'], undefined, 'Custom message');
+      const error = ModelNotFoundException.make('Post', ['post-456'], undefined, 'Custom message');
       expect(error.message).toBe('Custom message');
     });
   });
@@ -67,7 +67,7 @@ describe('ORM Exceptions', () => {
     it('should create query exception with SQL and parameters', () => {
       const sql = 'SELECT * FROM users WHERE id = ?';
       const params = [123];
-      const error = new QueryException('default', sql, params, undefined, 'Query failed');
+      const error = QueryException.make('default', sql, params, undefined, 'Query failed');
 
       expect(error).toBeInstanceOf(QueryException);
       expect(error.sql).toBe(sql);
@@ -77,7 +77,7 @@ describe('ORM Exceptions', () => {
 
   describe('ValidationException', () => {
     it('should create validation exception with field details', () => {
-      const error = new ValidationException('email', 'Validation failed', 'User');
+      const error = ValidationException.make('email', 'Validation failed', 'User');
 
       expect(error).toBeInstanceOf(ValidationException);
       expect(error.entity).toBe('User');
@@ -88,7 +88,7 @@ describe('ORM Exceptions', () => {
 
   describe('RelationNotFoundException', () => {
     it('should create relation not found exception with constraint details', () => {
-      const error = new RelationNotFoundException('User', 'posts', 'Relation not found');
+      const error = RelationNotFoundException.make('User', 'posts', 'Relation not found');
 
       expect(error).toBeInstanceOf(RelationNotFoundException);
       expect(error.model).toBe('User');

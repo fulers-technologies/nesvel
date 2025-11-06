@@ -1,6 +1,7 @@
 import type { INestApplication } from '@nestjs/common';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { SwaggerModule } from '@nestjs/swagger';
+import { SwaggerTheme } from 'swagger-themes';
 
 import { DEFAULT_SWAGGER_CSS, DEFAULT_SWAGGER_UI_OPTIONS } from '../constants';
 import type { SwaggerConfig } from '../interfaces';
@@ -13,6 +14,8 @@ import { SwaggerBuilderService } from './swagger-builder.service';
  */
 @Injectable()
 export class SwaggerSetupService {
+  private readonly logger = new Logger(SwaggerSetupService.name);
+
   constructor(
     @Inject(SWAGGER_CONFIG) private readonly config: SwaggerConfig,
     private readonly swaggerBuilder: SwaggerBuilderService,
@@ -33,6 +36,13 @@ export class SwaggerSetupService {
       return;
     }
 
+    // Debug: Log configuration
+    this.logger.debug('Swagger configuration loaded:');
+    this.logger.debug(`Server URL: ${this.config.serverUrl}`);
+    this.logger.debug(
+      `Additional servers: ${JSON.stringify(this.config.additionalServers, null, 2)}`,
+    );
+
     // Build the document configuration
     const documentConfig = this.swaggerBuilder.build(this.config);
 
@@ -42,23 +52,44 @@ export class SwaggerSetupService {
       deepScanRoutes: true,
     });
 
-    // Extract document URLs (support both flat and nested structures)
-    const jsonDocumentUrl =
-      this.config.jsonDocumentUrl || (this.config as any).documents?.jsonDocumentUrl;
-    const yamlDocumentUrl =
-      this.config.yamlDocumentUrl || (this.config as any).documents?.yamlDocumentUrl;
+    // Extract document URLs from nested structure
+    const jsonDocumentUrl = this.config.documents.jsonDocumentUrl;
+    const yamlDocumentUrl = this.config.documents.yamlDocumentUrl;
 
-    // Extract branding options (support both flat and nested structures)
-    const customSiteTitle =
-      this.config.customSiteTitle ||
-      (this.config as any).branding?.customSiteTitle ||
-      this.config.title;
-    const customFavIcon =
-      this.config.customFavIcon ||
-      (this.config as any).branding?.customfavIcon ||
-      (this.config as any).branding?.customFavIcon ||
-      '/favicon.ico';
-    const customCss = this.config.customCss || DEFAULT_SWAGGER_CSS;
+    // Extract branding options from nested structure
+    const customSiteTitle = this.config.branding.customSiteTitle || this.config.title;
+    const customFavIcon = this.config.branding.customFavIcon || '/favicon.ico';
+    const logoUrl = this.config.branding.logoUrl;
+
+    // Build custom CSS: theme CSS (inline) + custom CSS URL (separate)
+    let customCss = DEFAULT_SWAGGER_CSS;
+    let customCssUrl: string | undefined;
+
+    // Apply theme CSS if specified (inline CSS)
+    if (this.config.branding.theme) {
+      const swaggerTheme = new SwaggerTheme();
+      const themeCss = swaggerTheme.getBuffer(this.config.branding.theme);
+      customCss = themeCss;
+    }
+
+    // Add logo CSS if logoUrl is specified
+    if (logoUrl) {
+      customCss += `
+        .topbar-wrapper .link {
+          content: url('${logoUrl}');
+          width: auto;
+          height: 40px;
+        }
+        .topbar-wrapper .link img {
+          content: url('${logoUrl}');
+        }
+      `;
+    }
+
+    // Set custom CSS URL if specified (will be loaded separately by Swagger UI)
+    if (this.config.branding.customCssUrl) {
+      customCssUrl = this.config.branding.customCssUrl;
+    }
 
     // Build Swagger UI setup options
     const setupOptions: any = {
@@ -67,6 +98,11 @@ export class SwaggerSetupService {
       customfavIcon: customFavIcon,
       customCss,
     };
+
+    // Add custom CSS URL if specified (loaded separately from inline CSS)
+    if (customCssUrl) {
+      setupOptions.customCssUrl = customCssUrl;
+    }
 
     // Add optional document URLs if configured
     if (jsonDocumentUrl) {

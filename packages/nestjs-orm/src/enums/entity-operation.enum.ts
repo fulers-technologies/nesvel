@@ -13,25 +13,85 @@ export enum EntityOperation {
    * Entity was created (INSERT operation)
    * Triggered when a new entity is persisted to the database
    */
-  CREATED = 'created',
+  CREATED = 'create',
 
   /**
    * Entity was updated (UPDATE operation)
    * Triggered when existing entity fields are modified
    */
-  UPDATED = 'updated',
+  UPDATED = 'update',
 
   /**
    * Entity was deleted (DELETE operation)
    * Triggered when an entity is permanently removed (hard delete)
    */
-  DELETED = 'deleted',
+  DELETED = 'delete',
+
+  /**
+   * Entity was saved (INSERT or UPDATE)
+   * Triggered when an entity is persisted (create or update)
+   */
+  SAVED = 'save',
+
+  /**
+   * Entity was upserted (INSERT or UPDATE based on existence)
+   * Triggered when using upsert operation
+   */
+  UPSERTED = 'upsert',
 
   /**
    * Entity was loaded from database (SELECT operation)
    * Triggered when an entity is retrieved/queried
    */
-  LOADED = 'loaded',
+  LOADED = 'find',
+
+  /**
+   * Entities were counted (COUNT operation)
+   * Triggered when counting entities
+   */
+  COUNTED = 'count',
+
+  /**
+   * Entities were inserted in batch
+   * Triggered during bulk insert operations
+   */
+  INSERTED = 'insert',
+
+  /**
+   * Entities were paginated
+   * Triggered during pagination operations
+   */
+  PAGINATED = 'paginate',
+
+  /**
+   * Aggregate function (SUM)
+   * Triggered when calculating sum
+   */
+  SUM = 'sum',
+
+  /**
+   * Aggregate function (AVG)
+   * Triggered when calculating average
+   */
+  AVG = 'avg',
+
+  /**
+   * Aggregate function (MIN)
+   * Triggered when finding minimum
+   */
+  MIN = 'min',
+
+  /**
+   * Aggregate function (MAX)
+   * Triggered when finding maximum
+   */
+  MAX = 'max',
+
+  /**
+   * Table was truncated (DELETE ALL)
+   * Triggered when truncating entire table
+   */
+  TRUNCATED = 'truncate',
 
   /**
    * Entity was soft deleted

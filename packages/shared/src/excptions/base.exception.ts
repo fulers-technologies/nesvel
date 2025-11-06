@@ -35,7 +35,7 @@
  * }
  *
  * // 2. Use the make() method to create instances
- * // Instead of: new UserNotFoundException(123)
+ * // Instead of: UserNotFoundException.make(123)
  * throw UserNotFoundException.make(123);
  *
  * // With custom message
@@ -63,7 +63,7 @@
  *   if (!user) {
  *     throw UserNotFoundException.make(userId);
  *   }
- * } catch (error) {
+ * } catch (error: Error | any) {
  *   if (error instanceof UserNotFoundException) {
  *     console.log(`User ${error.userId} not found`);
  *   }

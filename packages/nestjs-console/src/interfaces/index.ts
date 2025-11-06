@@ -7,7 +7,8 @@
  * @module interfaces
  */
 
-export type { Theme } from './theme.interface';
-export type { FormField } from './form-field.interface';
-export type { TableOptions } from './table-options.interface';
-export type { MakeCommandOptions } from './make-command-options.interface';
+export * from './theme.interface';
+export * from './form-field.interface';
+export * from './command-info.interface';
+export * from './table-options.interface';
+export * from './make-command-options.interface';

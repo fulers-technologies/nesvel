@@ -59,6 +59,7 @@ export type {
   SwaggerDocumentOptions,
 } from '@nestjs/swagger';
 export * from './constants';
+export * from './enums';
 export * from './interfaces';
 export * from './services';
 export * from './swagger.module';

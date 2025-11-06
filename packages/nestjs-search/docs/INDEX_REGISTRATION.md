@@ -45,12 +45,12 @@ export class AppModule {}
 @Module({
   imports: [
     SearchModule.forRoot({ ... }),
-    
+
     // Method 1: Multiple registerIndex calls
     SearchModule.registerIndex({ name: 'products' }),
     SearchModule.registerIndex({ name: 'orders' }),
     SearchModule.registerIndex({ name: 'users' }),
-    
+
     // Method 2: Use registerIndices (bulk registration)
     SearchModule.registerIndices([
       { name: 'products' },
@@ -74,7 +74,7 @@ SearchModule.registerIndex({
     numberOfReplicas: 2,
     refreshInterval: '5s',
   },
-})
+});
 ```
 
 ### With Custom Mappings
@@ -113,7 +113,7 @@ SearchModule.registerIndex({
       },
     },
   },
-})
+});
 ```
 
 ### With Custom Analysis
@@ -147,7 +147,7 @@ SearchModule.registerIndex({
       },
     },
   },
-})
+});
 ```
 
 ### With Index Alias
@@ -176,7 +176,7 @@ SearchModule.registerIndex({
     filterableAttributes: ['category', 'price', 'inStock'],
     sortableAttributes: ['price', 'createdAt', 'rating'],
   },
-})
+});
 ```
 
 ### With Advanced Settings
@@ -186,66 +186,34 @@ SearchModule.registerIndex({
   name: 'products',
   meilisearch: {
     primaryKey: 'id',
-    
+
     // Searchable fields
-    searchableAttributes: [
-      'name',
-      'description',
-      'tags',
-      'category',
-    ],
-    
+    searchableAttributes: ['name', 'description', 'tags', 'category'],
+
     // Fields returned in results
-    displayedAttributes: [
-      'id',
-      'name',
-      'price',
-      'image',
-      'inStock',
-    ],
-    
+    displayedAttributes: ['id', 'name', 'price', 'image', 'inStock'],
+
     // Filterable fields
-    filterableAttributes: [
-      'category',
-      'price',
-      'inStock',
-      'brand',
-    ],
-    
+    filterableAttributes: ['category', 'price', 'inStock', 'brand'],
+
     // Sortable fields
-    sortableAttributes: [
-      'price',
-      'createdAt',
-      'rating',
-      'popularity',
-    ],
-    
+    sortableAttributes: ['price', 'createdAt', 'rating', 'popularity'],
+
     // Ranking rules
-    rankingRules: [
-      'words',
-      'typo',
-      'proximity',
-      'attribute',
-      'sort',
-      'exactness',
-    ],
-    
+    rankingRules: ['words', 'typo', 'proximity', 'attribute', 'sort', 'exactness'],
+
     // Stop words (words to ignore)
-    stopWords: [
-      'the',
-      'a',
-      'an',
-    ],
-    
+    stopWords: ['the', 'a', 'an'],
+
     // Synonyms
     synonyms: {
       phone: ['smartphone', 'mobile', 'cellphone'],
       laptop: ['notebook', 'computer'],
     },
-    
+
     // Distinct attribute (deduplication)
     distinctAttribute: 'productId',
-    
+
     // Typo tolerance
     typoTolerance: {
       enabled: true,
@@ -257,7 +225,7 @@ SearchModule.registerIndex({
       disableOnAttributes: ['category'],
     },
   },
-})
+});
 ```
 
 ## Auto-Creation Options
@@ -303,24 +271,22 @@ import { IndexRegistryService } from '@nesvel/nestjs-search';
 
 @Injectable()
 export class MyService {
-  constructor(
-    private readonly indexRegistry: IndexRegistryService,
-  ) {}
+  constructor(private readonly indexRegistry: IndexRegistryService) {}
 
   getProductsIndexConfig() {
     // Get by name
     const config = this.indexRegistry.get('products');
-    
+
     // Get by alias
     const configByAlias = this.indexRegistry.get('products_v1');
-    
+
     // Check if registered
     const exists = this.indexRegistry.has('products');
-    
+
     // Resolve alias to index name
     const indexName = this.indexRegistry.resolveIndexName('products_v1');
     // Returns: 'products'
-    
+
     // Get all registered indices
     const allIndices = this.indexRegistry.getAll();
   }
@@ -335,9 +301,7 @@ import { SearchService, SearchQueryBuilder } from '@nesvel/nestjs-search';
 
 @Injectable()
 export class ProductSearchService {
-  constructor(
-    private readonly searchService: SearchService,
-  ) {}
+  constructor(private readonly searchService: SearchService) {}
 
   async searchProducts(query: string) {
     // Build query
@@ -365,7 +329,7 @@ import { SearchModule, SearchConnectionType } from '@nesvel/nestjs-search';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    
+
     // Configure search provider
     SearchModule.forRootAsync({
       imports: [ConfigModule],
@@ -377,7 +341,7 @@ import { SearchModule, SearchConnectionType } from '@nesvel/nestjs-search';
       }),
       inject: [ConfigService],
     }),
-    
+
     // Register indices
     SearchModule.registerIndices([
       {
@@ -452,29 +416,32 @@ nesvel-search index:clear orders --force
 ## Best Practices
 
 1. **Use Aliases for Production**: Register indices with version suffixes and use aliases for zero-downtime updates
+
    ```typescript
    SearchModule.registerIndex({
      name: 'products_v2',
      alias: 'products',
-   })
+   });
    ```
 
 2. **Disable Auto-Update in Production**: Use `autoUpdateSettings: false` to avoid unexpected changes
+
    ```typescript
    SearchModule.registerIndex({
      name: 'products',
      autoUpdateSettings: false, // Manual updates only
-   })
+   });
    ```
 
 3. **Environment-Specific Configuration**: Use async configuration with ConfigService
+
    ```typescript
    SearchModule.forRootAsync({
      useFactory: (config: ConfigService) => ({
        connection: config.get('SEARCH_PROVIDER'),
        // ...
      }),
-   })
+   });
    ```
 
 4. **Group Related Indices**: Use feature modules to group related indices

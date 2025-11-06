@@ -53,7 +53,6 @@ import type { SearchOptions } from '@/interfaces/search-options.interface';
  * ```
  */
 export class MeilisearchQueryBuilder<T = any> extends BaseQueryBuilder<T> {
-
   /**
    * Get the raw Meilisearch query object
    *

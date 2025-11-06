@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Command, CommandRunner } from 'nest-commander';
+import { Command, Group } from '@nesvel/nestjs-console';
+import { CommandRunner } from 'nest-commander';
 
 /**
  * Database Seed Command
@@ -30,6 +31,7 @@ import { Command, CommandRunner } from 'nest-commander';
   name: 'db:seed',
   description: 'Seed the database with records',
 })
+@Group('Database Seeding')
 export class DbSeedCommand extends CommandRunner {
   private readonly logger = new Logger(DbSeedCommand.name);
   async run(): Promise<void> {}

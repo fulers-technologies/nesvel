@@ -263,7 +263,9 @@ export abstract class BaseCommand extends CommandRunner {
       }
 
       child.on('error', (error) => {
-        reject(new Error(`Failed to execute command: ${command} ${args.join(' ')}\n${error.message}`));
+        reject(
+          new Error(`Failed to execute command: ${command} ${args.join(' ')}\n${error.message}`),
+        );
       });
 
       child.on('close', (code) => {

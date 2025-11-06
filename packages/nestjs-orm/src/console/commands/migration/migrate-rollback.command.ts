@@ -1,4 +1,5 @@
-import { Command, CommandRunner, Option } from 'nest-commander';
+import { Command, Group } from '@nesvel/nestjs-console';
+import { CommandRunner, Option } from 'nest-commander';
 import { MikroORM } from '@mikro-orm/core';
 import { Injectable, Logger } from '@nestjs/common';
 
@@ -28,6 +29,7 @@ import { Injectable, Logger } from '@nestjs/common';
   name: 'migrate:rollback',
   description: 'Rollback the last batch of database migrations',
 })
+@Group('Database Migrations')
 export class MigrateRollbackCommand extends CommandRunner {
   private readonly logger = new Logger(MigrateRollbackCommand.name);
 

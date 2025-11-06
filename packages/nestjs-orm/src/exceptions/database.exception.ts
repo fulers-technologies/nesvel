@@ -265,7 +265,7 @@ export class DatabaseException extends BaseException {
   ): DatabaseException {
     const message = `Failed to connect to database '${connectionName}' at ${host}:${port}`;
     const details = { host, port };
-    return new DatabaseException(
+    return DatabaseException.make(
       'CONNECTION_FAILED',
       message,
       details,
@@ -289,7 +289,7 @@ export class DatabaseException extends BaseException {
   ): DatabaseException {
     const message = `Authentication failed for user '${username}' on database '${connectionName}'`;
     const details = { username };
-    return new DatabaseException(
+    return DatabaseException.make(
       'AUTHENTICATION_FAILED',
       message,
       details,
@@ -313,7 +313,7 @@ export class DatabaseException extends BaseException {
   ): DatabaseException {
     const message = `Invalid database configuration: ${field} = ${value}`;
     const details = { field, value };
-    return new DatabaseException('CONFIG_ERROR', message, details, connectionName);
+    return DatabaseException.make('CONFIG_ERROR', message, details, connectionName);
   }
 
   /**
@@ -331,7 +331,7 @@ export class DatabaseException extends BaseException {
   ): DatabaseException {
     const message = `Migration '${migrationName}' failed: ${reason}`;
     const details = { migrationName, reason };
-    return new DatabaseException('MIGRATION_FAILED', message, details, connectionName);
+    return DatabaseException.make('MIGRATION_FAILED', message, details, connectionName);
   }
 
   /**
@@ -349,7 +349,7 @@ export class DatabaseException extends BaseException {
   ): DatabaseException {
     const message = `Connection timeout after ${timeout}ms for database '${connectionName}'`;
     const details = { timeout };
-    return new DatabaseException(
+    return DatabaseException.make(
       'CONNECTION_TIMEOUT',
       message,
       details,
@@ -372,7 +372,7 @@ export class DatabaseException extends BaseException {
     const fieldList = requiredFields.join(', ');
     const message = `Missing required database configuration fields: ${fieldList}`;
     const details = { requiredFields };
-    return new DatabaseException('MISSING_CONFIG', message, details, connectionName);
+    return DatabaseException.make('MISSING_CONFIG', message, details, connectionName);
   }
 
   /**
@@ -390,7 +390,7 @@ export class DatabaseException extends BaseException {
   ): DatabaseException {
     const message = `Database '${connectionName}' is temporarily unavailable: ${reason}`;
     const details = { reason };
-    return new DatabaseException(
+    return DatabaseException.make(
       'TEMPORARY_UNAVAILABLE',
       message,
       details,

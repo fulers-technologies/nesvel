@@ -9,5 +9,4 @@
  * @since 1.0.0
  */
 
-export * from './sort-direction.enum';
 export * from './entity-operation.enum';

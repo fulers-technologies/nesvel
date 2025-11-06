@@ -1,5 +1,3 @@
-import { Command, Option } from 'nest-commander';
-import { Injectable } from '@nestjs/common';
 import {
   BaseCommand,
   spinner,
@@ -7,12 +5,16 @@ import {
   error,
   info,
   warning,
-  displayTable,
   newLine,
   confirm,
+  Group,
+  displayTable,
 } from '@nesvel/nestjs-console';
-import { InjectSearchService } from '@/decorators';
+import { Injectable } from '@nestjs/common';
+import { Command, Option } from 'nest-commander';
+
 import { SearchService } from '@/services';
+import { InjectSearchService } from '@/decorators';
 
 /**
  * Index Reindex Command
@@ -67,6 +69,7 @@ import { SearchService } from '@/services';
     index: 'Name of the index to reindex (optional - if not provided, reindexes all indices)',
   },
 })
+@Group('Index Management')
 export class IndexReindexCommand extends BaseCommand {
   /**
    * Skip confirmation prompt
@@ -210,7 +213,7 @@ export class IndexReindexCommand extends BaseCommand {
         // Call the search service's reindex method with required data source
         // Note: This will fail if the user hasn't provided a data source implementation
         // The user needs to extend SearchService and implement the reindex method with their data source
-        
+
         const result = await this.searchService.reindex(indexName, {
           batchSize,
           deleteOldIndex: clear,
@@ -219,7 +222,7 @@ export class IndexReindexCommand extends BaseCommand {
             // Users must extend SearchService and provide their own data source
             throw new Error(
               'Data source not configured. You must provide a dataSource function ' +
-              'that fetches documents from your database, API, or other source.',
+                'that fetches documents from your database, API, or other source.',
             );
           },
         });
@@ -241,13 +244,13 @@ export class IndexReindexCommand extends BaseCommand {
             ['Duration (ms)', result.duration.toString()],
           ],
           {
-            head: ['Metric', 'Value'],
+            header: ['Metric', 'Value'],
           },
         );
 
         newLine();
         info('Use "index:status ' + indexName + '" to verify the index.');
-      } catch (err) {
+      } catch (err: Error | any) {
         reindexSpinner.stop();
 
         // Check if data source is not configured
@@ -294,7 +297,7 @@ export class IndexReindexCommand extends BaseCommand {
 
         throw err;
       }
-    } catch (err) {
+    } catch (err: Error | any) {
       if (spinnerInstance) spinnerInstance.stop();
 
       error(`Failed to reindex: ${err instanceof Error ? err.message : 'Unknown error'}`);
@@ -384,7 +387,7 @@ export class IndexReindexCommand extends BaseCommand {
           success(`  ✓ ${indexName}: ${result.indexedDocuments} documents indexed`);
           successCount++;
           results.push({ index: indexName, success: true });
-        } catch (err) {
+        } catch (err: Error | any) {
           const errorMsg = err instanceof Error ? err.message : 'Unknown error';
           error(`  ✗ ${indexName}: ${errorMsg}`);
           failCount++;
@@ -416,10 +419,12 @@ export class IndexReindexCommand extends BaseCommand {
           });
         newLine();
       }
-    } catch (err) {
+    } catch (err: Error | any) {
       if (listSpinner) listSpinner.stop();
 
-      error(`Failed to reindex all indices: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      error(
+        `Failed to reindex all indices: ${err instanceof Error ? err.message : 'Unknown error'}`,
+      );
 
       if (process.env.DEBUG) {
         newLine();

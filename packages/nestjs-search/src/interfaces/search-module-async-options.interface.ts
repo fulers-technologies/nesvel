@@ -55,8 +55,20 @@ export interface SearchModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'
   useClass?: Type<SearchModuleOptionsFactory>;
 
   /**
-   * Whether the module is global
-   * @default false
+   * Whether the module should be registered globally
+   *
+   * When true, the SearchService and related providers will be
+   * available in all modules without explicit imports.
+   *
+   * @default true
+   *
+   * @example
+   * ```typescript
+   * SearchModule.forRootAsync({
+   *   useFactory: () => ({ ... }),
+   *   isGlobal: true, // Available in all modules
+   * });
+   * ```
    */
   isGlobal?: boolean;
 }

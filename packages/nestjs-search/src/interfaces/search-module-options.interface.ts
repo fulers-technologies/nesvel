@@ -152,4 +152,22 @@ export interface SearchModuleOptions {
    * @default false (true in development)
    */
   logging?: boolean;
+
+  /**
+   * Whether the module should be registered as global
+   *
+   * When true, the SearchService and other providers will be available
+   * globally across all modules without needing to import SearchModule.
+   *
+   * @default true
+   *
+   * @example
+   * ```typescript
+   * SearchModule.forRoot({
+   *   connection: SearchConnectionType.ELASTICSEARCH,
+   *   isGlobal: true, // Available in all modules
+   * })
+   * ```
+   */
+  isGlobal?: boolean;
 }

@@ -1,5 +1,3 @@
-import { Command, Option } from 'nest-commander';
-import { Injectable } from '@nestjs/common';
 import {
   BaseCommand,
   spinner,
@@ -9,9 +7,13 @@ import {
   warning,
   newLine,
   confirm,
+  Group,
 } from '@nesvel/nestjs-console';
-import { InjectSearchService } from '@/decorators';
+import { Injectable } from '@nestjs/common';
+import { Command, Option } from 'nest-commander';
+
 import { SearchService } from '@/services';
+import { InjectSearchService } from '@/decorators';
 
 /**
  * Index Delete Command
@@ -44,6 +46,7 @@ import { SearchService } from '@/services';
     index: 'Name of the index to delete',
   },
 })
+@Group('Index Management')
 export class IndexDeleteCommand extends BaseCommand {
   /**
    * Skip confirmation prompt
@@ -134,7 +137,7 @@ export class IndexDeleteCommand extends BaseCommand {
       success(`Index "${indexName}" deleted successfully!`);
       newLine();
       info('Use "index:list" to view remaining indices.');
-    } catch (err) {
+    } catch (err: Error | any) {
       if (spinnerInstance) spinnerInstance.stop();
 
       error(`Failed to delete index: ${err instanceof Error ? err.message : 'Unknown error'}`);

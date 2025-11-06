@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Command, CommandRunner } from 'nest-commander';
+import { Command, Group } from '@nesvel/nestjs-console';
+import { CommandRunner } from 'nest-commander';
 
 /**
  * Database Seed List Command
@@ -46,6 +47,7 @@ import { Command, CommandRunner } from 'nest-commander';
   name: 'db:seed:list',
   description: 'List all available database seeders',
 })
+@Group('Database Seeding')
 export class DbSeedListCommand extends CommandRunner {
   private readonly logger = new Logger(DbSeedListCommand.name);
 
