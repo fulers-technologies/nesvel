@@ -11,7 +11,7 @@
  * defaults.
  *
  * Configuration Properties:
- * - global: Whether to register the module globally (default: false)
+ * - isGlobal: Whether to register the module globally (default: false)
  * - autoConnect: Whether to auto-connect on initialization (default: true)
  * - maxRetries: Maximum retry attempts for failed operations (default: 3)
  * - retryDelay: Delay between retries in milliseconds (default: 1000)
@@ -44,7 +44,7 @@ export const DEFAULT_PUBSUB_CONFIG = {
    *
    * @default false
    */
-  global: false,
+  isGlobal: false,
 
   /**
    * Whether to automatically connect to the driver on module initialization.

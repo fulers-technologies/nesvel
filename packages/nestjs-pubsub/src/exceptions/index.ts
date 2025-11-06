@@ -7,5 +7,9 @@
  */
 
 export * from './pubsub.exception';
-export * from './driver-not-found.exception';
+export * from './circuit-open.exception';
 export * from './publish-failed.exception';
+export * from './driver-not-found.exception';
+export * from './rate-limit-exceeded.exception';
+export * from './max-retries-exceeded.exception';
+export * from './backpressure-timeout.exception';

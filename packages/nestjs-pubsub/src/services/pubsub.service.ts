@@ -1,6 +1,7 @@
 import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
-import type { IPubSubDriver } from '@interfaces/pubsub-driver.interface';
+
 import { MessageHandler } from '@/types/message-handler.type';
+import type { IPubSubDriver } from '@interfaces/pubsub-driver.interface';
 
 /**
  * Main PubSub service providing pub/sub functionality.

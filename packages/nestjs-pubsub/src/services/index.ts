@@ -8,3 +8,4 @@
 
 export * from './pubsub.service';
 export * from './pubsub-factory.service';
+export * from './subscription-discovery.service';

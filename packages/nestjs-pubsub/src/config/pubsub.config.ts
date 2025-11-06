@@ -49,7 +49,7 @@ export const pubsubConfig: PubSubConfig = {
    * @env PUBSUB_GLOBAL
    * @default false
    */
-  global: process.env.PUBSUB_GLOBAL === 'true',
+  isGlobal: process.env.PUBSUB_GLOBAL === 'true',
 
   /**
    * Auto-connect on module initialization

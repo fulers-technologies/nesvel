@@ -7,3 +7,5 @@
  */
 
 export * from './message-handler.type';
+export * from './message-error-handler.type';
+export * from './message-filter.type';

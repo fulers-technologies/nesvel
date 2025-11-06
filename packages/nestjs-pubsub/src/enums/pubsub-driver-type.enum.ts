@@ -71,4 +71,24 @@ export enum PubSubDriverType {
    * @see https://cloud.google.com/pubsub
    */
   GOOGLE_PUBSUB = 'google-pubsub',
+
+  /**
+   * Memory in-process driver using EventEmitter2 from @nestjs/event-emitter.
+   *
+   * The Memory driver provides in-process event handling without requiring
+   * an external messaging service. It's ideal for development, testing,
+   * monolithic applications, or scenarios where cross-process messaging
+   * is not needed.
+   *
+   * Characteristics:
+   * - No external dependencies
+   * - Zero latency (in-process)
+   * - No message persistence
+   * - Synchronous delivery
+   * - Perfect for testing and development
+   * - Wildcard pattern support
+   *
+   * @see https://github.com/EventEmitter2/EventEmitter2
+   */
+  MEMORY = 'memory',
 }

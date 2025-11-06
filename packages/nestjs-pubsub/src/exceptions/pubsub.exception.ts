@@ -1,3 +1,5 @@
+import { BaseException } from '@nesvel/shared';
+
 /**
  * Base exception class for all PubSub-related errors.
  *
@@ -8,7 +10,7 @@
  * All PubSub-specific exceptions should extend this base class to maintain
  * a consistent error hierarchy and enable type-safe error handling.
  */
-export class PubSubException extends Error {
+export class PubSubException extends BaseException {
   /**
    * Optional error code for categorizing the error.
    * Can be used for programmatic error handling and internationalization.
@@ -30,7 +32,7 @@ export class PubSubException extends Error {
    *
    * @example
    * ```typescript
-   * throw new PubSubException(
+   * throw PubSubException.make(
    *   'Failed to connect to messaging backend',
    *   'CONNECTION_FAILED',
    *   { driver: 'redis', host: 'localhost' }

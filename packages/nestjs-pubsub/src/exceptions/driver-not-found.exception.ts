@@ -9,7 +9,7 @@ import { PubSubException } from './pubsub.exception';
  *
  * @example
  * ```typescript
- * throw new DriverNotFoundException('custom-driver', ['redis', 'kafka', 'google-pubsub']);
+ * throw DriverNotFoundException.make('custom-driver', ['redis', 'kafka', 'google-pubsub']);
  * ```
  */
 export class DriverNotFoundException extends PubSubException {
@@ -22,7 +22,7 @@ export class DriverNotFoundException extends PubSubException {
    * @example
    * ```typescript
    * if (!factory.hasDriver(driverType)) {
-   *   throw new DriverNotFoundException(
+   *   throw DriverNotFoundException.make(
    *     driverType,
    *     factory.getAvailableDrivers()
    *   );

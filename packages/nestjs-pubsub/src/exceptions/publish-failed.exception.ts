@@ -12,7 +12,7 @@ import { PubSubException } from './pubsub.exception';
  * try {
  *   await driver.publish(topic, data);
  * } catch (error: Error | any) {
- *   throw new PublishFailedException(topic, error);
+ *   throw PublishFailedException.make(topic, error);
  * }
  * ```
  */
@@ -29,7 +29,7 @@ export class PublishFailedException extends PubSubException {
    * try {
    *   await pubsub.publish('user.created', userData);
    * } catch (error: Error | any) {
-   *   throw new PublishFailedException('user.created', error, userData);
+   *   throw PublishFailedException.make('user.created', error, userData);
    * }
    * ```
    */

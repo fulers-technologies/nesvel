@@ -1,10 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
+
+import { RedisPubSubDriver } from '@drivers/redis.driver';
+import { KafkaPubSubDriver } from '@drivers/kafka.driver';
+import { GooglePubSubDriver } from '@drivers/google.driver';
+import { MemoryPubSubDriver } from '@drivers/memory.driver';
+import { PubSubDriverType } from '@enums/pubsub-driver-type.enum';
 import type { IPubSubDriver } from '@interfaces/pubsub-driver.interface';
 import type { IPubSubOptions } from '@interfaces/pubsub-options.interface';
-import { PubSubDriverType } from '@enums/pubsub-driver-type.enum';
-import { RedisPubSubDriver } from '@drivers/redis/redis-pubsub.driver';
-import { KafkaPubSubDriver } from '@drivers/kafka/kafka-pubsub.driver';
-import { GooglePubSubDriver } from '@drivers/google-pubsub/google-pubsub.driver';
+import { IBaseDriverOptions } from '@interfaces/base-driver-options.interface';
 import { DriverNotFoundException } from '@exceptions/driver-not-found.exception';
 
 /**
@@ -33,6 +36,7 @@ export class PubSubFactoryService {
   private readonly driverRegistry = new Map<string, any>([
     [PubSubDriverType.REDIS, RedisPubSubDriver],
     [PubSubDriverType.KAFKA, KafkaPubSubDriver],
+    [PubSubDriverType.MEMORY, MemoryPubSubDriver],
     [PubSubDriverType.GOOGLE_PUBSUB, GooglePubSubDriver],
   ]);
 
@@ -64,20 +68,38 @@ export class PubSubFactoryService {
     // Validate driver type
     if (!this.driverRegistry.has(driverType)) {
       const availableDrivers = Array.from(this.driverRegistry.keys());
-      throw new DriverNotFoundException(driverType, availableDrivers);
+      throw DriverNotFoundException.make(driverType, availableDrivers);
     }
 
     try {
       // Get driver class from registry
       const DriverClass = this.driverRegistry.get(driverType);
 
-      // Get driver-specific options (new pattern first, fallback to legacy driverOptions)
+      // Get driver-specific options
       const driverOptions = this.getDriverOptions(options);
 
-      // Instantiate driver with options
-      const driver = DriverClass.make(driverOptions);
+      // Build base driver options for production features
+      const baseOptions: IBaseDriverOptions = {
+        metrics: options.metrics,
+        maxHandlersPerTopic: options.maxHandlersPerTopic,
+        deadLetterQueue: options.deadLetterQueue,
+        throwOnHandlerError: options.throwOnHandlerError,
+        maxMessageSize: options.maxMessageSize,
+        enableCorrelationId: options.enableCorrelationId,
+        logSamplingRate: options.logSamplingRate,
+        namespace: options.namespace,
+      };
 
-      this.logger.log(`Created ${driverType} driver instance`);
+      // Instantiate driver with both driver-specific and base options
+      const driver = DriverClass.make(driverOptions, baseOptions);
+
+      this.logger.log(`Created ${driverType} driver instance`, {
+        driver: driverType,
+        hasMetrics: !!options.metrics,
+        hasValidator: !!options.validator,
+        hasDLQ: !!options.deadLetterQueue,
+        hasNamespace: !!options.namespace,
+      });
 
       return driver;
     } catch (error: Error | any) {
@@ -209,14 +231,16 @@ export class PubSubFactoryService {
    */
   private getDriverOptions(options: IPubSubOptions): Record<string, any> {
     switch (options.driver) {
+      case PubSubDriverType.MEMORY:
+        return options.memory || {};
       case PubSubDriverType.REDIS:
-        return options.redis || options.driverOptions || {};
+        return options.redis || {};
       case PubSubDriverType.KAFKA:
-        return options.kafka || options.driverOptions || {};
+        return options.kafka || {};
       case PubSubDriverType.GOOGLE_PUBSUB:
-        return options.googlePubSub || options.driverOptions || {};
+        return options.googlePubSub || {};
       default:
-        return options.driverOptions || {};
+        return {};
     }
   }
 
@@ -232,6 +256,10 @@ export class PubSubFactoryService {
    */
   private validateDriverOptions(driverType: string, driverOptions?: Record<string, any>): void {
     switch (driverType) {
+      case PubSubDriverType.MEMORY:
+        // Memory driver validation is lenient as it has sensible defaults
+        break;
+
       case PubSubDriverType.REDIS:
         // Redis validation is lenient as it has sensible defaults
         break;

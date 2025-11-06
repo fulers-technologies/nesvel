@@ -14,7 +14,42 @@ export * from './pubsub-options.interface';
 export * from './pubsub-options-factory.interface';
 export * from './pubsub-async-options.interface';
 export * from './subscription-metadata.interface';
-export type { SubscribeOptions } from './subscribe-options.interface';
+export * from './subscribe-options.interface';
+export * from './metrics.interface';
+export * from './validator.interface';
+export * from './health.interface';
+export * from './retry-options.interface';
+export * from './backpressure-options.interface';
+export * from './circuit-breaker-options.interface';
+export * from './rate-limiter-options.interface';
+export * from './google-pubsub-options.interface';
+export * from './memory-options.interface';
+export * from './redis-options.interface';
+export * from './kafka-options.interface';
+export * from './no-op-metrics.interface';
+export * from './base-driver-options.interface';
+export * from './publish-options.interface';
 
 import type { IPubSubOptions } from './pubsub-options.interface';
+
+/**
+ * Type alias for PubSub module configuration options.
+ *
+ * This is a convenience type alias that maps to IPubSubOptions.
+ * It can be used interchangeably with IPubSubOptions for configuring
+ * the PubSub module during registration.
+ *
+ * @see {@link IPubSubOptions}
+ *
+ * @example
+ * ```typescript
+ * const config: PubSubConfig = {
+ *   driver: PubSubDriverType.REDIS,
+ *   redis: {
+ *     host: 'localhost',
+ *     port: 6379
+ *   }
+ * };
+ * ```
+ */
 export type PubSubConfig = IPubSubOptions;

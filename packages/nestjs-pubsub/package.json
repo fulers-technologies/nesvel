@@ -1,7 +1,7 @@
 {
   "name": "@nesvel/nestjs-pubsub",
   "version": "1.0.0",
-  "description": "A comprehensive NestJS module for pub/sub messaging with pluggable driver support for Redis, Kafka, and Google Cloud PubSub",
+  "description": "A comprehensive NestJS module for pub/sub messaging with pluggable driver support for Memory (EventEmitter2), Redis, Kafka, and Google Cloud PubSub",
   "license": "MIT",
   "author": "",
   "main": "dist/index.js",
@@ -27,15 +27,22 @@
     "test:e2e": "jest --config ./jest-e2e.config.js",
     "format": "prettier --write \"src/**/*.ts\""
   },
-  "dependencies": {},
+  "dependencies": {
+    "@nestjs/event-emitter": "^3.0.1",
+    "@nesvel/nestjs-console": "workspace:*"
+  },
   "peerDependencies": {
     "@nestjs/common": "^11.0.0",
     "@nestjs/config": "^4.0.0",
     "@nestjs/core": "^11.0.0",
+    "@nestjs/event-emitter": "^3.0.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.0"
   },
   "peerDependenciesMeta": {
+    "@nestjs/event-emitter": {
+      "optional": true
+    },
     "ioredis": {
       "optional": true
     },
@@ -55,6 +62,7 @@
     "@nestjs/common": "catalog:nestjs",
     "@nestjs/config": "catalog:nestjsModules",
     "@nestjs/core": "catalog:nestjs",
+    "@nestjs/event-emitter": "^3.0.1",
     "@nestjs/testing": "catalog:nestjsCli",
     "@types/ioredis": "^5.0.0",
     "@types/kafkajs": "^1.9.0",
@@ -75,6 +83,8 @@
   "keywords": [
     "nestjs",
     "pubsub",
+    "memory",
+    "event-emitter",
     "redis",
     "kafka",
     "google-pubsub",

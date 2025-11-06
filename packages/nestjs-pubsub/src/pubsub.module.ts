@@ -1,4 +1,5 @@
 import { DiscoveryModule } from '@nestjs/core';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { DynamicModule, Module, Provider } from '@nestjs/common';
 
 import {
@@ -8,9 +9,11 @@ import {
   PUBSUB_MODULE_OPTIONS,
 } from './constants';
 import { PubSubService } from '@services/pubsub.service';
+import { PubSubDriverType } from '@/enums/pubsub-driver-type.enum';
 import { PubSubFactoryService } from '@services/pubsub-factory.service';
 import type { IPubSubOptions } from '@interfaces/pubsub-options.interface';
 import type { IPubSubAsyncOptions } from '@interfaces/pubsub-async-options.interface';
+import { SubscriptionDiscoveryService } from '@services/subscription-discovery.service';
 import type { IPubSubOptionsFactory } from '@interfaces/pubsub-options-factory.interface';
 
 /**
@@ -105,12 +108,27 @@ export class PubSubModule {
     // Create providers
     const providers = this.createProviders(mergedOptions);
 
+    // Conditionally import EventEmitterModule for LOCAL driver
+    const imports: any[] = [DiscoveryModule];
+    if (mergedOptions.driver === PubSubDriverType.MEMORY) {
+      // Use memory-specific options or fallback to defaults
+      const memoryOptions = mergedOptions.memory || {};
+      imports.push(
+        EventEmitterModule.forRoot({
+          wildcard: true,
+          delimiter: '.',
+          maxListeners: 10,
+          ...memoryOptions,
+        }),
+      );
+    }
+
     return {
       module: PubSubModule,
-      global: mergedOptions.global || false,
-      imports: [DiscoveryModule],
+      global: mergedOptions.isGlobal || false,
+      imports,
       providers,
-      exports: [PUBSUB_SERVICE, PubSubService],
+      exports: [PUBSUB_SERVICE, PubSubService, SubscriptionDiscoveryService],
     };
   }
 
@@ -161,7 +179,7 @@ export class PubSubModule {
       global: options.global || false,
       imports: [DiscoveryModule, ...(options.imports || [])],
       providers: [...asyncProviders, ...coreProviders],
-      exports: [PUBSUB_SERVICE, PubSubService],
+      exports: [PUBSUB_SERVICE, PubSubService, SubscriptionDiscoveryService],
     };
   }
 
@@ -212,6 +230,9 @@ export class PubSubModule {
         provide: PubSubService,
         useExisting: PUBSUB_SERVICE,
       },
+
+      // Subscription discovery service
+      SubscriptionDiscoveryService,
     ];
   }
 
@@ -251,6 +272,9 @@ export class PubSubModule {
         provide: PubSubService,
         useExisting: PUBSUB_SERVICE,
       },
+
+      // Subscription discovery service
+      SubscriptionDiscoveryService,
     ];
   }
 
