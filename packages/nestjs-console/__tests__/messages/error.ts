@@ -1,10 +1,3 @@
-/**
- * Error Message Tests
- *
- * @description
- * Tests for the error message utility function.
- */
-
 import { error } from '@/messages/error';
 
 /**

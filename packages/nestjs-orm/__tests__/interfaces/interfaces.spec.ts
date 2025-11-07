@@ -1,9 +1,3 @@
-/**
- * Test suite for Interfaces.
- *
- * @module __tests__/interfaces/interfaces.spec
- */
-
 import 'reflect-metadata';
 
 describe('Interfaces', () => {

@@ -1,10 +1,3 @@
-/**
- * Confirm Prompt Tests
- *
- * @description
- * Interactive tests for the confirm prompt function.
- */
-
 import { confirm } from '@/prompts/confirm';
 import { success, error, info } from '@/messages';
 

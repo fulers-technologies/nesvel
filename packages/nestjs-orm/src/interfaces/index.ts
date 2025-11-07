@@ -38,11 +38,6 @@ export * from './subscriber-options.interface';
 // Export pagination interfaces
 export * from './pagination';
 
-/**
- * Type Aliases
- *
- * Convenient type aliases for common interfaces.
- */
 import type { MikroOrmModuleOptions } from '@mikro-orm/nestjs';
 
 /**

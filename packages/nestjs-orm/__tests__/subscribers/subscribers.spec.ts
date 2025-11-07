@@ -1,9 +1,3 @@
-/**
- * Test suite for category functionality.
- *
- * @module __tests__/category/category.spec
- */
-
 import 'reflect-metadata';
 
 describe('Category Tests', () => {

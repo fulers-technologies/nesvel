@@ -1,10 +1,3 @@
-/**
- * Clear Function Tests
- *
- * @description
- * Tests for clear console functions.
- */
-
 import { clear, clearLine, clearLines } from '@/prompts/clear';
 import { success, info } from '@/messages';
 

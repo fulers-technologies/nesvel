@@ -1,10 +1,3 @@
-/**
- * Success Message Tests
- *
- * @description
- * Tests for the success message utility function.
- */
-
 import { success } from '@/messages/success';
 
 /**

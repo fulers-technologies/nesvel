@@ -1,10 +1,3 @@
-/**
- * Warning Message Tests
- *
- * @description
- * Tests for the warning message utility function.
- */
-
 import { warning } from '@/messages/warning';
 
 /**

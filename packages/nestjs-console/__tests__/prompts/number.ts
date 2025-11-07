@@ -1,10 +1,3 @@
-/**
- * Number Prompt Tests
- *
- * @description
- * Interactive tests for the number prompt function.
- */
-
 import { number } from '@/prompts/number';
 import { success, error } from '@/messages';
 

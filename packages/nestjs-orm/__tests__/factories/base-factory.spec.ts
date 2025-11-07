@@ -1,22 +1,3 @@
-/**
- * Test suite for BaseFactory class.
- *
- * This test suite verifies the behavior of the BaseFactory class,
- * including state management, sequence generation, and relationship
- * handling for Laravel-style factory patterns.
- *
- * Coverage:
- * - Factory definition and basic creation
- * - State management and fluent API
- * - Sequence generation and callbacks
- * - Relationship handling
- * - Conditional logic with when() method
- * - Count and batch creation
- * - Integration with faker library
- *
- * @module __tests__/factories/base-factory.spec
- */
-
 import 'reflect-metadata';
 import { BaseFactory } from '@/factories/base.factory';
 import { BaseEntity } from '@/entities/base.entity';

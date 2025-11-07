@@ -1,19 +1,3 @@
-/**
- * Test suite for PubSubService class.
- *
- * This test suite verifies the behavior of the main PubSubService, which
- * provides the primary interface for pub/sub operations in applications.
- *
- * Coverage:
- * - Constructor and initialization
- * - connect() and disconnect() methods
- * - publish() method with various data types
- * - subscribe() method with handlers
- * - unsubscribe() method
- * - isConnected() status check
- * - Error handling and edge cases
- */
-
 import { PubSubService } from '@services/pubsub.service';
 import type { IPubSubDriver } from '@interfaces/pubsub-driver.interface';
 import type { IPubSubMessage } from '@interfaces/pubsub-message.interface';

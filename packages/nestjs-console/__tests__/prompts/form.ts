@@ -1,10 +1,3 @@
-/**
- * Form Prompt Tests
- *
- * @description
- * Interactive tests for the form prompt function.
- */
-
 import { form } from '@/prompts/form';
 import { success, error } from '@/messages';
 

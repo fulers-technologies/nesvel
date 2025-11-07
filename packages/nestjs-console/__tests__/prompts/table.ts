@@ -1,10 +1,3 @@
-/**
- * Table Tests
- *
- * @description
- * Tests for table display functionality.
- */
-
 import { displayTable, table } from '@/prompts/table';
 import { success, info } from '@/messages';
 

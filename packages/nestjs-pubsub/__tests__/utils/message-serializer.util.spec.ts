@@ -1,19 +1,3 @@
-/**
- * Test suite for message serializer utilities.
- *
- * This test suite verifies the behavior of the JsonMessageSerializer class
- * and related utility functions for serializing and deserializing messages.
- *
- * Coverage:
- * - JsonMessageSerializer.serialize()
- * - JsonMessageSerializer.deserialize()
- * - getDefaultSerializer()
- * - safeSerialize()
- * - safeDeserialize()
- * - Error handling for invalid data
- * - Buffer handling
- */
-
 import {
   JsonMessageSerializer,
   getDefaultSerializer,

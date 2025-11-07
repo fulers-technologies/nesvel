@@ -1,11 +1,3 @@
-/**
- * Theme System Demonstration
- *
- * @description
- * Demonstrates the theme system with all available themes and spinner types.
- * Shows how to switch themes dynamically and use different visual styles.
- */
-
 import {
   setTheme,
   resetTheme,

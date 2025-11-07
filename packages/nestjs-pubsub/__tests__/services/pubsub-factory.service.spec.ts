@@ -1,17 +1,3 @@
-/**
- * Test suite for PubSubFactoryService class.
- *
- * This test suite verifies the behavior of the PubSubFactoryService, which
- * is responsible for creating and configuring driver instances based on
- * the provided options.
- *
- * Coverage:
- * - createDriver() method for all driver types
- * - validateOptions() method
- * - Error handling for invalid configurations
- * - Driver instantiation with various options
- */
-
 import { PubSubFactoryService } from '@services/pubsub-factory.service';
 import { PubSubDriverType } from '@enums/pubsub-driver-type.enum';
 import { DriverNotFoundException } from '@exceptions/driver-not-found.exception';

@@ -1,18 +1,3 @@
-/**
- * Test suite for PublishFailedException class.
- *
- * This test suite verifies the behavior of the PublishFailedException,
- * which is thrown when a message fails to publish to a topic.
- *
- * Coverage:
- * - Constructor with topic and cause
- * - Constructor with optional message data
- * - Error message formatting
- * - Cause error preservation
- * - Metadata structure
- * - Inheritance from PubSubException
- */
-
 import { PublishFailedException } from '@exceptions/publish-failed.exception';
 import { PubSubException } from '@exceptions/pubsub.exception';
 

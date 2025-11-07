@@ -1,16 +1,3 @@
-/**
- * Test suite for Entity Integration.
- *
- * Coverage:
- * - Entity lifecycle hooks
- * - Mixin integration with entities
- * - Relationship handling
- * - Business logic methods
- * - Serialization methods
- *
- * @module __tests__/entities/entity.integration.spec
- */
-
 import 'reflect-metadata';
 import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntity } from '@/entities/base.entity';

@@ -1,10 +1,3 @@
-/**
- * Info Message Tests
- *
- * @description
- * Tests for the info message utility function.
- */
-
 import { info } from '@/messages/info';
 
 /**

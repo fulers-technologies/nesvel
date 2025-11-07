@@ -1,11 +1,3 @@
-/**
- * Text Prompt Tests
- *
- * @description
- * Interactive tests for the text prompt function.
- * Run this file to manually test text input functionality.
- */
-
 import { text } from '@/prompts/text';
 import { success, error } from '@/messages';
 

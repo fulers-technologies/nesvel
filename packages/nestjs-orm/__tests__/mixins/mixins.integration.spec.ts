@@ -1,21 +1,3 @@
-/**
- * Test suite for ORM Mixins Integration.
- *
- * This test suite verifies the behavior of all available mixins
- * including individual functionality and combinations.
- *
- * Coverage:
- * - HasTimestamps mixin functionality
- * - HasSoftDeletes mixin functionality
- * - HasUserstamps mixin functionality
- * - HasUuid mixin functionality
- * - Mixin combination scenarios
- * - Entity lifecycle integration
- * - Business logic methods
- *
- * @module __tests__/mixins/mixins.integration.spec
- */
-
 import 'reflect-metadata';
 import { Entity, Property, BaseEntity as MikroBaseEntity, PrimaryKey } from '@mikro-orm/core';
 import { BaseEntity } from '@/entities/base.entity';

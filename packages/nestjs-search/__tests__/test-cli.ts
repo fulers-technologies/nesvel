@@ -1,10 +1,4 @@
 #!/usr/bin/env ts-node
-/**
- * Test script for Search CLI commands
- *
- * This script tests both Meilisearch and Elasticsearch providers.
- */
-
 import 'reflect-metadata';
 import { MeilisearchProvider, ElasticsearchProvider } from './src/providers';
 import { SearchService, IndexNamingService } from './src/services';

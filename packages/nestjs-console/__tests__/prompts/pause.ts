@@ -1,10 +1,3 @@
-/**
- * Pause Prompt Tests
- *
- * @description
- * Interactive tests for the pause prompt function.
- */
-
 import { pause } from '@/prompts/pause';
 import { success, info } from '@/messages';
 

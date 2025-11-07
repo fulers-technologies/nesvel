@@ -1,11 +1,3 @@
-/**
- * Basic Examples
- *
- * @description
- * Simple examples demonstrating the most common use cases of the console-prompts library.
- * Perfect for getting started quickly.
- */
-
 import { text, select, confirm, success, error, info, warning } from '@/';
 
 /**

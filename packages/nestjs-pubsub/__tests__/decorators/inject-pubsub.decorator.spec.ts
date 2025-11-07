@@ -1,18 +1,3 @@
-/**
- * Test suite for @InjectPubSub() decorator.
- *
- * This test suite verifies the behavior of the @InjectPubSub() decorator,
- * including dependency injection integration with NestJS.
- *
- * Coverage:
- * - Basic injection functionality
- * - Integration with NestJS DI container
- * - Constructor parameter decoration
- * - Injection token verification
- *
- * @module __tests__/decorators/inject-pubsub.decorator.spec
- */
-
 import 'reflect-metadata';
 import { InjectPubSub } from '@decorators/inject-pubsub.decorator';
 

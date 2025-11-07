@@ -42,7 +42,7 @@
   "dependencies": {
     "@nesvel/nestjs-console": "workspace:*",
     "@nesvel/nestjs-orm": "workspace:*",
-    "nest-commander": "^3.17.0"
+    "nest-commander": "^3.20.1"
   },
   "devDependencies": {
     "@elastic/elasticsearch": "^9.2.0",

@@ -1,20 +1,3 @@
-/**
- * Test suite for @Subscribe() decorator.
- *
- * This test suite verifies the behavior of the @Subscribe() decorator,
- * including metadata attachment, parameter handling, and topic configuration.
- *
- * Coverage:
- * - Basic subscription with topic only
- * - Subscription with options
- * - Multiple subscriptions on different methods
- * - Metadata storage and retrieval
- * - Pattern-based subscriptions
- * - Queue group configuration
- *
- * @module __tests__/decorators/subscribe.decorator.spec
- */
-
 import 'reflect-metadata';
 import { Subscribe } from '@decorators/subscribe.decorator';
 import { PUBSUB_SUBSCRIBE_METADATA } from '@constants/pubsub-subscribe-metadata.constant';

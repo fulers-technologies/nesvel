@@ -6,8 +6,8 @@ import base from '@nesvel/jest-config/nest-lib';
  *
  * Extends base configuration with:
  * - Custom coverage collection rules
- * - Path aliases for pub/sub modules
- * - Setup files for message broker testing
+ * - Path aliases for search-specific modules
+ * - Transform patterns for ESM dependencies
  */
 const config: Config = {
   // Inherit base configuration from shared Jest config
@@ -20,6 +20,7 @@ const config: Config = {
    * - Enum files (simple enumerations)
    * - Index files (re-exports only)
    * - Constant files (static values)
+   * - Example files (documentation)
    */
   collectCoverageFrom: [
     'src/**/*.ts', // Include all TypeScript files
@@ -27,60 +28,30 @@ const config: Config = {
     '!src/**/*.enum.ts', // Exclude enums
     '!src/**/index.ts', // Exclude index files
     '!src/**/*.constant.ts', // Exclude constants
+    '!src/**/examples.ts', // Exclude examples
   ],
 
   /**
    * Module name mapper for path aliases
    * Maps TypeScript path aliases to actual file locations for Jest
-   * Supports both file-level and folder-level imports
+   * Supports both file-level (@/path) and folder-level (@providers) aliases
    */
   moduleNameMapper: {
-    // Config: PubSub configuration and connection options
-    '^@config/(.*)$': '<rootDir>/src/config/$1',
-    '^@config$': '<rootDir>/src/config',
-
-    // Constants: Channel names, topic patterns, defaults
-    '^@constants/(.*)$': '<rootDir>/src/constants/$1',
-    '^@constants$': '<rootDir>/src/constants',
-
-    // Decorators: Subscribe and Publish decorators
-    '^@decorators/(.*)$': '<rootDir>/src/decorators/$1',
-    '^@decorators$': '<rootDir>/src/decorators',
-
-    // Drivers: Message broker implementations (Redis, RabbitMQ, etc.)
-    '^@drivers/(.*)$': '<rootDir>/src/drivers/$1',
-    '^@drivers$': '<rootDir>/src/drivers',
-
-    // Enums: Message types and broker types
-    '^@enums/(.*)$': '<rootDir>/src/enums/$1',
-    '^@enums$': '<rootDir>/src/enums',
-
-    // Exceptions: PubSub error classes
-    '^@exceptions/(.*)$': '<rootDir>/src/exceptions/$1',
-    '^@exceptions$': '<rootDir>/src/exceptions',
-
-    // Interfaces: Message and subscription interfaces
-    '^@interfaces/(.*)$': '<rootDir>/src/interfaces/$1',
-    '^@interfaces$': '<rootDir>/src/interfaces',
-
-    // Services: PubSub service implementations
-    '^@services/(.*)$': '<rootDir>/src/services/$1',
-    '^@services$': '<rootDir>/src/services',
-
-    // Types: Message payload types
-    '^@types/(.*)$': '<rootDir>/src/types/$1',
-    '^@types$': '<rootDir>/src/types',
-
-    // Utils: Message serialization and helpers
-    '^@utils/(.*)$': '<rootDir>/src/utils/$1',
-    '^@utils$': '<rootDir>/src/utils',
+    // Root alias: Direct access to src folder
+    '^@/(.*)$': '<rootDir>/src/$1',
   },
 
   /**
    * Setup files to run after test environment is set up
-   * Initializes message broker mocks and test utilities
+   * Initializes search engine mocks, test fixtures, and utilities
    */
   setupFilesAfterEnv: ['<rootDir>/__tests__/setup.ts'],
+
+  /**
+   * Transform ignore patterns
+   * Transforms ESM dependencies from node_modules
+   */
+  transformIgnorePatterns: ['node_modules/(?!(uuid)/)'],
 };
 
 export default config;

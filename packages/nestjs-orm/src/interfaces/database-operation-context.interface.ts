@@ -11,14 +11,17 @@ export interface DatabaseOperationContext {
    * Name of the entity being operated on
    */
   entityName: string;
+
   /**
    * Database operation type - use EntityOperation enum values
    */
   operation: EntityOperation | string;
+
   /**
    * Additional context data (IDs, filters, etc.)
    */
   context?: Record<string, any>;
+
   /**
    * Database connection name
    */

@@ -1,11 +1,3 @@
-/**
- * Advanced Examples
- *
- * @description
- * Advanced use cases demonstrating complex workflows, custom themes,
- * and integration patterns for the console-prompts library.
- */
-
 import {
   text,
   select,

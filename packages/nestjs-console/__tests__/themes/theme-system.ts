@@ -1,10 +1,3 @@
-/**
- * Theme System Tests
- *
- * @description
- * Tests for the theme configuration system.
- */
-
 import { setTheme, resetTheme, getTheme, getAvailableThemes, ThemeType } from '@/';
 import { success, error, warning, info } from '@/';
 

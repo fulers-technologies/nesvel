@@ -1,17 +1,3 @@
-/**
- * Test suite for DriverNotFoundException class.
- *
- * This test suite verifies the behavior of the DriverNotFoundException,
- * which is thrown when a requested driver is not found or not registered.
- *
- * Coverage:
- * - Constructor with driver type only
- * - Constructor with available drivers list
- * - Error message formatting
- * - Metadata structure
- * - Inheritance from PubSubException
- */
-
 import { DriverNotFoundException } from '@exceptions/driver-not-found.exception';
 import { PubSubException } from '@exceptions/pubsub.exception';
 

@@ -1,16 +1,3 @@
-/**
- * Test suite for Repository Classes.
- *
- * Coverage:
- * - BaseRepository functionality
- * - Query building methods
- * - Pagination features
- * - Scopes and filters
- * - Relationship queries
- *
- * @module __tests__/repositories/repository.spec
- */
-
 import 'reflect-metadata';
 import { BaseRepository } from '@/repositories/base.repository';
 import { BaseEntity } from '@/entities/base.entity';

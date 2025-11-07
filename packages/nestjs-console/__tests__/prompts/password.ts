@@ -1,10 +1,3 @@
-/**
- * Password Prompt Tests
- *
- * @description
- * Interactive tests for the password prompt function.
- */
-
 import { password } from '@/prompts/password';
 import { success, error, warning } from '@/messages';
 

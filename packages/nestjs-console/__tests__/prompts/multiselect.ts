@@ -1,10 +1,3 @@
-/**
- * Multiselect Prompt Tests
- *
- * @description
- * Interactive tests for the multiselect prompt function.
- */
-
 import { multiselect } from '@/prompts/multiselect';
 import { success, error, info } from '@/messages';
 

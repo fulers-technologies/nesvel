@@ -1,10 +1,3 @@
-/**
- * Spinner Tests
- *
- * @description
- * Tests for spinner functionality with async operations.
- */
-
 import { spinner, runWithSpinner } from '@/prompts/spinner';
 import { success, error } from '@/messages';
 

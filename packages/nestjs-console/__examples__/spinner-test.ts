@@ -1,7 +1,3 @@
-/**
- * Quick Spinner Test
- */
-
 import { spinner, SpinnerType, setTheme, ThemeType, success } from '@/';
 
 async function delay(ms: number): Promise<void> {

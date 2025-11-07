@@ -1,20 +1,3 @@
-/**
- * Test suite for PubSubException class.
- *
- * This test suite verifies the behavior of the base PubSubException class,
- * including proper error message handling, metadata attachment, error code
- * support, and serialization capabilities.
- *
- * Coverage:
- * - Constructor with various parameter combinations
- * - Error message preservation
- * - Error code handling
- * - Metadata attachment
- * - Stack trace capture
- * - JSON serialization
- * - Inheritance from Error class
- */
-
 import { PubSubException } from '@exceptions/pubsub.exception';
 
 describe('PubSubException', () => {

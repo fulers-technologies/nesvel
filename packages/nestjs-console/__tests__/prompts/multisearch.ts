@@ -1,10 +1,3 @@
-/**
- * Multisearch Prompt Tests
- *
- * @description
- * Interactive tests for the multisearch prompt function.
- */
-
 import { simpleSearch, multisearch } from '@/prompts/multisearch';
 import { success, error } from '@/messages';
 

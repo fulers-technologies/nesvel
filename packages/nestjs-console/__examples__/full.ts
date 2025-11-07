@@ -1,11 +1,3 @@
-/**
- * Full Feature Examples
- *
- * @description
- * Comprehensive examples showcasing all features of the console-prompts library.
- * Demonstrates prompts, messages, spinners, tables, and more.
- */
-
 import {
   text,
   select,

@@ -1,18 +1,3 @@
-/**
- * I18n Interfaces
- *
- * Exports all interfaces for the i18n module.
- *
- * @module Interfaces
- */
-
-export * from './i18n-config.interface';
-
-/**
- * Type Aliases
- *
- * Convenient type aliases for common interfaces.
- */
 import type { I18nOptions } from 'nestjs-i18n';
 
 /**

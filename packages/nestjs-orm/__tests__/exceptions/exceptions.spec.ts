@@ -1,18 +1,3 @@
-/**
- * Test suite for ORM Exception Classes.
- *
- * Coverage:
- * - DatabaseException functionality
- * - ModelNotFoundException scenarios
- * - QueryException handling
- * - ValidationException patterns
- * - RelationshipException cases
- * - Error message formatting
- * - Exception inheritance chain
- *
- * @module __tests__/exceptions/exceptions.spec
- */
-
 import 'reflect-metadata';
 import {
   DatabaseException,

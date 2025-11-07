@@ -9,6 +9,7 @@ The PubSub module is fully functional and production-ready. The following are **
 ## Priority 1: Critical for Production (Consider Now)
 
 ### 1. ⚠️ **Health Checks**
+
 **Status:** Missing
 **Priority:** HIGH
 **Effort:** Low (2-3 hours)
@@ -23,7 +24,7 @@ export class PubSubHealthIndicator extends HealthIndicator {
   async isHealthy(key: string): Promise<HealthIndicatorResult> {
     const isConnected = this.pubsub.isConnected();
     const result = this.getStatus(key, isConnected);
-    
+
     if (isConnected) {
       return result;
     }
@@ -33,6 +34,7 @@ export class PubSubHealthIndicator extends HealthIndicator {
 ```
 
 **Usage:**
+
 ```typescript
 @Get('health')
 @HealthCheck()
@@ -46,6 +48,7 @@ check() {
 ---
 
 ### 2. 📊 **Message Acknowledgment (Kafka/Google PubSub)**
+
 **Status:** Partial (auto-commit only)
 **Priority:** HIGH
 **Effort:** Medium (4-6 hours)
@@ -67,6 +70,7 @@ async handleOrder(message: IPubSubMessage<Order>) {
 ---
 
 ### 3. 🔄 **Graceful Shutdown**
+
 **Status:** Partial (disconnect on destroy)
 **Priority:** HIGH
 **Effort:** Low (2-3 hours)
@@ -91,6 +95,7 @@ export class PubSubGracefulShutdown implements OnModuleDestroy {
 ## Priority 2: Enhanced Features (Future Consideration)
 
 ### 4. 🔐 **Schema Validation**
+
 **Status:** Missing
 **Priority:** MEDIUM
 **Effort:** Medium (6-8 hours)
@@ -121,6 +126,7 @@ async handleOrder(message: IPubSubMessage<z.infer<typeof OrderSchema>>) {
 ---
 
 ### 5. 🎭 **Message Transformers**
+
 **Status:** Missing
 **Priority:** MEDIUM
 **Effort:** Low (2-3 hours)
@@ -143,6 +149,7 @@ async handleOrder(message: IPubSubMessage<Order>) {
 ---
 
 ### 6. 📈 **Built-in Metrics Dashboard**
+
 **Status:** Metrics collected, no dashboard
 **Priority:** MEDIUM
 **Effort:** High (8-12 hours)
@@ -157,10 +164,11 @@ PubSubModule.forRoot({
     exporters: ['prometheus'],
     port: 9090,
   },
-})
+});
 ```
 
 **Metrics to expose:**
+
 - Messages published/consumed per topic
 - Processing time per handler
 - Error rates
@@ -170,6 +178,7 @@ PubSubModule.forRoot({
 ---
 
 ### 7. 🔁 **Retry Policies**
+
 **Status:** Basic (driver-level only)
 **Priority:** MEDIUM
 **Effort:** Medium (4-6 hours)
@@ -196,6 +205,7 @@ async handlePayment(message: IPubSubMessage<Payment>) {
 ---
 
 ### 8. ⏱️ **Message Scheduling**
+
 **Status:** Missing
 **Priority:** LOW
 **Effort:** Medium (6-8 hours)
@@ -203,18 +213,20 @@ async handlePayment(message: IPubSubMessage<Payment>) {
 Add delayed/scheduled message publishing:
 
 ```typescript
-await this.pubsub.schedule('order.reminder', 
+await this.pubsub.schedule(
+  'order.reminder',
   { orderId: '123' },
-  { 
+  {
     delay: '24h',
     // or: at: new Date('2024-12-25T00:00:00Z')
-  }
+  },
 );
 ```
 
 ---
 
 ### 9. 🧪 **Testing Utilities**
+
 **Status:** Manual mocking
 **Priority:** LOW
 **Effort:** Low (3-4 hours)
@@ -238,7 +250,7 @@ describe('OrderService', () => {
 
   it('should publish order event', async () => {
     await service.createOrder(data);
-    
+
     expect(pubsub).toHavePublished('order.created', {
       orderId: expect.any(String),
     });
@@ -249,6 +261,7 @@ describe('OrderService', () => {
 ---
 
 ### 10. 🔍 **Tracing Integration**
+
 **Status:** Correlation IDs only
 **Priority:** LOW
 **Effort:** Medium (6-8 hours)
@@ -263,7 +276,7 @@ PubSubModule.forRoot({
     exporter: 'jaeger',
     serviceName: 'my-service',
   },
-})
+});
 ```
 
 ---
@@ -271,6 +284,7 @@ PubSubModule.forRoot({
 ## Priority 3: Advanced Features (Nice-to-Have)
 
 ### 11. 🌊 **Message Batching**
+
 Add consumer-side batching:
 
 ```typescript
@@ -289,6 +303,7 @@ async handleLogs(messages: IPubSubMessage<Log>[]) {
 ---
 
 ### 12. 🔀 **Message Routing**
+
 Add smart routing:
 
 ```typescript
@@ -300,15 +315,16 @@ Add smart routing:
   },
 })
 export class OrderRouter {
-  handleCreated(msg) { }
-  handleUpdated(msg) { }
-  handleCancelled(msg) { }
+  handleCreated(msg) {}
+  handleUpdated(msg) {}
+  handleCancelled(msg) {}
 }
 ```
 
 ---
 
 ### 13. 🎚️ **Priority Queues**
+
 Add message priority:
 
 ```typescript
@@ -320,6 +336,7 @@ await this.pubsub.publish('task', data, {
 ---
 
 ### 14. 🔐 **Message Encryption**
+
 Add built-in encryption:
 
 ```typescript
@@ -330,7 +347,7 @@ PubSubModule.forRoot({
     algorithm: 'aes-256-gcm',
     keyProvider: KmsKeyProvider,
   },
-})
+});
 ```
 
 ---
@@ -338,6 +355,7 @@ PubSubModule.forRoot({
 ## Recommendation Priority
 
 ### **Implement Now:**
+
 1. ✅ Health Checks (2-3 hours)
 2. ✅ Manual Acknowledgment (4-6 hours)
 3. ✅ Graceful Shutdown (2-3 hours)
@@ -345,12 +363,14 @@ PubSubModule.forRoot({
 **Total:** 8-12 hours of work
 
 ### **Implement Later (v2.0):**
+
 4. Schema Validation
 5. Message Transformers
 6. Retry Policies
 7. Metrics Dashboard
 
 ### **Maybe Never (Complex/Low Value):**
+
 8. Message Scheduling (use external scheduler)
 9. Tracing (use external APM)
 10. Encryption (handle at network level)
@@ -360,6 +380,7 @@ PubSubModule.forRoot({
 ## Current Assessment
 
 ### ✅ **What's Already Excellent:**
+
 - Multi-driver architecture
 - Auto-discovery
 - Type safety
@@ -372,4 +393,5 @@ PubSubModule.forRoot({
 The current implementation is **production-ready** for most use cases. The Priority 1 enhancements are **nice-to-have** but not critical for launch.
 
 ### 💡 **Verdict:**
+
 **Ship it!** Add Priority 1 features incrementally based on actual production needs.

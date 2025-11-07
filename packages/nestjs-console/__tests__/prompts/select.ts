@@ -1,10 +1,3 @@
-/**
- * Select Prompt Tests
- *
- * @description
- * Interactive tests for the select prompt function.
- */
-
 import { select } from '@/prompts/select';
 import { success, error } from '@/messages';
 
