@@ -406,4 +406,4 @@ export const rateLimitConfig: RateLimitConfig = {
       limit: isProduction ? 10 : 100,
     },
   },
-} as const satisfies RateLimitConfig;
+};
