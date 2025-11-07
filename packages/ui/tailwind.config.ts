@@ -1,41 +1,6 @@
-/**
- * Tailwind CSS Configuration for @nesvel/ui
- *
- * Comprehensive configuration extending Tailwind CSS with shadcn/ui design tokens.
- * Uses CSS variables for theming to support light and dark modes with full customization.
- *
- * @see https://tailwindcss.com/docs/configuration
- * @see https://ui.shadcn.com/docs/theming
- */
-
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
-  /**
-   * Dark mode strategy
-   * - 'class': Toggle dark mode by adding 'dark' class to html element
-   * - 'media': Use system preference (prefers-color-scheme)
-   */
-  darkMode: ['class'],
-
-  /**
-   * Content sources for Tailwind to scan for classes
-   * Includes all TypeScript and JavaScript files in src
-   */
-  content: ['./src/**/*.{ts,tsx}', './src/**/*.{js,jsx}'],
-
-  /**
-   * Class prefix (optional)
-   * Useful for avoiding conflicts with other CSS frameworks
-   * Example: prefix: 'tw-' would generate classes like 'tw-flex', 'tw-grid'
-   */
-  prefix: '',
-
-  /**
-   * Important strategy
-   * Set to false for better CSS specificity control
-   * Can be set to a selector string like '#app' to scope important
-   */
   important: false,
 
   /**

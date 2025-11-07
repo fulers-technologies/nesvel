@@ -18,11 +18,13 @@ type ToastOptions = {
     label: string;
     onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   };
+
   /** Cancel button configuration */
   cancel?: {
     label: string;
     onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   };
+
   /** Whether the toast can be dismissed by clicking */
   dismissible?: boolean;
   /** Callback when toast is dismissed */

@@ -1,10 +1,3 @@
-/**
- * Utility Functions for @nesvel/ui
- *
- * This module provides helper functions for working with CSS classes
- * in a Tailwind CSS environment.
- */
-
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
