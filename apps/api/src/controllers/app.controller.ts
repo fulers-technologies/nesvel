@@ -100,7 +100,7 @@ export class AppController {
     description: 'Order cancellation event published successfully',
   })
   async testOrderCancel(
-    @Body() data: { orderId: string; reason: string },
+    @Body() data: { orderId: string; reason: string }
   ): Promise<{ message: string; data: any }> {
     await this.orderPublisher.publishCancellation(data.orderId, data.reason);
 
@@ -117,7 +117,7 @@ export class AppController {
     description: 'Order error event published successfully',
   })
   async testOrderError(
-    @Body() data: { orderId: string; error: string },
+    @Body() data: { orderId: string; error: string }
   ): Promise<{ message: string; data: any }> {
     await this.orderPublisher.publishError(data.orderId, data.error);
 

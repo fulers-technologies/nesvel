@@ -1,5 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
-import { HttpMethod } from '../enums/http-method.enum';
+import { HttpMethod } from '@nesvel/shared';
+
 import { RouteOptions } from '../interfaces/api-endpoint-options.interface';
 
 /**

@@ -6,16 +6,17 @@ import {
   ApiBodyOptions,
   ApiHeaderOptions,
 } from '@nestjs/swagger';
+
 import { AuthOptions } from './auth-options.interface';
-import { ResponseOptions } from './response-options.interface';
 import { CacheConfig } from './cache-config.interface';
 import { CorsOptions } from './cors-options.interface';
-import { SecurityOptions } from './security-options.interface';
-import { TelemetryOptions } from './telemetry-options.interface';
-import { CircuitBreakerOptions } from './circuit-breaker-options.interface';
 import { RetryOptions } from './retry-options.interface';
 import { ThrottleOptions } from './throttle-options.interface';
+import { ResponseOptions } from './response-options.interface';
+import { SecurityOptions } from './security-options.interface';
+import { TelemetryOptions } from './telemetry-options.interface';
 import { FileUploadOptions } from './file-upload-options.interface';
+import { CircuitBreakerOptions } from './circuit-breaker-options.interface';
 
 /**
  * Comprehensive configuration options for the @Route decorator.

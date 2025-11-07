@@ -25,7 +25,8 @@
 export { Route } from './route.decorator';
 
 // Enums
-export { HttpMethod, EndpointPreset } from './enums';
+export { EndpointPreset } from './enums';
+export { HttpMethod } from '@nesvel/shared';
 
 // Interfaces
 export type {

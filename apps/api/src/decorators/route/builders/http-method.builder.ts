@@ -1,6 +1,5 @@
+import { HttpMethod } from '@nesvel/shared';
 import { Get, Post, Put, Patch, Delete, Options, Head, All } from '@nestjs/common';
-
-import { HttpMethod } from '../enums/http-method.enum';
 
 /**
  * HTTP Method Decorator Builder Module

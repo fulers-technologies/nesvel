@@ -26,7 +26,7 @@ import {
   buildApiProduces,
   buildApiOperation,
 } from './builders/swagger-docs.builder';
-import { HttpMethod } from './enums/http-method.enum';
+import { HttpMethod } from '@nesvel/shared';
 import { applyPreset } from './presets/preset-factory';
 import { buildAuthDecorators } from './builders/auth.builder';
 import { mergeWithDefaults } from './utils/merge-options.util';
