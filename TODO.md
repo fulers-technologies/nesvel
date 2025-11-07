@@ -3,6 +3,8 @@
 
 fileName.replace(/-/g, ' ')
 
+- refactor nesvel/mailer/resources/interfaces and base component to seperated
+  file for each
 - refactor all database commands
 
   ```bash
