@@ -13,10 +13,10 @@ import type { TailwindConfig } from '@react-email/components';
  *
  * @example
  * ```typescript
- * // Use in your mailer config:
+ * // Use in your mail config:
  * import { tailwindEmailConfig } from './config/tailwind.config.example';
  *
- * export const mailerConfig: IMailerConfig = {
+ * export const mailConfig: IMailConfig = {
  *   // ... other config
  *   tailwindEmailConfig: tailwindEmailConfig,
  * };

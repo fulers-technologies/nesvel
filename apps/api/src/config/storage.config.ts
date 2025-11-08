@@ -1,76 +1,193 @@
+import type {
+  IS3Options,
+  IMinIOOptions,
+  ILocalOptions,
+  IStorageOptions,
+} from '@nesvel/nestjs-storage';
+import {
+  StorageVisibility,
+  StorageDriverType,
+  DEFAULT_STORAGE_CONFIG,
+} from '@nesvel/nestjs-storage';
+
 /**
- * Storage Configuration
+ * Storage Module Configuration
  *
- * Configuration for file storage (local, S3, GCS, etc.)
+ * Production-ready storage configuration for NestJS.
+ * Provides comprehensive cloud storage integration with multiple drivers.
  *
- * @module config/storage.config
+ * Features:
+ * - Multi-driver support (S3, MinIO)
+ * - Automatic connection management
+ * - Type-safe operations
+ * - Configurable retry mechanisms
+ * - File validation and size limits
+ *
+ * All configuration values can be overridden via environment variables.
+ *
+ * @see {@link https://aws.amazon.com/s3/ | Amazon S3}
+ * @see {@link https://min.io/ | MinIO}
+ *
+ * @example
+ * ```typescript
+ * // Access configuration values
+ * const driver = storageConfig.driver;
+ * const maxRetries = storageConfig.maxRetries;
+ * const bucket = storageConfig.s3?.bucket;
+ * ```
  */
+export const storageConfig: IStorageOptions = {
+  /**
+   * Storage driver type
+   *
+   * Determines which storage system to use.
+   * Options: S3, MINIO
+   *
+   * @env STORAGE_DRIVER
+   * @default StorageDriverType.S3
+   */
+  driver: (process.env.STORAGE_DRIVER as StorageDriverType) || StorageDriverType.MINIO,
 
-export enum StorageDriver {
-  LOCAL = 'local',
-  S3 = 's3',
-  GCS = 'gcs',
-  AZURE = 'azure',
-}
+  /**
+   * S3 driver configuration
+   *
+   * Configuration options specific to the S3 driver.
+   * Used when driver is set to StorageDriverType.S3.
+   *
+   * @env S3_REGION - S3 bucket region
+   * @env S3_BUCKET - S3 bucket name
+   * @env S3_ACCESS_KEY_ID - AWS access key ID
+   * @env S3_SECRET_ACCESS_KEY - AWS secret access key
+   * @env S3_SESSION_TOKEN - AWS session token
+   * @env S3_ENDPOINT - Custom S3 endpoint
+   * @env S3_FORCE_PATH_STYLE - Force path-style URLs
+   * @env S3_USE_SSL - Use SSL/TLS
+   */
+  s3: {
+    region: process.env.S3_REGION || 'us-east-1',
+    bucket: process.env.S3_BUCKET || '',
+    credentials: {
+      accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
+      secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
+      sessionToken: process.env.S3_SESSION_TOKEN,
+    },
+    endpoint: process.env.S3_ENDPOINT,
+    forcePathStyle: process.env.S3_FORCE_PATH_STYLE === 'true',
+    useSSL: process.env.S3_USE_SSL !== 'false',
+  } as IS3Options,
 
-export interface IStorageConfig {
-  default: StorageDriver;
-  local?: {
-    root: string;
-    url: string;
-  };
-  s3?: {
-    bucket: string;
-    region: string;
-    accessKeyId: string;
-    secretAccessKey: string;
-    endpoint?: string;
-  };
-  gcs?: {
-    bucket: string;
-    keyFilename: string;
-    projectId: string;
-  };
-  azure?: {
-    account: string;
-    accountKey: string;
-    container: string;
-  };
-  maxFileSize: number; // in bytes
-  allowedMimeTypes: string[];
-}
+  /**
+   * MinIO driver configuration
+   *
+   * Configuration options specific to the MinIO driver.
+   * Used when driver is set to StorageDriverType.MINIO.
+   *
+   * @env MINIO_ENDPOINT - MinIO server hostname
+   * @env MINIO_PORT - MinIO server port
+   * @env MINIO_USE_SSL - Use SSL/TLS
+   * @env MINIO_ACCESS_KEY - MinIO access key
+   * @env MINIO_SECRET_KEY - MinIO secret key
+   * @env MINIO_BUCKET - MinIO bucket name
+   * @env MINIO_REGION - MinIO region
+   */
+  minio: {
+    endPoint: process.env.MINIO_ENDPOINT || 'localhost',
+    port: parseInt(process.env.MINIO_PORT || '9000', 10),
+    useSSL: process.env.MINIO_USE_SSL === 'true',
+    accessKey: process.env.MINIO_ACCESS_KEY || 'minioadmin',
+    secretKey: process.env.MINIO_SECRET_KEY || 'minioadmin',
+    bucket: process.env.MINIO_BUCKET || '',
+    region: process.env.MINIO_REGION || 'us-east-1',
+  } as IMinIOOptions,
 
-export const storageConfig: IStorageConfig = {
-  default: (process.env.STORAGE_DRIVER as StorageDriver) || StorageDriver.LOCAL,
+  /**
+   * Local filesystem driver configuration
+   *
+   * Configuration options specific to the Local driver.
+   * Used when driver is set to StorageDriverType.LOCAL.
+   *
+   * @env LOCAL_STORAGE_ROOT - Root directory for file storage
+   * @env LOCAL_STORAGE_BASE_URL - Base URL for file access
+   * @env LOCAL_STORAGE_ENSURE_DIR - Create directory if not exists
+   */
   local: {
-    root: process.env.STORAGE_LOCAL_ROOT || './storage/uploads',
-    url: process.env.STORAGE_LOCAL_URL || 'http://localhost:3000/uploads',
-  },
-  s3: process.env.AWS_S3_BUCKET
-    ? {
-        bucket: process.env.AWS_S3_BUCKET,
-        region: process.env.AWS_S3_REGION || 'us-east-1',
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
-        endpoint: process.env.AWS_S3_ENDPOINT,
-      }
-    : undefined,
-  gcs: process.env.GCS_BUCKET
-    ? {
-        bucket: process.env.GCS_BUCKET,
-        keyFilename: process.env.GCS_KEY_FILENAME || '',
-        projectId: process.env.GCS_PROJECT_ID || '',
-      }
-    : undefined,
-  azure: process.env.AZURE_STORAGE_ACCOUNT
-    ? {
-        account: process.env.AZURE_STORAGE_ACCOUNT,
-        accountKey: process.env.AZURE_STORAGE_ACCOUNT_KEY || '',
-        container: process.env.AZURE_STORAGE_CONTAINER || '',
-      }
-    : undefined,
-  maxFileSize: parseInt(process.env.MAX_FILE_SIZE || '10485760', 10), // 10MB default
-  allowedMimeTypes: process.env.ALLOWED_MIME_TYPES
-    ? process.env.ALLOWED_MIME_TYPES.split(',')
-    : ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'],
+    root: process.env.LOCAL_STORAGE_ROOT || './storage',
+    baseUrl: process.env.LOCAL_STORAGE_BASE_URL || 'http://localhost:3000/files',
+    ensureDirectoryExists: process.env.LOCAL_STORAGE_ENSURE_DIR !== 'false',
+  } as ILocalOptions,
+
+  /**
+   * Register module globally
+   *
+   * When true, the module will be available globally without imports.
+   *
+   * @env STORAGE_GLOBAL
+   * @default false
+   */
+  global: process.env.STORAGE_GLOBAL === 'true',
+
+  /**
+   * Auto-connect on module initialization
+   *
+   * When true, connects to the storage system on app bootstrap.
+   *
+   * @env STORAGE_AUTO_CONNECT
+   * @default true
+   */
+  autoConnect: process.env.STORAGE_AUTO_CONNECT !== 'false',
+
+  /**
+   * Default visibility for uploaded files
+   *
+   * @env STORAGE_DEFAULT_VISIBILITY
+   * @default StorageVisibility.PRIVATE
+   */
+  defaultVisibility:
+    (process.env.STORAGE_DEFAULT_VISIBILITY as StorageVisibility) ||
+    DEFAULT_STORAGE_CONFIG.defaultVisibility,
+
+  /**
+   * Maximum allowed file size in bytes
+   *
+   * @env STORAGE_MAX_FILE_SIZE
+   * @default 104857600 (100 MB)
+   */
+  maxFileSize: parseInt(
+    process.env.STORAGE_MAX_FILE_SIZE || String(DEFAULT_STORAGE_CONFIG.maxFileSize),
+    10
+  ),
+
+  /**
+   * Default expiration time for presigned URLs in seconds
+   *
+   * @env STORAGE_PRESIGNED_URL_EXPIRATION
+   * @default 3600 (1 hour)
+   */
+  presignedUrlExpiration: parseInt(
+    process.env.STORAGE_PRESIGNED_URL_EXPIRATION ||
+      String(DEFAULT_STORAGE_CONFIG.presignedUrlExpiration),
+    10
+  ),
+
+  /**
+   * Maximum retry attempts for failed operations
+   *
+   * @env STORAGE_MAX_RETRIES
+   * @default 3
+   */
+  maxRetries: parseInt(
+    process.env.STORAGE_MAX_RETRIES || String(DEFAULT_STORAGE_CONFIG.maxRetries),
+    10
+  ),
+
+  /**
+   * Delay between retry attempts (in milliseconds)
+   *
+   * @env STORAGE_RETRY_DELAY
+   * @default 1000
+   */
+  retryDelay: parseInt(
+    process.env.STORAGE_RETRY_DELAY || String(DEFAULT_STORAGE_CONFIG.retryDelay),
+    10
+  ),
 };

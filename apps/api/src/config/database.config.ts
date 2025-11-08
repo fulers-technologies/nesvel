@@ -1,5 +1,5 @@
 import { Migrator } from '@mikro-orm/migrations';
-import { SqliteDriver } from '@mikro-orm/sqlite';
+import { BetterSqliteDriver } from '@mikro-orm/better-sqlite';
 import { LoadStrategy, DatabaseConfig, UnderscoreNamingStrategy } from '@nesvel/nestjs-orm';
 
 /**
@@ -27,7 +27,7 @@ export const databaseConfig: DatabaseConfig = {
    * Available drivers: PostgreSqlDriver, MySqlDriver, SqliteDriver, BetterSqliteDriver, MongoDriver
    */
   // driver: PostgreSqlDriver as any,
-  driver: SqliteDriver,
+  driver: BetterSqliteDriver,
 
   /**
    * Database connection settings

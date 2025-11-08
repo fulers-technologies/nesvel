@@ -7,7 +7,7 @@ import {
   ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { ApiTags } from '@nesvel/nestjs-swagger';
-// import { Route, EndpointPreset } from '@/decorators/route';
+// import { Route, EndpointPreset } from '@nesvel/nestjs-routing';
 // import { paginate, Paginate, Paginated, type PaginateQuery } from '@nesvel/nestjs-orm';
 
 // import { OrderDto } from '../dtos/order.dto';

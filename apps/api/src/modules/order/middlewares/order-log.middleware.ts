@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from '@nesvel/nestjs-http';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 
 /**
@@ -38,7 +38,7 @@ export class OrderLogMiddleware implements NestMiddleware {
     // console.log(`[OrderLogMiddleware] ${req.method} ${req.url}`);
 
     // Example: Add custom headers
-    // res.setHeader('X-Custom-Header', 'value');
+    // res.header('X-Custom-Header', 'value');
 
     // Example: Validate request
     // if (!req.headers.authorization) {
