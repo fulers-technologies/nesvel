@@ -183,13 +183,15 @@ export class TrustHostsMiddleware extends BaseHttpMiddleware {
     }
 
     // Remove port from host for validation
-    const hostWithoutPort = host.split(':')[0];
+    const hostWithoutPort = host.split(':')[0] || host;
 
     if (!this.isHostTrusted(hostWithoutPort)) {
-      this.logger.warn('Untrusted host rejected', {
-        host: hostWithoutPort,
-        trustedPatterns: this.trustedHostPatterns.map((p) => p.source),
-      });
+      if (this.logger) {
+        this.logger.warn('Untrusted host rejected', {
+          host: hostWithoutPort,
+          trustedPatterns: this.trustedHostPatterns.map(p => p.source),
+        });
+      }
 
       throw new HttpException(
         {

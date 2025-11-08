@@ -62,7 +62,6 @@ export class AddLinkHeadersMiddleware extends BaseHttpMiddleware {
       merge: options.merge ?? true,
     };
   }
-  }
 
   /**
    * After hook: Add Link headers to response.
