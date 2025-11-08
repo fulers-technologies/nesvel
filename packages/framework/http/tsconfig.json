@@ -1,0 +1,19 @@
+{
+  "extends": "@nesvel/typescript-config/nest-lib",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./",
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@client/*": ["./src/client/*"],
+      "@client": ["./src/client"],
+      "@server/*": ["./src/server/*"],
+      "@server": ["./src/server"],
+      "@types/*": ["./src/types/*"],
+      "@types": ["./src/types"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
+}

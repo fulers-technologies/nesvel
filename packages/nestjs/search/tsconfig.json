@@ -1,0 +1,33 @@
+{
+  "extends": "@nesvel/typescript-config/nest-lib",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./",
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@builders/*": ["./src/builders/*"],
+      "@builders": ["./src/builders"],
+      "@console/*": ["./src/console/*"],
+      "@console": ["./src/console"],
+      "@constants/*": ["./src/constants/*"],
+      "@constants": ["./src/constants"],
+      "@decorators/*": ["./src/decorators/*"],
+      "@decorators": ["./src/decorators"],
+      "@enums/*": ["./src/enums/*"],
+      "@enums": ["./src/enums"],
+      "@interfaces/*": ["./src/interfaces/*"],
+      "@interfaces": ["./src/interfaces"],
+      "@providers/*": ["./src/providers/*"],
+      "@providers": ["./src/providers"],
+      "@services/*": ["./src/services/*"],
+      "@services": ["./src/services"],
+      "@subscribers/*": ["./src/subscribers/*"],
+      "@subscribers": ["./src/subscribers"],
+      "@types/*": ["./src/types/*"],
+      "@types": ["./src/types"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
+}

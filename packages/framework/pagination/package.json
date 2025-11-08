@@ -1,0 +1,57 @@
+{
+  "name": "@nesvel/pagination",
+  "version": "1.0.0",
+  "description": "Laravel-inspired pagination utilities for TypeScript with cursor, length-aware, and simple paginators",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "build:watch": "tsup --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix"
+  },
+  "keywords": [
+    "typescript",
+    "pagination",
+    "paginator",
+    "laravel",
+    "cursor-pagination",
+    "offset-pagination",
+    "type-safe"
+  ],
+  "author": "Nesvel",
+  "license": "MIT",
+  "peerDependencies": {
+    "@nesvel/nestjs-http": "workspace:*"
+  },
+  "devDependencies": {
+    "@nesvel/nestjs-http": "workspace:*",
+    "@nesvel/eslint-config": "workspace:*",
+    "@nesvel/jest-config": "workspace:*",
+    "@nesvel/tsup-config": "workspace:*",
+    "@nesvel/typescript-config": "workspace:*",
+    "@types/node": "catalog:types"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20",
+    "npm": ">=10"
+  },
+  "packageManager": "bun@1.3.2"
+}

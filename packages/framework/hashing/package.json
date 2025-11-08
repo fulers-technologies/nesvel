@@ -1,0 +1,76 @@
+{
+  "name": "@nesvel/nestjs-hashing",
+  "version": "1.0.0",
+  "description": "Laravel-inspired hashing module for NestJS with multiple algorithms (Bcrypt, Argon2, Argon2id, Scrypt)",
+  "license": "MIT",
+  "author": "Nesvel",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "build:watch": "tsup --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "@nesvel/shared": "workspace:*",
+    "@nesvel/exceptions": "workspace:*",
+    "bcrypt": "^6.0.0",
+    "argon2": "^0.44.0"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^10.0.0 || ^11.0.0",
+    "@nestjs/core": "^10.0.0 || ^11.0.0",
+    "reflect-metadata": "^0.1.13 || ^0.2.0",
+    "rxjs": "^7.8.0"
+  },
+  "devDependencies": {
+    "@nesvel/typescript-config": "workspace:*",
+    "@nesvel/tsup-config": "workspace:*",
+    "@nesvel/jest-config": "workspace:*",
+    "@nesvel/eslint-config": "workspace:*",
+    "@nestjs/common": "^11.1.8",
+    "@nestjs/core": "^11.1.8",
+    "@nestjs/testing": "^11.1.8",
+    "@types/bcrypt": "^6.0.0",
+    "@types/node": "^24.10.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "typescript": "^5.9.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "nestjs",
+    "hashing",
+    "hash",
+    "password",
+    "bcrypt",
+    "argon2",
+    "argon2id",
+    "scrypt",
+    "laravel",
+    "security",
+    "crypto",
+    "typescript"
+  ]
+}

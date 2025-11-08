@@ -1,0 +1,131 @@
+/**
+ * Nesvel NestJS ORM Package
+ *
+ * A comprehensive Laravel Eloquent-inspired ORM package for NestJS applications.
+ * Built on top of MikroORM with additional features including pagination,
+ * PubSub integration, comprehensive exception handling, and fluent migration API.
+ *
+ * Features:
+ * - Laravel Eloquent-inspired API patterns
+ * - Comprehensive pagination with nestjs-paginate
+ * - PubSub integration for entity lifecycle events
+ * - Detailed exception handling and logging
+ * - Fluent migration API using Knex.js
+ * - Full TypeScript support with proper typing
+ *
+ * @author Nesvel
+ * @since 1.0.0
+ */
+
+// Core Entities and Base Classes
+export * from './entities';
+
+// Action Pattern
+export * from './actions';
+
+// Event Pattern
+export * from './events';
+
+// Repository Pattern
+export * from './repositories';
+
+// Service Layer
+export * from './services';
+
+// Interface Definitions
+export * from './interfaces';
+
+// Enums
+export * from './enums';
+
+// Exception Handling
+export * from './exceptions';
+
+// Type Definitions
+export * from './types';
+
+// Event Subscribers
+export * from './subscribers';
+
+// Migration System
+export * from './migrations';
+
+// Entity Mixins (Traits)
+export * from './mixins';
+
+// Factory System for Test Data Generation
+export * from './factories';
+
+// Seeder System for Database Seeding
+export * from './seeders';
+
+// Console Commands (Laravel-style make commands)
+export * from './console';
+
+// Re-export MikroORM core types and classes
+export type {
+  FilterQuery,
+  Loaded,
+  QueryOrderMap,
+  FindOptions,
+  CountOptions,
+  DeleteOptions,
+  UpdateOptions,
+  EntityData,
+  EntityDTO,
+  Populate,
+  ConnectionType,
+  IDatabaseDriver,
+  Configuration,
+  EventSubscriber,
+} from '@mikro-orm/core';
+
+export {
+  EntityManager,
+  EntityRepository,
+  wrap,
+  Reference,
+  Collection,
+  QueryOrder,
+  UnderscoreNamingStrategy,
+  LoadStrategy,
+} from '@mikro-orm/core';
+
+// Re-export MikroORM decorators
+export {
+  Entity,
+  Property,
+  PrimaryKey,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  ManyToMany,
+  Embedded,
+  Enum,
+  Formula,
+  Index,
+  Unique,
+  Check,
+  BeforeCreate,
+  AfterCreate,
+  BeforeUpdate,
+  AfterUpdate,
+  BeforeDelete,
+  AfterDelete,
+  OnInit,
+  OnLoad,
+  Cascade,
+} from '@mikro-orm/core';
+
+// Re-export NestJS integration
+export { InjectRepository, type MikroOrmModuleOptions } from '@mikro-orm/nestjs';
+
+// Custom ORM Module with health indicator support
+export { OrmModule } from './orm.module';
+export type { IOrmModuleOptions, IOrmModuleOptions as OrmModuleOptions } from './orm.module';
+
+// Utility functions and helpers
+export * from './utils';
+
+// Health Indicators
+export * from './indicators';

@@ -1,0 +1,27 @@
+{
+  "extends": "@nesvel/typescript-config/nest-lib",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./",
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@builders/*": ["./src/builders/*"],
+      "@builders": ["./src/builders"],
+      "@constants/*": ["./src/constants/*"],
+      "@constants": ["./src/constants"],
+      "@decorators/*": ["./src/decorators/*"],
+      "@decorators": ["./src/decorators"],
+      "@enums/*": ["./src/enums/*"],
+      "@enums": ["./src/enums"],
+      "@interfaces/*": ["./src/interfaces/*"],
+      "@interfaces": ["./src/interfaces"],
+      "@presets/*": ["./src/presets/*"],
+      "@presets": ["./src/presets"],
+      "@utils/*": ["./src/utils/*"],
+      "@utils": ["./src/utils"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
+}

@@ -1,0 +1,62 @@
+import { EntityData } from '@mikro-orm/core';
+import { BaseFactory } from '@nesvel/nestjs-orm';
+
+import { <%= modelName %> } from '@/entities/<%= fileName %>.entity';
+
+/**
+ * <%= className %>
+ *
+ * Factory for generating <%= modelName %> test data.
+ *
+ * @see https://mikro-orm.io/docs/seeding#using-entity-factories
+ *
+ * @example
+ * ```typescript
+ * // In a seeder
+ * const factory = new <%= className %>(em);
+ * // Or using static method:
+ * const factory = <%= className %>.make(em);
+ *
+ * // Make entities without persisting
+ * const <%= variableName %> = factory.makeOne();
+ * const <%= variableName %>s = factory.make(10);
+ *
+ * // Create and persist entities
+ * const persisted<%= modelName %> = await factory.createOne();
+ * const persisted<%= modelName %>s = await factory.create(10);
+ *
+ * // Override attributes
+ * const custom<%= modelName %> = factory.makeOne({
+ *   name: 'Custom Name',
+ * });
+ *
+ * // Apply logic to each entity
+ * const <%= variableName %>s = await factory.each((<%= variableName %>) => {
+ *   <%= variableName %>.verified = true;
+ * }).create(5);
+ * ```
+ */
+export class <%= className %> extends BaseFactory<<%= modelName %>> {
+  /**
+   * The entity class this factory creates
+   */
+  public readonly model = <%= modelName %>;
+
+  /**
+   * Define the default attributes for the entity
+   *
+   * This method returns the default data used to create entity instances.
+   * Use this.faker to generate realistic test data.
+   *
+   * @returns Entity data with default values
+   */
+  protected definition(): EntityData<<%= modelName %>> {
+    return {
+      // TODO: Define default factory attributes using this.faker
+      // Example:
+      // name: this.faker.person.fullName(),
+      // email: this.faker.internet.email(),
+      // description: this.faker.lorem.paragraph(),
+    };
+  }
+}

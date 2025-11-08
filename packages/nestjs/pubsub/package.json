@@ -1,0 +1,94 @@
+{
+  "name": "@nesvel/nestjs-pubsub",
+  "version": "1.0.0",
+  "description": "A comprehensive NestJS module for pub/sub messaging with pluggable driver support for Memory (EventEmitter2), Redis, Kafka, and Google Cloud PubSub",
+  "license": "MIT",
+  "author": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/**/*.ts",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./jest-e2e.config.js",
+    "format": "prettier --write \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "@nestjs/event-emitter": "^3.0.1",
+    "@nesvel/nestjs-console": "workspace:*"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/config": "^4.0.0",
+    "@nestjs/core": "^11.0.0",
+    "@nestjs/event-emitter": "^3.0.0",
+    "reflect-metadata": "^0.2.0",
+    "rxjs": "^7.8.0"
+  },
+  "peerDependenciesMeta": {
+    "@nestjs/event-emitter": {
+      "optional": true
+    },
+    "ioredis": {
+      "optional": true
+    },
+    "kafkajs": {
+      "optional": true
+    },
+    "@google-cloud/pubsub": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@nesvel/eslint-config": "workspace:*",
+    "@nesvel/jest-config": "workspace:*",
+    "@nesvel/tsup-config": "workspace:*",
+    "@nesvel/typescript-config": "workspace:*",
+    "@google-cloud/pubsub": "^5.2.0",
+    "@nestjs/common": "catalog:nestjs",
+    "@nestjs/config": "catalog:nestjsModules",
+    "@nestjs/core": "catalog:nestjs",
+    "@nestjs/event-emitter": "^3.0.1",
+    "@nestjs/testing": "catalog:nestjsCli",
+    "@types/ioredis": "^5.0.0",
+    "@types/kafkajs": "^1.9.0",
+    "dotenv": "^17.2.3",
+    "ioredis": "^5.8.2",
+    "kafkajs": "^2.2.4",
+    "reflect-metadata": "catalog:nestjs",
+    "rxjs": "catalog:nestjs"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20",
+    "npm": ">=10"
+  },
+  "packageManager": "bun@1.3.2",
+  "keywords": [
+    "nestjs",
+    "pubsub",
+    "memory",
+    "event-emitter",
+    "redis",
+    "kafka",
+    "google-pubsub",
+    "messaging",
+    "event-driven"
+  ]
+}

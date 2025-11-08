@@ -1,0 +1,70 @@
+{
+  "name": "@nesvel/nestjs-swagger",
+  "version": "1.0.0",
+  "description": "Production-ready Swagger/OpenAPI documentation module for NestJS applications with TypeScript support",
+  "license": "MIT",
+  "author": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/**/*.ts",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./jest-e2e.config.js",
+    "format": "prettier --write \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "nestjs-swagger-dto": "^3.8.5",
+    "swagger-themes": "^1.4.3"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/core": "^11.0.0",
+    "@nestjs/swagger": "catalog:nestjsModules",
+    "reflect-metadata": "^0.2.0",
+    "rxjs": "^7.8.0"
+  },
+  "peerDependenciesMeta": {},
+  "devDependencies": {
+    "@nesvel/eslint-config": "workspace:*",
+    "@nesvel/jest-config": "workspace:*",
+    "@nesvel/tsup-config": "workspace:*",
+    "@nesvel/typescript-config": "workspace:*",
+    "@nestjs/common": "catalog:nestjs",
+    "@nestjs/core": "catalog:nestjs",
+    "@nestjs/testing": "catalog:nestjsCli",
+    "reflect-metadata": "catalog:nestjs",
+    "rxjs": "catalog:nestjs"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20",
+    "npm": ">=10"
+  },
+  "packageManager": "bun@1.3.2",
+  "keywords": [
+    "nestjs",
+    "swagger",
+    "openapi",
+    "api-documentation",
+    "rest-api",
+    "typescript",
+    "documentation"
+  ]
+}
