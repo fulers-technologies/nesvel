@@ -47,7 +47,7 @@
     "cleanup": "find . -name 'node_modules' -type d -prune -exec rm -rf {} + && find . -name '.turbo' -type d -prune -exec rm -rf {} + && find . -name 'dist' -type d -not -path '*/node_modules/*' -exec rm -rf {} + && find . -name '.next' -type d -prune -exec rm -rf {} + && rm -f bun.lockb pnpm-lock.yaml yarn.lock package-lock.json",
     "commit": "git-cz",
     "prepare": "husky",
-    "update-dependencies": "for dir in apps/* packages/*; do [ -f \"$dir/package.json\" ] && echo \"Updating $dir...\" && (cd \"$dir\" && ncu -u) || true; done",
+    "update-dependencies": "find apps packages -type f -name 'package.json' -not -path '*/node_modules/*' | while read -r pkg; do dir=$(dirname \"$pkg\"); echo \"Updating $dir...\"; (cd \"$dir\" && ncu -u) || true; done",
     "turbo:login": "turbo login",
     "turbo:link": "turbo link",
     "turbo:unlink": "turbo unlink"
@@ -84,7 +84,10 @@
   },
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "packages/tools/*",
+    "packages/nestjs/*",
+    "packages/framework/*"
   ],
   "trustedDependencies": [
     "@nestjs/core",

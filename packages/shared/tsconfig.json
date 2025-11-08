@@ -1,21 +1,23 @@
 {
   "extends": "@nesvel/typescript-config/base",
   "compilerOptions": {
-    "module": "CommonJS",
-    "moduleResolution": "node",
     "outDir": "./dist",
-    "rootDir": "./src",
-    "declaration": true,
-    "emitDeclarationOnly": false,
-    "baseUrl": "./src",
+    "rootDir": "./",
+    "baseUrl": "./",
     "paths": {
-      "@/*": ["./*"],
-      "@types/*": ["./types/*"],
-      "@utils/*": ["./utils/*"],
-      "@tests/*": ["../__tests__/*", "../test/*"],
-      "@examples/*": ["../__examples__/*"]
+      "@/*": ["./src/*"],
+      "@abstract/*": ["./src/abstract/*"],
+      "@abstract": ["./src/abstract"],
+      "@constants/*": ["./src/constants/*"],
+      "@constants": ["./src/constants"],
+      "@enums/*": ["./src/enums/*"],
+      "@enums": ["./src/enums"],
+      "@types/*": ["./src/types/*"],
+      "@types": ["./src/types"],
+      "@utils/*": ["./src/utils/*"],
+      "@utils": ["./src/utils"]
     }
   },
   "include": ["src/**/*"],
-  "exclude": ["dist", "node_modules", "**/*.spec.ts", "**/*.test.ts"]
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
 }
