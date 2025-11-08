@@ -45,7 +45,7 @@ healthCheck() {
 ### Using Route Decorator
 
 ```typescript
-import { Route, HttpMethod } from './decorators/route';
+import { Route, HttpMethod } from '@nesvel/nestjs-routing';
 
 @Route({
   method: HttpMethod.POST,

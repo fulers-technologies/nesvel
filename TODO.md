@@ -1,10 +1,13 @@
+- console theme system how it works and also some prompts have static colors and
+  ymanic from the theme
+
 - refactor all stubs files as some need camelcase and some need different params
   we need an interface for all passed vars to the ejs file,
 
 fileName.replace(/-/g, ' ')
 
-- refactor nesvel/mailer/resources/interfaces and base component to seperated
-  file for each
+- refactor nesvel/mail/resources/componenets to add docblocks and detailed
+  comments all over the code and files file for each
 - refactor all database commands
 
   ```bash
@@ -36,3 +39,5 @@ fileName.replace(/-/g, ' ')
   mikro-orm migration:pending       List all pending migrations
   mikro-orm migration:fresh         Clear the database and rerun all migrations
   ```
+
+-
