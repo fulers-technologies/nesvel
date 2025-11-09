@@ -142,7 +142,7 @@ export abstract class BaseException extends Error {
     // Create a new instance using the constructor with all provided arguments
     // 'this' refers to the actual exception class (e.g., UserNotFoundException)
     // The spread operator passes all arguments to the constructor
-    return new this(...args);
+    return this.make(...args);
   }
 
   /**

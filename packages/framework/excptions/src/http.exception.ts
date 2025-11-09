@@ -92,6 +92,6 @@ export class HttpException extends BaseHttpException {
     status: number,
     options?: HttpExceptionOptions | undefined
   ): HttpException {
-    return new HttpException(response, status, options);
+    return HttpException.make(response, status, options);
   }
 }
