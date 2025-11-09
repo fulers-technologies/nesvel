@@ -12,7 +12,7 @@ import { IFlightReservation, IOrganization, IPerson } from '@markup/schemas';
  *
  * @example
  * ```typescript
- * const flightMarkup = new FlightReservationBuilder()
+ * const flightMarkup = FlightReservationBuilder.make()
  *   .setReservationNumber('ABC123')
  *   .setStatus(ReservationStatus.CONFIRMED)
  *   .setUnderName({ '@type': 'Person', name: 'John Doe', email: 'john@example.com' })

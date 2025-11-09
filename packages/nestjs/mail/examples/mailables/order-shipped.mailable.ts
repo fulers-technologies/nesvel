@@ -46,13 +46,13 @@ interface Customer {
  *
  * @example Basic usage
  * ```typescript
- * const mailable = new OrderShippedMailable(order, customer);
+ * const mailable = OrderShippedMailable.make(order, customer);
  * await mailService.to(customer.email).send(mailable);
  * ```
  *
  * @example With invoice attachment
  * ```typescript
- * const mailable = new OrderShippedMailable(order, customer, '/tmp/invoice.pdf');
+ * const mailable = OrderShippedMailable.make(order, customer, '/tmp/invoice.pdf');
  * await mailService.to(customer.email).send(mailable);
  * ```
  *
@@ -60,7 +60,7 @@ interface Customer {
  * ```typescript
  * import { MAIL_JOB_PRIORITIES } from '@nesvel/nestjs-mail';
  *
- * const mailable = new OrderShippedMailable(order, customer);
+ * const mailable = OrderShippedMailable.make(order, customer);
  * await mailService
  *   .to(customer.email)
  *   .queue(mailable, { priority: MAIL_JOB_PRIORITIES.HIGH });

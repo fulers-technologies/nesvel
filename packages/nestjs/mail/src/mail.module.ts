@@ -86,8 +86,8 @@ export class MailModule {
    */
   static forRoot(options: IMailModuleOptions = {}): DynamicModule {
     const config = options.config || mailConfig.config!;
-    const factory = new MailFactoryService();
-    const optionsFactory = new MailOptionsFactoryService(factory);
+    const factory = MailFactoryService.make();
+    const optionsFactory = MailOptionsFactoryService.make(factory);
     const mailOptions = optionsFactory.createMailOptions(config);
 
     // Build imports array

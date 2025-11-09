@@ -12,7 +12,7 @@ import { IOrder, IOrderItem, IOrganization, IParcelDelivery } from '@markup/sche
  *
  * @example
  * ```typescript
- * const orderMarkup = new OrderMarkupBuilder()
+ * const orderMarkup = OrderMarkupBuilder.make()
  *   .setOrderNumber('ORD-12345')
  *   .setMerchant({ '@type': 'Organization', name: 'Example Store' })
  *   .setOrderStatus(OrderStatus.PROCESSING)

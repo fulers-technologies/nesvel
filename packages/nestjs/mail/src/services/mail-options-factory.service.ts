@@ -62,7 +62,7 @@ export class MailOptionsFactoryService {
     if (!config.template?.adapter) {
       options.template = {
         ...config.template,
-        adapter: new ReactAdapter({
+        adapter: ReactAdapter.make({
           pretty: process.env.NODE_ENV === 'development',
           plainText: true, // Generate plain text version for email client compatibility
         }),

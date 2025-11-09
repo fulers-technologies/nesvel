@@ -13,7 +13,7 @@ import { IOrder, IOrderItem, IOrganization } from '@markup/schemas';
  *
  * @example Basic invoice
  * ```typescript
- * const invoiceMarkup = new InvoiceBuilder()
+ * const invoiceMarkup = InvoiceBuilder.make()
  *   .setInvoiceNumber('INV-2024-001')
  *   .setBiller({ '@type': 'Organization', name: 'Acme Corp', email: 'billing@acme.com' })
  *   .setCustomer({ '@type': 'Organization', name: 'Client Inc', email: 'accounts@client.com' })
@@ -39,7 +39,7 @@ import { IOrder, IOrderItem, IOrganization } from '@markup/schemas';
  *
  * @example Invoice with multiple line items
  * ```typescript
- * const detailedInvoice = new InvoiceBuilder()
+ * const detailedInvoice = InvoiceBuilder.make()
  *   .setInvoiceNumber('INV-2024-042')
  *   .setBiller({
  *     '@type': 'Organization',

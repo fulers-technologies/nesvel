@@ -17,7 +17,7 @@ import { MailerOptions, TemplateAdapter } from '@nestjs-modules/mailer';
  * MailModule.forRoot({
  *   template: {
  *     dir: path.join(__dirname, 'templates/emails'),
- *     adapter: new ReactAdapter({
+ *     adapter: ReactAdapter.make({
  *       pretty: process.env.NODE_ENV !== 'production',
  *       plainText: true,
  *     }),

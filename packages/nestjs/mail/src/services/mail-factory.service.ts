@@ -125,7 +125,7 @@ import { IMailProvider, IMailConfig } from '@interfaces';
  * ```typescript
  * class CustomMailProvider implements IMailProvider {
  *   static make(options: any) {
- *     return new CustomMailProvider(options);
+ *     return CustomMailProvider.make(options);
  *   }
  *   async send(message: IMailMessage): Promise<void> { ... }
  *   getTransportConfig() { ... }

@@ -372,7 +372,7 @@ export const scheduledQueueConfig: MailQueueConfig = {
  *   constructor(private readonly queueService: MailQueueService) {}
  *
  *   async sendPasswordReset(user: User, token: string) {
- *     const mailable = new PasswordResetEmail(user, token);
+ *     const mailable = PasswordResetEmail.make(user, token);
  *
  *     await this.queueService.addMailJob(mailable, {
  *       priority: MAIL_JOB_PRIORITIES.CRITICAL,
@@ -382,7 +382,7 @@ export const scheduledQueueConfig: MailQueueConfig = {
  *   }
  *
  *   async scheduleFollowUp(user: User, delay: number) {
- *     const mailable = new FollowUpEmail(user);
+ *     const mailable = FollowUpEmail.make(user);
  *
  *     await this.queueService.addMailJob(mailable, {
  *       delay, // Milliseconds until sending

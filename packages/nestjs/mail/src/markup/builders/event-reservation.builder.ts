@@ -13,7 +13,7 @@ import { IEventReservation, IOrganization, IPerson, IPostalAddress } from '@mark
  *
  * @example Concert ticket
  * ```typescript
- * const ticketMarkup = new EventReservationBuilder()
+ * const ticketMarkup = EventReservationBuilder.make()
  *   .setReservationNumber('TKT-12345')
  *   .setStatus(ReservationStatus.CONFIRMED)
  *   .setUnderName({ '@type': 'Person', name: 'John Doe', email: 'john@example.com' })
@@ -35,7 +35,7 @@ import { IEventReservation, IOrganization, IPerson, IPostalAddress } from '@mark
  *
  * @example Conference ticket
  * ```typescript
- * const conferenceTicket = new EventReservationBuilder()
+ * const conferenceTicket = EventReservationBuilder.make()
  *   .setReservationNumber('CONF-2024-789')
  *   .setStatus(ReservationStatus.CONFIRMED)
  *   .setUnderName({ '@type': 'Person', name: 'Jane Smith', email: 'jane@example.com' })

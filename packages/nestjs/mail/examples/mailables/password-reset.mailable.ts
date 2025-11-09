@@ -29,7 +29,7 @@ interface User {
  *
  * @example Basic usage
  * ```typescript
- * const mailable = new PasswordResetMailable(user, resetToken);
+ * const mailable = PasswordResetMailable.make(user, resetToken);
  * await mailService
  *   .to(user.email)
  *   .send(mailable); // Send immediately, don't queue!
@@ -37,13 +37,13 @@ interface User {
  *
  * @example With custom expiration
  * ```typescript
- * const mailable = new PasswordResetMailable(user, resetToken, 30); // 30 minutes
+ * const mailable = PasswordResetMailable.make(user, resetToken, 30); // 30 minutes
  * await mailService.to(user.email).send(mailable);
  * ```
  *
  * @example With IP tracking
  * ```typescript
- * const mailable = new PasswordResetMailable(
+ * const mailable = PasswordResetMailable.make(
  *   user,
  *   resetToken,
  *   60,

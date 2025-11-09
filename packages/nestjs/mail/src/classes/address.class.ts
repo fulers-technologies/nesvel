@@ -7,10 +7,10 @@
  * @example
  * ```typescript
  * // Create from string
- * const addr = new Address('user@example.com');
+ * const addr = Address.make('user@example.com');
  *
  * // Create with name
- * const addr = new Address('user@example.com', 'John Doe');
+ * const addr = Address.make('user@example.com', 'John Doe');
  *
  * // Create from object
  * const addr = Address.from({ email: 'user@example.com', name: 'John Doe' });
@@ -53,14 +53,14 @@ export class Address {
    */
   public static from(input: string | Address | { email: string; name?: string }): Address {
     if (typeof input === 'string') {
-      return new Address(input);
+      return Address.make(input);
     }
 
     if (input instanceof Address) {
       return input;
     }
 
-    return new Address(input.email, input.name);
+    return Address.make(input.email, input.name);
   }
 
   /**

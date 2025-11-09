@@ -12,7 +12,7 @@ import { ILodgingReservation, IOrganization, IPerson, IPostalAddress } from '@ma
  *
  * @example Hotel booking
  * ```typescript
- * const hotelMarkup = new HotelReservationBuilder()
+ * const hotelMarkup = HotelReservationBuilder.make()
  *   .setReservationNumber('HTL-789456')
  *   .setStatus(ReservationStatus.CONFIRMED)
  *   .setGuestName({ '@type': 'Person', name: 'Jane Doe', email: 'jane@example.com' })
@@ -37,7 +37,7 @@ import { ILodgingReservation, IOrganization, IPerson, IPostalAddress } from '@ma
  *
  * @example Resort booking
  * ```typescript
- * const resortBooking = new HotelReservationBuilder()
+ * const resortBooking = HotelReservationBuilder.make()
  *   .setReservationNumber('RST-2024-555')
  *   .setStatus(ReservationStatus.CONFIRMED)
  *   .setGuestName({

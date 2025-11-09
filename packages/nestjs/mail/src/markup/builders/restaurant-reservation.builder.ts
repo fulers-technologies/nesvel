@@ -17,7 +17,7 @@ import {
  *
  * @example Basic restaurant reservation
  * ```typescript
- * const reservationMarkup = new RestaurantReservationBuilder()
+ * const reservationMarkup = RestaurantReservationBuilder.make()
  *   .setReservationNumber('RES-123456')
  *   .setStatus(ReservationStatus.CONFIRMED)
  *   .setGuestName({ '@type': 'Person', name: 'John Doe', email: 'john@example.com' })
@@ -41,7 +41,7 @@ import {
  *
  * @example Anniversary dinner reservation
  * ```typescript
- * const dinnerReservation = new RestaurantReservationBuilder()
+ * const dinnerReservation = RestaurantReservationBuilder.make()
  *   .setReservationNumber('DIN-2024-999')
  *   .setStatus(ReservationStatus.CONFIRMED)
  *   .setGuestName({

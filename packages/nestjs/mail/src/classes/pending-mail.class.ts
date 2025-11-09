@@ -24,17 +24,17 @@ export interface HasLocalePreference {
  *   .to('user@example.com')
  *   .cc('manager@example.com')
  *   .locale('es')
- *   .send(new OrderShipped(order));
+ *   .send(OrderShipped.make(order));
  *
  * // Queue for async processing
  * await mailService
  *   .to(user)  // Auto-detects user's preferred locale
- *   .queue(new WelcomeMailable(user));
+ *   .queue(WelcomeMailable.make(user));
  *
  * // Schedule for later
  * await mailService
  *   .to('user@example.com')
- *   .later(3600, new ReminderMailable()); // 1 hour delay
+ *   .later(3600, ReminderMailable.make()); // 1 hour delay
  * ```
  */
 export class PendingMail {
@@ -114,11 +114,11 @@ export class PendingMail {
 
       // Convert to Address
       if (typeof user === 'string') {
-        this._to.push(new Address(user));
+        this._to.push(Address.make(user));
       } else if (user instanceof Address) {
         this._to.push(user);
       } else if (user && typeof user === 'object' && 'email' in user) {
-        this._to.push(new Address(user.email, user.name));
+        this._to.push(Address.make(user.email, user.name));
       }
     });
 
@@ -136,11 +136,11 @@ export class PendingMail {
 
     userArray.forEach((user) => {
       if (typeof user === 'string') {
-        this._cc.push(new Address(user));
+        this._cc.push(Address.make(user));
       } else if (user instanceof Address) {
         this._cc.push(user);
       } else if (user && typeof user === 'object' && 'email' in user) {
-        this._cc.push(new Address(user.email, user.name));
+        this._cc.push(Address.make(user.email, user.name));
       }
     });
 
@@ -158,11 +158,11 @@ export class PendingMail {
 
     userArray.forEach((user) => {
       if (typeof user === 'string') {
-        this._bcc.push(new Address(user));
+        this._bcc.push(Address.make(user));
       } else if (user instanceof Address) {
         this._bcc.push(user);
       } else if (user && typeof user === 'object' && 'email' in user) {
-        this._bcc.push(new Address(user.email, user.name));
+        this._bcc.push(Address.make(user.email, user.name));
       }
     });
 
@@ -180,7 +180,7 @@ export class PendingMail {
 
     addressArray.forEach((addr) => {
       if (typeof addr === 'string') {
-        this._replyTo.push(new Address(addr));
+        this._replyTo.push(Address.make(addr));
       } else if (addr instanceof Address) {
         this._replyTo.push(addr);
       }
@@ -199,7 +199,7 @@ export class PendingMail {
    * ```typescript
    * await mailService
    *   .to('user@example.com')
-   *   .send(new OrderShipped(order));
+   *   .send(OrderShipped.make(order));
    * ```
    */
   public async send(mailable: Mailable): Promise<any> {
@@ -216,7 +216,7 @@ export class PendingMail {
    * ```typescript
    * await mailService
    *   .to('user@example.com')
-   *   .queue(new OrderShipped(order));
+   *   .queue(OrderShipped.make(order));
    * ```
    */
   public async queue(mailable: Mailable): Promise<any> {
@@ -235,7 +235,7 @@ export class PendingMail {
    * // Send after 1 hour (3600 seconds)
    * await mailService
    *   .to('user@example.com')
-   *   .later(3600, new ReminderMailable());
+   *   .later(3600, ReminderMailable.make());
    * ```
    */
   public async later(delay: number, mailable: Mailable): Promise<any> {

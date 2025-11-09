@@ -67,7 +67,7 @@ export class Attachment {
    * ```
    */
   public static fromPath(filepath: string): Attachment {
-    const attachment = new Attachment();
+    const attachment = Attachment.make();
     attachment.filePath = filepath;
     attachment.filename = path.basename(filepath);
     return attachment;
@@ -92,7 +92,7 @@ export class Attachment {
    * ```
    */
   public static fromStorage(storagePath: string, diskName?: string): Attachment {
-    const attachment = new Attachment();
+    const attachment = Attachment.make();
     attachment.storagePath = storagePath;
     attachment.disk = diskName;
     attachment.filename = path.basename(storagePath);
@@ -114,7 +114,7 @@ export class Attachment {
    * ```
    */
   public static fromData(data: Buffer | string, filename: string): Attachment {
-    const attachment = new Attachment();
+    const attachment = Attachment.make();
     attachment.data = data;
     attachment.filename = filename;
     return attachment;

@@ -278,15 +278,15 @@ export class MailService {
    * ```typescript
    * await mailService
    *   .to('user@example.com')
-   *   .send(new OrderShipped(order));
+   *   .send(OrderShipped.make(order));
    *
    * await mailService
    *   .to(user) // Auto-detects locale from user.preferredLocale()
-   *   .queue(new Welcome(user));
+   *   .queue(Welcome.make(user));
    * ```
    */
   public to(users: string | Address | any | Array<string | Address | any>): PendingMail {
-    return new PendingMail(this).to(users);
+    return PendingMail.make(this).to(users);
   }
 
   /**
@@ -296,7 +296,7 @@ export class MailService {
    * @returns PendingMail instance for chaining
    */
   public cc(users: string | Address | any | Array<string | Address | any>): PendingMail {
-    return new PendingMail(this).cc(users);
+    return PendingMail.make(this).cc(users);
   }
 
   /**
@@ -306,7 +306,7 @@ export class MailService {
    * @returns PendingMail instance for chaining
    */
   public bcc(users: string | Address | any | Array<string | Address | any>): PendingMail {
-    return new PendingMail(this).bcc(users);
+    return PendingMail.make(this).bcc(users);
   }
 
   /**

@@ -27,8 +27,8 @@ import { Attachment } from './attachment.class';
  * }
  *
  * // Usage
- * await mailService.to('user@example.com').send(new OrderShippedMailable(order));
- * await mailService.to('user@example.com').queue(new OrderShippedMailable(order));
+ * await mailService.to('user@example.com').send(OrderShippedMailable.make(order));
+ * await mailService.to('user@example.com').queue(OrderShippedMailable.make(order));
  * ```
  */
 export abstract class Mailable {
@@ -182,7 +182,7 @@ export abstract class Mailable {
    * @returns this for chaining
    */
   public from(address: string | Address, name?: string): this {
-    this._from = address instanceof Address ? address : new Address(address, name);
+    this._from = address instanceof Address ? address : Address.make(address, name);
     return this;
   }
 
@@ -196,7 +196,7 @@ export abstract class Mailable {
   public to(address: string | Address | Array<string | Address>, name?: string): this {
     const addresses = Array.isArray(address) ? address : [address];
     addresses.forEach((addr) => {
-      this._to.push(addr instanceof Address ? addr : new Address(addr, name));
+      this._to.push(addr instanceof Address ? addr : Address.make(addr, name));
     });
     return this;
   }
@@ -211,7 +211,7 @@ export abstract class Mailable {
   public cc(address: string | Address | Array<string | Address>, name?: string): this {
     const addresses = Array.isArray(address) ? address : [address];
     addresses.forEach((addr) => {
-      this._cc.push(addr instanceof Address ? addr : new Address(addr, name));
+      this._cc.push(addr instanceof Address ? addr : Address.make(addr, name));
     });
     return this;
   }
@@ -226,7 +226,7 @@ export abstract class Mailable {
   public bcc(address: string | Address | Array<string | Address>, name?: string): this {
     const addresses = Array.isArray(address) ? address : [address];
     addresses.forEach((addr) => {
-      this._bcc.push(addr instanceof Address ? addr : new Address(addr, name));
+      this._bcc.push(addr instanceof Address ? addr : Address.make(addr, name));
     });
     return this;
   }
@@ -241,7 +241,7 @@ export abstract class Mailable {
   public replyTo(address: string | Address | Array<string | Address>, name?: string): this {
     const addresses = Array.isArray(address) ? address : [address];
     addresses.forEach((addr) => {
-      this._replyTo.push(addr instanceof Address ? addr : new Address(addr, name));
+      this._replyTo.push(addr instanceof Address ? addr : Address.make(addr, name));
     });
     return this;
   }

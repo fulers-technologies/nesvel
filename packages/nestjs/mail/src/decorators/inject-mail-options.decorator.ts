@@ -180,7 +180,7 @@ import { MAIL_OPTIONS } from '../constants';
  *       });
  *     }
  *
- *     throw new HealthCheckError(
+ *     throw HealthCheckError.make(
  *       'Mail check failed',
  *       this.getStatus(key, false)
  *     );

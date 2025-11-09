@@ -12,7 +12,7 @@ import { IRentalCarReservation, IOrganization, IPerson, IPostalAddress } from '@
  *
  * @example Basic car rental
  * ```typescript
- * const carRentalMarkup = new RentalCarReservationBuilder()
+ * const carRentalMarkup = RentalCarReservationBuilder.make()
  *   .setReservationNumber('CAR-789012')
  *   .setStatus(ReservationStatus.CONFIRMED)
  *   .setRenterName({ '@type': 'Person', name: 'Jane Smith', email: 'jane@example.com' })
@@ -47,7 +47,7 @@ import { IRentalCarReservation, IOrganization, IPerson, IPostalAddress } from '@
  *
  * @example Luxury car rental with same return location
  * ```typescript
- * const luxuryRental = new RentalCarReservationBuilder()
+ * const luxuryRental = RentalCarReservationBuilder.make()
  *   .setReservationNumber('LUX-2024-456')
  *   .setStatus(ReservationStatus.CONFIRMED)
  *   .setRenterName({

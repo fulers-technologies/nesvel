@@ -43,7 +43,7 @@ import type { QueueJobOptions, QueueRetryConfig, QueueStats, MailQueueConfig } f
  *   constructor(private readonly queueService: MailQueueService) {}
  *
  *   async sendWelcomeEmail(user: User) {
- *     const mailable = new WelcomeEmail(user);
+ *     const mailable = WelcomeEmail.make(user);
  *     await this.queueService.addMailJob(mailable);
  *   }
  * }
@@ -51,7 +51,7 @@ import type { QueueJobOptions, QueueRetryConfig, QueueStats, MailQueueConfig } f
  *
  * @example High priority with custom retry
  * ```typescript
- * const mailable = new PasswordResetEmail(user, token);
+ * const mailable = PasswordResetEmail.make(user, token);
  * await queueService.addMailJob(mailable, {
  *   priority: MAIL_JOB_PRIORITIES.CRITICAL,
  *   attempts: 5,
@@ -64,7 +64,7 @@ import type { QueueJobOptions, QueueRetryConfig, QueueStats, MailQueueConfig } f
  *
  * @example Scheduled email
  * ```typescript
- * const mailable = new ReminderEmail(event);
+ * const mailable = ReminderEmail.make(event);
  * await queueService.addMailJob(mailable, {
  *   delay: 24 * 60 * 60 * 1000, // Send in 24 hours
  * });
@@ -197,7 +197,7 @@ export class MailQueueService implements OnModuleInit, OnModuleDestroy {
    * @example Queue with high priority
    * ```typescript
    * const job = await queueService.addMailJob(
-   *   new OrderConfirmation(order),
+   *   OrderConfirmation.make(order),
    *   { priority: MAIL_JOB_PRIORITIES.HIGH }
    * );
    * console.log(`Queued job: ${job.id}`);
@@ -206,7 +206,7 @@ export class MailQueueService implements OnModuleInit, OnModuleDestroy {
    * @example Schedule for later
    * ```typescript
    * await queueService.addMailJob(
-   *   new FollowUpEmail(user),
+   *   FollowUpEmail.make(user),
    *   { delay: 7 * 24 * 60 * 60 * 1000 } // 7 days
    * );
    * ```
@@ -269,9 +269,9 @@ export class MailQueueService implements OnModuleInit, OnModuleDestroy {
    * @example
    * ```typescript
    * await queueService.addBulkMailJobs([
-   *   { mailable: new WelcomeEmail(user1), options: {} },
-   *   { mailable: new WelcomeEmail(user2), options: {} },
-   *   { mailable: new WelcomeEmail(user3), options: {} },
+   *   { mailable: WelcomeEmail.make(user1), options: {} },
+   *   { mailable: WelcomeEmail.make(user2), options: {} },
+   *   { mailable: WelcomeEmail.make(user3), options: {} },
    * ]);
    * ```
    */

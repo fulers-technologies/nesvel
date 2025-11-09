@@ -26,19 +26,19 @@ interface User {
  * ```typescript
  * await mailService
  *   .to(user.email)
- *   .send(new WelcomeMailable(user));
+ *   .send(WelcomeMailable.make(user));
  * ```
  *
  * @example Queue for async processing
  * ```typescript
  * await mailService
  *   .to(user.email)
- *   .queue(new WelcomeMailable(user));
+ *   .queue(WelcomeMailable.make(user));
  * ```
  *
  * @example With custom locale
  * ```typescript
- * const welcome = new WelcomeMailable(user);
+ * const welcome = WelcomeMailable.make(user);
  * welcome.locale('es'); // Spanish
  * await mailService.to(user.email).send(welcome);
  * ```
