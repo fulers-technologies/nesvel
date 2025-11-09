@@ -84,7 +84,7 @@ export class HealthModule {
    * @private
    * @static
    */
-  private static registry = new IndicatorRegistryService();
+  private static registry = IndicatorRegistryService.make();
   /**
    * Register Health Module with Configuration
    *

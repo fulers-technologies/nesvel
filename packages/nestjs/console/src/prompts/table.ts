@@ -29,7 +29,7 @@ import type { TableOptions } from '@/interfaces/table-options.interface';
  */
 export function table(rows: Array<Array<string | number>>, options: TableOptions = {}): string {
   const theme = getTheme();
-  const tableInstance = new Table({
+  const tableInstance = Table.make({
     head: options.header?.map((h) => theme.highlight(theme.primary(h))),
     style: {
       header: [],
