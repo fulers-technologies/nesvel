@@ -233,9 +233,9 @@ export class ReactAdapter implements TemplateAdapter {
       // Render plainText version if enabled
       const plainTextPromise = this.generatePlainText
         ? render(React.createElement(Comp, context), {
-          ...this.htmlConfig,
-          plainText: true,
-        })
+            ...this.htmlConfig,
+            plainText: true,
+          })
         : Promise.resolve(null);
 
       Promise.all([htmlPromise, plainTextPromise])

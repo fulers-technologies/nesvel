@@ -35,6 +35,24 @@ import type { SearchModuleOptionsFactory } from './search-module-options-factory
  */
 export interface SearchModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
   /**
+   * Whether the module should be registered globally
+   *
+   * When true, the SearchService and related providers will be
+   * available in all modules without explicit imports.
+   *
+   * @default true
+   *
+   * @example
+   * ```typescript
+   * SearchModule.forRootAsync({
+   *   useFactory: () => ({ ... }),
+   *   isGlobal: true, // Available in all modules
+   * });
+   * ```
+   */
+  isGlobal?: boolean;
+
+  /**
    * Factory function to create options
    */
   useFactory?: (...args: any[]) => Promise<SearchModuleOptions> | SearchModuleOptions;
@@ -53,22 +71,4 @@ export interface SearchModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'
    * Use a class to provide options
    */
   useClass?: Type<SearchModuleOptionsFactory>;
-
-  /**
-   * Whether the module should be registered globally
-   *
-   * When true, the SearchService and related providers will be
-   * available in all modules without explicit imports.
-   *
-   * @default true
-   *
-   * @example
-   * ```typescript
-   * SearchModule.forRootAsync({
-   *   useFactory: () => ({ ... }),
-   *   isGlobal: true, // Available in all modules
-   * });
-   * ```
-   */
-  isGlobal?: boolean;
 }
