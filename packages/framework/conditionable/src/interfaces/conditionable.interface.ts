@@ -11,7 +11,7 @@
  *   // ... your methods
  * }
  *
- * const query = new QueryBuilder();
+ * const query = QueryBuilder.make();
  * query
  *   .when(condition, (q) => q.where('field', 'value'))
  *   .unless(!condition, (q) => q.where('other', 'value'))

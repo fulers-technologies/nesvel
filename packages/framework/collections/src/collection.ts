@@ -55,13 +55,13 @@ export class Collection<T = any> implements ICollection<T> {
    * @example
    * ```typescript
    * // Create from array
-   * const collection = new Collection([1, 2, 3, 4, 5]);
+   * const collection = Collection.make([1, 2, 3, 4, 5]);
    *
    * // Create from object
-   * const collection = new Collection({ a: 1, b: 2, c: 3 });
+   * const collection = Collection.make({ a: 1, b: 2, c: 3 });
    *
    * // Create empty collection
-   * const collection = new Collection();
+   * const collection = Collection.make();
    * ```
    */
   constructor(items: any = []) {

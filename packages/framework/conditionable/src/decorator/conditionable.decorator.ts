@@ -28,7 +28,7 @@
  *   }
  * }
  *
- * const query = new QueryBuilder();
+ * const query = QueryBuilder.make();
  * query
  *   .when(user.isAdmin, (q) => q.where('role', 'admin'))
  *   .when(false, (q) => q.where('status', 'active'))
@@ -59,7 +59,7 @@
  *
  * @example Chaining multiple conditions
  * ```typescript
- * const builder = new QueryBuilder()
+ * const builder = QueryBuilder.make()
  *   .when(filters.status, (q) => q.where('status', filters.status))
  *   .when(filters.category, (q) => q.where('category', filters.category))
  *   .unless(user.isAdmin, (q) => q.where('public', true))
@@ -173,7 +173,7 @@ export function Conditionable() {
         });
 
         // Return Proxy to maintain proper context
-        const proxy = new Proxy(this, {
+        const proxy = Proxy.make(this, {
           get: (target: any, prop: string | symbol): any => {
             // Return property from target
             if (prop in target) {

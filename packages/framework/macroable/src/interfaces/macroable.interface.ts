@@ -11,7 +11,7 @@
  * MyService.staticHelper();
  *
  * // Instance macros (per-instance)
- * const service = new MyService();
+ * const service = MyService.make();
  * service.macro('instanceHelper', function() { ... });
  * service.instanceHelper();
  * ```

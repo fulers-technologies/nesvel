@@ -42,7 +42,7 @@ describe('@Conditionable', () => {
   let builder: TestBuilder;
 
   beforeEach(() => {
-    builder = new TestBuilder();
+    builder = TestBuilder.make();
   });
 
   describe('when()', () => {

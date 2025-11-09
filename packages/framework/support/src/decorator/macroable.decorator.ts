@@ -27,7 +27,7 @@
  * });
  *
  * // Instance macro (per-instance)
- * const service = new MyService();
+ * const service = MyService.make();
  * service.macro('sayHello', function(name: string) {
  *   return `Hello, ${name}!`;
  * });
@@ -121,7 +121,7 @@ export function Macroable() {
         });
 
         // Return Proxy to intercept method calls
-        const proxy = new Proxy(this, {
+        const proxy = Proxy.make(this, {
           get: (target: any, prop: string | symbol): any => {
             // First, check if property exists on target
             if (prop in target) {
@@ -209,7 +209,7 @@ export function Macroable() {
     });
 
     // Create a proxy for the class to intercept static method calls
-    const classProxy = new Proxy(decorated, {
+    const classProxy = Proxy.make(decorated, {
       get: (target: any, prop: string | symbol): any => {
         // First, check if property exists on the class
         if (prop in target) {
