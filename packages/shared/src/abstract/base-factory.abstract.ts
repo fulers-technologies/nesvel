@@ -50,11 +50,11 @@ import { Logger } from '@nestjs/common';
  *     DriverClass: any,
  *     options: Record<string, any> | undefined
  *   ): IHashingDriver {
- *     return new DriverClass(options);
+ *     return DriverClass.make(options);
  *   }
  *
  *   protected getNotFoundError(driverType: string): Error {
- *     return new UnsupportedAlgorithmException(driverType);
+ *     return UnsupportedAlgorithmException.make(driverType);
  *   }
  * }
  * ```
@@ -338,7 +338,7 @@ export abstract class BaseFactory<TConfig, TDriver, TOptions = any> {
    *   DriverClass: any,
    *   options: Record<string, any> | undefined
    * ): IHashingDriver {
-   *   return new DriverClass(options);
+   *   return DriverClass.make(options);
    * }
    *
    * // Using static factory method
@@ -375,7 +375,7 @@ export abstract class BaseFactory<TConfig, TDriver, TOptions = any> {
    *   driverType: string,
    *   availableDrivers: string[]
    * ): Error {
-   *   return new UnsupportedAlgorithmException(driverType);
+   *   return UnsupportedAlgorithmException.make(driverType);
    * }
    * ```
    */
@@ -439,7 +439,7 @@ export abstract class BaseFactory<TConfig, TDriver, TOptions = any> {
 
     // Check if it's an instance method
     try {
-      const instance = new driverClass({});
+      const instance = driverClass.make({});
       if (typeof instance[methodName] !== 'function') {
         throw new Error(
           `Driver class for ${driverType} must have a ${methodName}() method (static or instance)`,
