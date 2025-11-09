@@ -67,7 +67,7 @@ export class SwaggerSetupService {
 
     // Apply theme CSS if specified (inline CSS)
     if (this.config.branding.theme) {
-      const swaggerTheme = new SwaggerTheme();
+      const swaggerTheme = SwaggerTheme.make();
       const themeCss = swaggerTheme.getBuffer(this.config.branding.theme);
       customCss = themeCss;
     }

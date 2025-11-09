@@ -20,7 +20,7 @@ import type { ValidationError } from '@nestjs/common';
  * throw I18nValidationException.make(validationErrors);
  *
  * // Traditional instantiation still works
- * throw new I18nValidationException(validationErrors);
+ * throw I18nValidationException.make(validationErrors);
  * ```
  */
 export class I18nValidationException extends BaseI18nValidationException {
@@ -51,6 +51,6 @@ export class I18nValidationException extends BaseI18nValidationException {
    * ```
    */
   static make(errors: ValidationError[]): I18nValidationException {
-    return new I18nValidationException(errors);
+    return I18nValidationException.make(errors);
   }
 }

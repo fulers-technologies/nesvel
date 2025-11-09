@@ -18,7 +18,7 @@ export class SwaggerBuilderService {
    * @returns DocumentBuilder instance with all configurations applied
    */
   build(config: SwaggerConfig) {
-    const builder = new DocumentBuilder()
+    const builder = DocumentBuilder.make()
       .setTitle(config.title)
       .setDescription(config.description)
       .setVersion(config.version);

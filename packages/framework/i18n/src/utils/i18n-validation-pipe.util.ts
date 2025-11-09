@@ -41,7 +41,7 @@ import { I18nValidationException, I18nValidationExceptionFilter } from '@/except
  * ```
  */
 export function createI18nValidationPipe(options?: ValidationPipeOptions): ValidationPipe {
-  return new ValidationPipe({
+  return ValidationPipe.make({
     ...options,
     exceptionFactory: (errors: ValidationError[]) => {
       return I18nValidationException.make(errors);
@@ -64,5 +64,5 @@ export function createI18nValidationPipe(options?: ValidationPipeOptions): Valid
  * ```
  */
 export function getI18nValidationExceptionFilter(): I18nValidationExceptionFilter {
-  return new I18nValidationExceptionFilter();
+  return I18nValidationExceptionFilter.make();
 }

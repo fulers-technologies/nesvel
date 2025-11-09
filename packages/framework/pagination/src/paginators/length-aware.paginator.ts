@@ -114,7 +114,7 @@ export class LengthAwarePaginator<T> {
    * // Requires separate COUNT query
    * const total = await repository.count();
    * const items = await repository.find({ limit: 15, offset: 0 });
-   * const paginator = new LengthAwarePaginator(items, total, 15, 1, {
+   * const paginator = LengthAwarePaginator.make(items, total, 15, 1, {
    *   path: '/api/users',
    *   query: { filter: 'active' }
    * });
@@ -175,7 +175,7 @@ export class LengthAwarePaginator<T> {
     currentPage: number = 1,
     options: PaginatorOptions = {}
   ): LengthAwarePaginator<T> {
-    return new LengthAwarePaginator(items, total, perPage, currentPage, options);
+    return LengthAwarePaginator.make(items, total, perPage, currentPage, options);
   }
 
   /**
@@ -674,7 +674,7 @@ export class LengthAwarePaginator<T> {
     const transformedItems = this.items.map(callback);
 
     // Create new paginator with transformed items, preserving total count
-    return new LengthAwarePaginator(
+    return LengthAwarePaginator.make(
       transformedItems,
       this.totalItems,
       this.perPageItems,

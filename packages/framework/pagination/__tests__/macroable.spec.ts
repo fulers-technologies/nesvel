@@ -34,7 +34,7 @@ describe('@Macroable', () => {
   let service: TestService;
 
   beforeEach(() => {
-    service = new TestService();
+    service = TestService.make();
     // Clear static macros before each test
     if (typeof (TestService as any).flushMacros === 'function') {
       (TestService as any).flushMacros();
@@ -96,8 +96,8 @@ describe('@Macroable', () => {
     it('should share static macros across instances', () => {
       (TestService as any).macro('shared', () => 'shared value');
 
-      const instance1 = new TestService();
-      const instance2 = new TestService();
+      const instance1 = TestService.make();
+      const instance2 = TestService.make();
 
       expect(instance1.shared()).toBe('shared value');
       expect(instance2.shared()).toBe('shared value');
@@ -298,8 +298,8 @@ describe('@Macroable', () => {
     });
 
     it('should maintain separate macro registries per instance', () => {
-      const service1 = new TestService('Service1');
-      const service2 = new TestService('Service2');
+      const service1 = TestService.make('Service1');
+      const service2 = TestService.make('Service2');
 
       service1.macro('test', () => 'service1');
       service2.macro('test', () => 'service2');

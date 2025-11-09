@@ -53,7 +53,7 @@ export class RouteOptionsValidationError extends Error {
 export function validateRouteOptions(options: RouteOptions): void {
   // Validation 1: SSE endpoints cannot have request bodies
   if (options.sse && options.body) {
-    throw new RouteOptionsValidationError(
+    throw RouteOptionsValidationError.make(
       'Server-Sent Events (SSE) endpoints cannot have request bodies. ' +
         'SSE is for server-to-client streaming only.',
       ['sse', 'body']
@@ -79,7 +79,7 @@ export function validateRouteOptions(options: RouteOptions): void {
 
   // Validation 4: SSE endpoints cannot redirect
   if (options.sse && options.redirect) {
-    throw new RouteOptionsValidationError(
+    throw RouteOptionsValidationError.make(
       'Server-Sent Events (SSE) endpoints cannot have redirects. ' +
         'SSE requires maintaining a persistent connection.',
       ['sse', 'redirect']
@@ -106,7 +106,7 @@ export function validateRouteOptions(options: RouteOptions): void {
 
   // Validation 7: Render cannot be used with SSE
   if (options.render && options.sse) {
-    throw new RouteOptionsValidationError(
+    throw RouteOptionsValidationError.make(
       'Template rendering (render) cannot be used with Server-Sent Events (SSE). ' +
         'These are mutually exclusive response types.',
       ['render', 'sse']
@@ -115,7 +115,7 @@ export function validateRouteOptions(options: RouteOptions): void {
 
   // Validation 8: Both file and files cannot be specified together
   if (options.file && options.files) {
-    throw new RouteOptionsValidationError(
+    throw RouteOptionsValidationError.make(
       'Cannot specify both "file" (single file) and "files" (multiple files) options. ' +
         'Choose one based on whether you need single or multiple file upload.',
       ['file', 'files']

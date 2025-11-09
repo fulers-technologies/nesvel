@@ -14,7 +14,7 @@
  * import { DocumentBuilder } from '@nesvel/nestjs-swagger';
  * import { DEFAULT_AUTH_CONFIGS, AUTH_SCHEMES } from './constants';
  *
- * const config = new DocumentBuilder()
+ * const config = DocumentBuilder.make()
  *   .addBearerAuth(DEFAULT_AUTH_CONFIGS.JWT, AUTH_SCHEMES.JWT)
  *   .addApiKey(DEFAULT_AUTH_CONFIGS.API_KEY, AUTH_SCHEMES.API_KEY)
  *   .build();

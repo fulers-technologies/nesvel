@@ -64,6 +64,6 @@ export class I18nValidationExceptionFilter extends BaseI18nValidationExceptionFi
    * ```
    */
   static make(options?: any): I18nValidationExceptionFilter {
-    return new I18nValidationExceptionFilter(options);
+    return I18nValidationExceptionFilter.make(options);
   }
 }

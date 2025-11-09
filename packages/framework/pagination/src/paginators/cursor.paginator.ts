@@ -110,7 +110,7 @@ export class CursorPaginator<T> {
    *
    * @example
    * ```typescript
-   * const paginator = new CursorPaginator(
+   * const paginator = CursorPaginator.make(
    *   items,          // Array with 16 items (15 + 1 to check hasMore)
    *   15,             // Show 15 items per page
    *   currentCursor,  // Current cursor or null
@@ -159,7 +159,7 @@ export class CursorPaginator<T> {
     cursor: Cursor | null = null,
     options: PaginatorOptions = {}
   ): CursorPaginator<T> {
-    return new CursorPaginator(items, perPage, cursor, options);
+    return CursorPaginator.make(items, perPage, cursor, options);
   }
 
   /**
@@ -684,7 +684,7 @@ export class CursorPaginator<T> {
     const transformedItems = this.items.map(callback);
 
     // Create new paginator with transformed items
-    const cursorPaginator = new CursorPaginator(
+    const cursorPaginator = CursorPaginator.make(
       transformedItems,
       this.perPageItems,
       this.cursor,

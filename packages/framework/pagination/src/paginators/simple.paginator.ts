@@ -111,7 +111,7 @@ export class SimplePaginator<T> {
    * ```typescript
    * // Fetch 16 items when perPage is 15
    * const items = await repository.findMany({ limit: 16, offset: 0 });
-   * const paginator = new SimplePaginator(items, 15, 1, {
+   * const paginator = SimplePaginator.make(items, 15, 1, {
    *   path: '/api/users',
    *   query: { filter: 'active' }
    * });
@@ -163,7 +163,7 @@ export class SimplePaginator<T> {
     currentPage: number = 1,
     options: PaginatorOptions = {}
   ): SimplePaginator<T> {
-    return new SimplePaginator(items, perPage, currentPage, options);
+    return SimplePaginator.make(items, perPage, currentPage, options);
   }
 
   /**
@@ -556,7 +556,7 @@ export class SimplePaginator<T> {
     const transformedItems = this.items.map(callback);
 
     // Create new paginator with transformed items
-    return new SimplePaginator(
+    return SimplePaginator.make(
       transformedItems,
       this.perPageItems,
       this.currentPageNum,
