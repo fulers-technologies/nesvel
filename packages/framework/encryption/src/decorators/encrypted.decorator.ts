@@ -63,7 +63,7 @@ export function Encrypted(): PropertyDecorator {
  *
  * @example
  * ```typescript
- * const user = new User();
+ * const user = User.make();
  * const encryptedProps = getEncryptedProperties(user);
  * console.log(encryptedProps); // ['password', 'ssn']
  * ```
@@ -81,7 +81,7 @@ export function getEncryptedProperties(target: object): string[] {
  *
  * @example
  * ```typescript
- * const user = new User();
+ * const user = User.make();
  * const isEncrypted = isPropertyEncrypted(user, 'password');
  * console.log(isEncrypted); // true
  * ```

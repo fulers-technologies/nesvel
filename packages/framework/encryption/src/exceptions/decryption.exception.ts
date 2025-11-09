@@ -12,7 +12,7 @@ import { BaseException } from '@nesvel/exceptions';
  *
  * @example
  * ```typescript
- * throw new DecryptionException('MAC verification failed');
+ * throw DecryptionException.make('MAC verification failed');
  * ```
  */
 export class DecryptionException extends BaseException {

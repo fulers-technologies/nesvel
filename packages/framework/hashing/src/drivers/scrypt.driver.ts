@@ -89,7 +89,7 @@ export class ScryptDriver extends BaseHashingDriver {
 
       return `$scrypt$N=${config.cost}$r=${config.blockSize}$p=${config.parallelization}$${saltBase64}$${hashBase64}`;
     } catch (error: any) {
-      throw new HashingException(`Failed to hash value: ${error.message}`);
+      throw HashingException.make(`Failed to hash value: ${error.message}`);
     }
   }
 

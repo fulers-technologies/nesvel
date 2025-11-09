@@ -240,7 +240,7 @@ export class HashingFactoryService extends BaseFactory<
     DriverClass: any,
     options: Record<string, any> | undefined
   ): IHashingDriver {
-    return new DriverClass(options);
+    return DriverClass.make(options);
   }
 
   /**
@@ -264,7 +264,7 @@ export class HashingFactoryService extends BaseFactory<
    * ```
    */
   protected getNotFoundError(algorithm: string): Error {
-    return new UnsupportedAlgorithmException(algorithm);
+    return UnsupportedAlgorithmException.make(algorithm);
   }
 
   /**

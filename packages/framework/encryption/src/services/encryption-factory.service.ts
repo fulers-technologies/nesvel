@@ -228,7 +228,7 @@ export class EncryptionFactoryService extends BaseFactory<
     DriverClass: any,
     options: { key: string; cipher: CipherAlgorithm }
   ): IEncryptionDriver {
-    return new DriverClass(options.key, options.cipher);
+    return DriverClass.make(options.key, options.cipher);
   }
 
   /**

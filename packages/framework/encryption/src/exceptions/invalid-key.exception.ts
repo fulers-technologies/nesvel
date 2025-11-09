@@ -11,7 +11,7 @@ import { BaseException } from '@nesvel/exceptions';
  *
  * @example
  * ```typescript
- * throw new InvalidKeyException('Key must be 32 bytes for AES-256-GCM');
+ * throw InvalidKeyException.make('Key must be 32 bytes for AES-256-GCM');
  * ```
  */
 export class InvalidKeyException extends BaseException {

@@ -61,7 +61,7 @@ export class BcryptDriver extends BaseHashingDriver {
       const rounds = options?.rounds || this.defaultRounds;
       return await bcrypt.hash(value, rounds);
     } catch (error: any) {
-      throw new HashingException(`Failed to hash value: ${error.message}`);
+      throw HashingException.make(`Failed to hash value: ${error.message}`);
     }
   }
 

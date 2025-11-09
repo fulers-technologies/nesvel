@@ -21,7 +21,7 @@ import { EncryptionException, DecryptionException, InvalidKeyException } from '@
  *
  * @example
  * ```typescript
- * const driver = new AesGcmDriver(key, CipherAlgorithm.AES_256_GCM);
+ * const driver = AesGcmDriver.make(key, CipherAlgorithm.AES_256_GCM);
  * const encrypted = await driver.encrypt('secret data');
  * const decrypted = await driver.decrypt(encrypted);
  * ```
@@ -60,7 +60,7 @@ export class AesGcmDriver extends BaseEncryptionDriver {
     try {
       const keyBuffer = Buffer.from(this.key, 'base64');
       if (keyBuffer.length !== this.keyLength) {
-        throw new InvalidKeyException(
+        throw InvalidKeyException.make(
           `Invalid key length for ${this.cipher}. Expected ${this.keyLength} bytes, got ${keyBuffer.length} bytes`
         );
       }
@@ -68,7 +68,7 @@ export class AesGcmDriver extends BaseEncryptionDriver {
       if (error instanceof InvalidKeyException) {
         throw error;
       }
-      throw new InvalidKeyException('Failed to decode encryption key from base64', error as Error);
+      throw InvalidKeyException.make('Failed to decode encryption key from base64', error as Error);
     }
   }
 
@@ -106,7 +106,7 @@ export class AesGcmDriver extends BaseEncryptionDriver {
       if (error instanceof EncryptionException) {
         throw error;
       }
-      throw new EncryptionException(`Failed to encrypt data using ${this.cipher}`, error as Error);
+      throw EncryptionException.make(`Failed to encrypt data using ${this.cipher}`, error as Error);
     }
   }
 
@@ -142,7 +142,7 @@ export class AesGcmDriver extends BaseEncryptionDriver {
       if (error instanceof DecryptionException) {
         throw error;
       }
-      throw new DecryptionException(`Failed to decrypt data using ${this.cipher}`, error as Error);
+      throw DecryptionException.make(`Failed to decrypt data using ${this.cipher}`, error as Error);
     }
   }
 }

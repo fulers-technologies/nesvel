@@ -89,7 +89,7 @@ export class ArgonDriver extends BaseHashingDriver {
         parallelism: config.parallelism,
       });
     } catch (error: any) {
-      throw new HashingException(`Failed to hash value: ${error.message}`);
+      throw HashingException.make(`Failed to hash value: ${error.message}`);
     }
   }
 
@@ -115,7 +115,7 @@ export class ArgonDriver extends BaseHashingDriver {
 
     // Verify algorithm type if enabled
     if (this.shouldVerifyAlgorithm() && !(await this.isUsingCorrectAlgorithm(hashedValue))) {
-      throw new HashingException('This password does not use the Argon2i algorithm.');
+      throw HashingException.make('This password does not use the Argon2i algorithm.');
     }
 
     try {

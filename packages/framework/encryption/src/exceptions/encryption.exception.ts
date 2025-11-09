@@ -9,7 +9,7 @@ import { BaseException } from '@nesvel/exceptions';
  *
  * @example
  * ```typescript
- * throw new EncryptionException('Failed to encrypt data: invalid key format');
+ * throw EncryptionException.make('Failed to encrypt data: invalid key format');
  * ```
  */
 export class EncryptionException extends BaseException {

@@ -23,7 +23,7 @@ import { EncryptionException, DecryptionException, InvalidKeyException } from '@
  *
  * @example
  * ```typescript
- * const driver = new SodiumDriver(key, CipherAlgorithm.SODIUM);
+ * const driver = SodiumDriver.make(key, CipherAlgorithm.SODIUM);
  * const encrypted = await driver.encrypt('secret data');
  * const decrypted = await driver.decrypt(encrypted);
  * ```
@@ -56,7 +56,7 @@ export class SodiumDriver extends BaseEncryptionDriver {
     try {
       const keyBuffer = Buffer.from(this.key, 'base64');
       if (keyBuffer.length !== this.keyLength) {
-        throw new InvalidKeyException(
+        throw InvalidKeyException.make(
           `Invalid key length for ${this.cipher}. Expected ${this.keyLength} bytes, got ${keyBuffer.length} bytes`
         );
       }
@@ -64,7 +64,7 @@ export class SodiumDriver extends BaseEncryptionDriver {
       if (error instanceof InvalidKeyException) {
         throw error;
       }
-      throw new InvalidKeyException('Failed to decode encryption key from base64', error as Error);
+      throw InvalidKeyException.make('Failed to decode encryption key from base64', error as Error);
     }
   }
 
@@ -105,7 +105,7 @@ export class SodiumDriver extends BaseEncryptionDriver {
       if (error instanceof EncryptionException) {
         throw error;
       }
-      throw new EncryptionException(`Failed to encrypt data using ${this.cipher}`, error as Error);
+      throw EncryptionException.make(`Failed to encrypt data using ${this.cipher}`, error as Error);
     }
   }
 
@@ -138,7 +138,9 @@ export class SodiumDriver extends BaseEncryptionDriver {
       const decrypted = sodium.crypto_secretbox_open_easy(ciphertext, nonce, keyBuffer);
 
       if (!decrypted) {
-        throw new DecryptionException('Decryption failed - authentication tag verification failed');
+        throw DecryptionException.make(
+          'Decryption failed - authentication tag verification failed'
+        );
       }
 
       return sodium.to_string(decrypted);
@@ -146,7 +148,7 @@ export class SodiumDriver extends BaseEncryptionDriver {
       if (error instanceof DecryptionException) {
         throw error;
       }
-      throw new DecryptionException(`Failed to decrypt data using ${this.cipher}`, error as Error);
+      throw DecryptionException.make(`Failed to decrypt data using ${this.cipher}`, error as Error);
     }
   }
 }

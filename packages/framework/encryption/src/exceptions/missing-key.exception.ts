@@ -11,7 +11,7 @@ import { BaseException } from '@nesvel/exceptions';
  *
  * @example
  * ```typescript
- * throw new MissingKeyException('No encryption key configured. Set APP_KEY environment variable.');
+ * throw MissingKeyException.make('No encryption key configured. Set APP_KEY environment variable.');
  * ```
  */
 export class MissingKeyException extends BaseException {

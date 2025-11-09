@@ -70,7 +70,7 @@ export abstract class BaseEncryptionDriver implements IEncryptionDriver {
     try {
       return Buffer.from(this.key, 'base64');
     } catch (error: Error | any) {
-      throw new InvalidKeyException('Failed to decode encryption key from base64', error as Error);
+      throw InvalidKeyException.make('Failed to decode encryption key from base64', error as Error);
     }
   }
 
@@ -88,7 +88,7 @@ export abstract class BaseEncryptionDriver implements IEncryptionDriver {
       }
       return payload;
     } catch (error: Error | any) {
-      throw new DecryptionException('Invalid encrypted payload format', error as Error);
+      throw DecryptionException.make('Invalid encrypted payload format', error as Error);
     }
   }
 
@@ -119,7 +119,7 @@ export abstract class BaseEncryptionDriver implements IEncryptionDriver {
   ): void {
     for (const field of requiredFields) {
       if (!payload[field]) {
-        throw new DecryptionException(`Missing required field in encrypted payload: ${field}`);
+        throw DecryptionException.make(`Missing required field in encrypted payload: ${field}`);
       }
     }
   }

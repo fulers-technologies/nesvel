@@ -67,7 +67,7 @@ export class ExampleModule {}
  * Usage example
  */
 async function main() {
-  const service = new ExampleService(new HashingService(null as any));
+  const service = ExampleService.make(HashingService.make(null as any));
 
   // Hash a password
   const password = 'mySecurePassword123!';

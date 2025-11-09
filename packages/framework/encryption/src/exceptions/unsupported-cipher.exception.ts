@@ -9,7 +9,7 @@ import { BaseException } from '@nesvel/exceptions';
  *
  * @example
  * ```typescript
- * throw new UnsupportedCipherException('unknown-cipher');
+ * throw UnsupportedCipherException.make('unknown-cipher');
  * // Error: Unsupported cipher algorithm: unknown-cipher.
  * // Available: aes-128-cbc, aes-256-cbc, aes-128-gcm, aes-256-gcm, sodium
  * ```

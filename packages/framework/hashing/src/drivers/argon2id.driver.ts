@@ -65,7 +65,7 @@ export class Argon2idDriver extends ArgonDriver {
 
     // Verify algorithm type if enabled
     if (this.shouldVerifyAlgorithm() && !(await this.isUsingCorrectAlgorithm(hashedValue))) {
-      throw new HashingException('This password does not use the Argon2id algorithm.');
+      throw HashingException.make('This password does not use the Argon2id algorithm.');
     }
 
     try {

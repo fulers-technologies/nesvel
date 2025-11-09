@@ -56,14 +56,14 @@ export class UserService {
     const user = await this.findUserByEmail(email);
 
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw UnauthorizedException.make('Invalid credentials');
     }
 
     // Verify password
     const isValid = await this.hashing.check(password, user.password);
 
     if (!isValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw UnauthorizedException.make('Invalid credentials');
     }
 
     // Check if password needs rehashing
@@ -95,7 +95,7 @@ export class UserService {
     const isValid = await this.hashing.check(currentPassword, user.password);
 
     if (!isValid) {
-      throw new UnauthorizedException('Current password is incorrect');
+      throw UnauthorizedException.make('Current password is incorrect');
     }
 
     // Hash and save new password
@@ -204,8 +204,8 @@ async function main() {
 
   // This would normally be injected by NestJS
   const hashingService = null as any;
-  const userService = new UserService(hashingService);
-  const authService = new AuthService(userService);
+  const userService = UserService.make(hashingService);
+  const authService = AuthService.make(userService);
 
   // Register user
   console.log('1. Registering user...');
