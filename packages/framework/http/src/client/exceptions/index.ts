@@ -13,3 +13,5 @@
 export * from './request-exception';
 export * from './connection-exception';
 export * from './timeout-exception';
+export * from './stray-request.exception';
+export * from './batch-in-progress.exception';

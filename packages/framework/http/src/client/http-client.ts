@@ -1,5 +1,12 @@
-import { PendingRequest } from './pending-request';
-import type { HttpRequestConfig } from '../types/client.types';
+import { Mixin } from 'ts-mixer';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+
+import { BuildsHttpRequests } from './concerns/builds-http-requests';
+import type { RetryStrategy } from '@/interfaces';
+import { CircuitBreaker, CircuitBreakerManager } from './circuit-breaker';
+import { Batch } from './batch';
+import type { ClientResponse } from './response';
+import type { PendingRequest } from './pending-request';
 
 /**
  * HTTP Client Factory
@@ -9,6 +16,9 @@ import type { HttpRequestConfig } from '../types/client.types';
  *
  * This is the primary entry point for making HTTP requests in your application.
  * Similar to Laravel's Http facade.
+ *
+ * Uses mixins to provide request building functionality via the
+ * BuildsHttpRequests concern.
  *
  * @example
  * ```typescript
@@ -31,420 +41,269 @@ import type { HttpRequestConfig } from '../types/client.types';
  *   .post('https://api.example.com/users', userData);
  * ```
  */
-export class HttpClient {
+export class HttpClient extends Mixin(BuildsHttpRequests) {
   /**
-   * Create a new pending request instance.
-   *
-   * @param config - Optional initial configuration
-   * @returns A new PendingRequest instance
-   *
-   * @example
-   * ```typescript
-   * const request = HttpClient.create();
-   * const response = await request.get('/users');
-   * ```
+   * Global event emitter for HTTP events.
    */
-  public static create(config?: HttpRequestConfig): PendingRequest {
-    return new PendingRequest(config);
+  private static globalEventEmitter?: EventEmitter2;
+
+  /**
+   * Global retry strategy.
+   */
+  private static globalRetryStrategy?: RetryStrategy;
+
+  /**
+   * Global circuit breaker manager.
+   */
+  private static globalCircuitBreakerManager?: CircuitBreakerManager;
+
+  /**
+   * Set global event emitter for all HTTP requests.
+   *
+   * @param emitter - EventEmitter2 instance
+   */
+  public static setGlobalEventEmitter(emitter: EventEmitter2): void {
+    this.globalEventEmitter = emitter;
   }
 
   /**
-   * Set base URL for requests.
+   * Set global retry strategy for all HTTP requests.
    *
-   * @param url - The base URL
-   * @returns A new PendingRequest instance
-   *
-   * @example
-   * ```typescript
-   * const response = await HttpClient
-   *   .baseUrl('https://api.example.com')
-   *   .get('/users');
-   * ```
+   * @param strategy - Retry strategy instance
    */
-  public static baseUrl(url: string): PendingRequest {
-    return this.create().baseUrl(url);
+  public static setGlobalRetryStrategy(strategy: RetryStrategy): void {
+    this.globalRetryStrategy = strategy;
   }
 
   /**
-   * Set request headers.
+   * Set global circuit breaker manager for all HTTP requests.
    *
-   * @param headers - Headers to set
-   * @returns A new PendingRequest instance
-   *
-   * @example
-   * ```typescript
-   * const response = await HttpClient
-   *   .withHeaders({ 'X-Api-Key': 'key' })
-   *   .get('/users');
-   * ```
+   * @param manager - Circuit breaker manager instance
    */
-  public static withHeaders(headers: Record<string, string>): PendingRequest {
-    return this.create().withHeaders(headers);
-  }
-
-  /**
-   * Set a single header.
-   *
-   * @param name - Header name
-   * @param value - Header value
-   * @returns A new PendingRequest instance
-   *
-   * @example
-   * ```typescript
-   * const response = await HttpClient
-   *   .withHeader('Authorization', 'Bearer token')
-   *   .get('/users');
-   * ```
-   */
-  public static withHeader(name: string, value: string): PendingRequest {
-    return this.create().withHeader(name, value);
-  }
-
-  /**
-   * Set bearer token authorization.
-   *
-   * @param token - The bearer token
-   * @param type - Token type (default: 'Bearer')
-   * @returns A new PendingRequest instance
-   *
-   * @example
-   * ```typescript
-   * const response = await HttpClient
-   *   .withToken('my-api-token')
-   *   .get('/users');
-   * ```
-   */
-  public static withToken(token: string, type = 'Bearer'): PendingRequest {
-    return this.create().withToken(token, type);
-  }
-
-  /**
-   * Set basic authentication.
-   *
-   * @param username - Username
-   * @param password - Password
-   * @returns A new PendingRequest instance
-   *
-   * @example
-   * ```typescript
-   * const response = await HttpClient
-   *   .withBasicAuth('user', 'pass')
-   *   .get('/users');
-   * ```
-   */
-  public static withBasicAuth(username: string, password: string): PendingRequest {
-    return this.create().withBasicAuth(username, password);
-  }
-
-  /**
-   * Set Accept header.
-   *
-   * @param contentType - Content type to accept
-   * @returns A new PendingRequest instance
-   *
-   * @example
-   * ```typescript
-   * const response = await HttpClient
-   *   .accept('application/json')
-   *   .get('/users');
-   * ```
-   */
-  public static accept(contentType: string): PendingRequest {
-    return this.create().accept(contentType);
-  }
-
-  /**
-   * Set Content-Type header.
-   *
-   * @param contentType - Content type
-   * @returns A new PendingRequest instance
-   *
-   * @example
-   * ```typescript
-   * const response = await HttpClient
-   *   .contentType('application/json')
-   *   .post('/users', data);
-   * ```
-   */
-  public static contentType(contentType: string): PendingRequest {
-    return this.create().contentType(contentType);
-  }
-
-  /**
-   * Set request body format to JSON.
-   *
-   * @returns A new PendingRequest instance
-   *
-   * @example
-   * ```typescript
-   * const response = await HttpClient
-   *   .asJson()
-   *   .post('/users', data);
-   * ```
-   */
-  public static asJson(): PendingRequest {
-    return this.create().asJson();
-  }
-
-  /**
-   * Set request body format to form-urlencoded.
-   *
-   * @returns A new PendingRequest instance
-   *
-   * @example
-   * ```typescript
-   * const response = await HttpClient
-   *   .asForm()
-   *   .post('/users', data);
-   * ```
-   */
-  public static asForm(): PendingRequest {
-    return this.create().asForm();
-  }
-
-  /**
-   * Set request body format to multipart/form-data.
-   *
-   * @returns A new PendingRequest instance
-   *
-   * @example
-   * ```typescript
-   * const response = await HttpClient
-   *   .asMultipart()
-   *   .post('/users', data);
-   * ```
-   */
-  public static asMultipart(): PendingRequest {
-    return this.create().asMultipart();
-  }
-
-  /**
-   * Set request timeout.
-   *
-   * @param seconds - Timeout in seconds
-   * @returns A new PendingRequest instance
-   *
-   * @example
-   * ```typescript
-   * const response = await HttpClient
-   *   .timeout(30)
-   *   .get('/users');
-   * ```
-   */
-  public static timeout(seconds: number): PendingRequest {
-    return this.create().timeout(seconds);
-  }
-
-  /**
-   * Set connection timeout.
-   *
-   * @param seconds - Connection timeout in seconds
-   * @returns A new PendingRequest instance
-   *
-   * @example
-   * ```typescript
-   * const response = await HttpClient
-   *   .connectTimeout(10)
-   *   .get('/users');
-   * ```
-   */
-  public static connectTimeout(seconds: number): PendingRequest {
-    return this.create().connectTimeout(seconds);
-  }
-
-  /**
-   * Configure retry behavior.
-   *
-   * @param times - Number of retry attempts
-   * @param delay - Delay between retries in milliseconds or callback
-   * @param when - Callback to determine if request should be retried
-   * @returns A new PendingRequest instance
-   *
-   * @example
-   * ```typescript
-   * const response = await HttpClient
-   *   .retry(3, 100)
-   *   .get('/users');
-   * ```
-   */
-  public static retry(
-    times: number,
-    delay?: number | ((attempt: number) => number),
-    when?: (error: any, attempt: number) => boolean
-  ): PendingRequest {
-    return this.create().retry(times, delay, when);
-  }
-
-  /**
-   * Attach a file for multipart upload.
-   *
-   * @param name - Field name
-   * @param contents - File contents
-   * @param filename - Optional filename
-   * @param options - Optional options (contentType/mimeType)
-   * @returns A new PendingRequest instance
-   *
-   * @example
-   * ```typescript
-   * const response = await HttpClient
-   *   .attach('avatar', fileBuffer, 'profile.jpg')
-   *   .post('/users', userData);
-   * const response = await HttpClient
-   *   .attach('image', buffer, 'photo.png', 'image/png')
-   *   .post('/upload', {});
-   * ```
-   */
-  public static attach(
-    name: string,
-    contents: Buffer | NodeJS.ReadableStream | string,
-    filename?: string,
-    options?: string | { contentType?: string }
-  ): PendingRequest {
-    return this.create().attach(name, contents, filename, options);
-  }
-
-  /**
-   * Set query parameters.
-   *
-   * @param params - Query parameters
-   * @returns A new PendingRequest instance
-   *
-   * @example
-   * ```typescript
-   * const response = await HttpClient
-   *   .withQuery({ page: 1, limit: 10 })
-   *   .get('/users');
-   * ```
-   */
-  public static withQuery(params: Record<string, any>): PendingRequest {
-    return this.create().withQuery(params);
-  }
-
-  /**
-   * Set Axios options.
-   *
-   * @param options - Axios options
-   * @returns A new PendingRequest instance
-   *
-   * @example
-   * ```typescript
-   * const response = await HttpClient
-   *   .withOptions({ maxRedirects: 5 })
-   *   .get('/users');
-   * ```
-   */
-  public static withOptions(options: any): PendingRequest {
-    return this.create().withOptions(options);
+  public static setGlobalCircuitBreakerManager(manager: CircuitBreakerManager): void {
+    this.globalCircuitBreakerManager = manager;
   }
 
   /**
    * Make a GET request.
    *
+   * @template T - The expected response data type
+   * @template D - The request data type
    * @param url - Request URL
    * @param query - Optional query parameters
    * @returns Promise resolving to ClientResponse
    *
    * @example
    * ```typescript
-   * const response = await HttpClient.get('https://api.example.com/users');
+   * interface User { id: number; name: string; }
+   * const response = await HttpClient.get<User[]>('https://api.example.com/users');
+   * const users = response.data; // Type: User[]
    * const response = await HttpClient.get('/users', { page: 1 });
    * ```
    */
-  public static async get(url: string, query?: Record<string, any>) {
-    return this.create().get(url, query);
+  public static async get<T = any, D = any>(url: string, query?: Record<string, any>) {
+    return this.create().get<T, D>(url, query);
   }
 
   /**
    * Make a POST request.
    *
+   * @template T - The expected response data type
+   * @template D - The request data type
    * @param url - Request URL
    * @param data - Request body data
    * @returns Promise resolving to ClientResponse
    *
    * @example
    * ```typescript
-   * const response = await HttpClient.post('/users', { name: 'John' });
+   * interface User { id: number; name: string; }
+   * interface CreateUserDto { name: string; email: string; }
+   * const response = await HttpClient.post<User, CreateUserDto>('/users', { name: 'John', email: 'john@example.com' });
+   * const user = response.data; // Type: User
    * ```
    */
-  public static async post(url: string, data?: any) {
-    return this.create().post(url, data);
+  public static async post<T = any, D = any>(url: string, data?: D) {
+    return this.create().post<T, D>(url, data);
   }
 
   /**
    * Make a PUT request.
    *
+   * @template T - The expected response data type
+   * @template D - The request data type
    * @param url - Request URL
    * @param data - Request body data
    * @returns Promise resolving to ClientResponse
    *
    * @example
    * ```typescript
-   * const response = await HttpClient.put('/users/1', { name: 'Jane' });
+   * interface User { id: number; name: string; }
+   * interface UpdateUserDto { name: string; }
+   * const response = await HttpClient.put<User, UpdateUserDto>('/users/1', { name: 'Jane' });
+   * const user = response.data; // Type: User
    * ```
    */
-  public static async put(url: string, data?: any) {
-    return this.create().put(url, data);
+  public static async put<T = any, D = any>(url: string, data?: D) {
+    return this.create().put<T, D>(url, data);
   }
 
   /**
    * Make a PATCH request.
    *
+   * @template T - The expected response data type
+   * @template D - The request data type
    * @param url - Request URL
    * @param data - Request body data
    * @returns Promise resolving to ClientResponse
    *
    * @example
    * ```typescript
-   * const response = await HttpClient.patch('/users/1', { email: 'new@example.com' });
+   * interface User { id: number; name: string; email: string; }
+   * interface PatchUserDto { email?: string; }
+   * const response = await HttpClient.patch<User, PatchUserDto>('/users/1', { email: 'new@example.com' });
+   * const user = response.data; // Type: User
    * ```
    */
-  public static async patch(url: string, data?: any) {
-    return this.create().patch(url, data);
+  public static async patch<T = any, D = any>(url: string, data?: D) {
+    return this.create().patch<T, D>(url, data);
   }
 
   /**
    * Make a DELETE request.
    *
+   * @template T - The expected response data type
+   * @template D - The request data type
    * @param url - Request URL
    * @param data - Optional request body data
    * @returns Promise resolving to ClientResponse
    *
    * @example
    * ```typescript
-   * const response = await HttpClient.delete('/users/1');
+   * interface DeleteResponse { success: boolean; }
+   * const response = await HttpClient.delete<DeleteResponse>('/users/1');
+   * const result = response.data; // Type: DeleteResponse
    * ```
    */
-  public static async delete(url: string, data?: any) {
-    return this.create().delete(url, data);
+  public static async delete<T = any, D = any>(url: string, data?: D) {
+    return this.create().delete<T, D>(url, data);
   }
 
   /**
    * Make a HEAD request.
    *
+   * @template T - The expected response data type
+   * @template D - The request data type
    * @param url - Request URL
    * @returns Promise resolving to ClientResponse
    *
    * @example
    * ```typescript
    * const response = await HttpClient.head('/users');
+   * console.log(response.headers);
    * ```
    */
-  public static async head(url: string) {
-    return this.create().head(url);
+  public static async head<T = any, D = any>(url: string) {
+    return this.create().head<T, D>(url);
   }
 
   /**
    * Make an OPTIONS request.
    *
+   * @template T - The expected response data type
+   * @template D - The request data type
    * @param url - Request URL
    * @returns Promise resolving to ClientResponse
    *
    * @example
    * ```typescript
    * const response = await HttpClient.options('/users');
+   * console.log(response.headers['allow']);
    * ```
    */
-  public static async options(url: string) {
-    return this.create().options(url);
+  public static async options<T = any, D = any>(url: string) {
+    return this.create().options<T, D>(url);
+  }
+
+  /**
+   * Execute multiple requests concurrently with lifecycle callbacks (Laravel-style).
+   *
+   * Creates a new Batch instance and passes it to the callback function,
+   * allowing you to define multiple named requests with progress tracking.
+   * All global configurations (event emitter, retry strategy, circuit breaker)
+   * are automatically applied to each request in the batch.
+   *
+   * @param callback - Function that receives the batch and adds requests to it
+   * @returns Promise resolving to record of responses by key
+   *
+   * @example
+   * ```typescript
+   * const responses = await HttpClient.batch((batch) => {
+   *   batch.as('users').get('https://api.example.com/users');
+   *   batch.as('posts').get('https://api.example.com/posts');
+   *   batch.as('comments').get('https://api.example.com/comments');
+   * });
+   *
+   * console.log(responses.users.json());
+   * console.log(responses.posts.json());
+   * ```
+   *
+   * @example
+   * ```typescript
+   * // With lifecycle hooks
+   * const responses = await HttpClient.batch((batch) => {
+   *   batch
+   *     .as('users').get('https://api.example.com/users')
+   *     .as('posts').get('https://api.example.com/posts')
+   *     .before((b) => console.log('Starting batch...'))
+   *     .progress((b, key, response) => {
+   *       console.log(`${key}: ${response.status()}`);
+   *     })
+   *     .catch((b, key, error) => {
+   *       console.error(`${key} failed:`, error.message);
+   *     })
+   *     .then((b, responses) => {
+   *       console.log('All requests succeeded!');
+   *     });
+   * });
+   * ```
+   */
+  public static async batch(
+    callback: (batch: Batch) => void | Promise<void>
+  ): Promise<Record<string, ClientResponse>> {
+    return this.create().batch(callback);
+  }
+
+  /**
+   * Create a new PendingRequest with global configuration applied.
+   *
+   * Overrides the base create() method to inject global event emitter,
+   * retry strategy, and circuit breaker manager.
+   *
+   * @returns PendingRequest instance with global config
+   * @protected
+   */
+  protected static create(): PendingRequest {
+    // Import PendingRequest dynamically to avoid circular dependency
+    const { PendingRequest: PendingRequestClass } = require('./pending-request');
+    const request = PendingRequestClass.make();
+
+    // Apply global event emitter
+    if (this.globalEventEmitter) {
+      request.withEventEmitter(this.globalEventEmitter);
+    }
+
+    // Apply global retry strategy
+    if (this.globalRetryStrategy) {
+      request.withRetryStrategy(this.globalRetryStrategy);
+    }
+
+    // Apply global circuit breaker (extract from manager per host)
+    if (this.globalCircuitBreakerManager) {
+      // Circuit breaker will be applied per-request based on host
+      // Store the manager so PendingRequest can use it
+      (request as any).circuitBreakerManager = this.globalCircuitBreakerManager;
+    }
+
+    return request;
   }
 }

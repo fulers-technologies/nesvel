@@ -1,12 +1,19 @@
 import { stringify } from 'qs';
 import FormData from 'form-data';
+import type { RetryStrategy } from '@/interfaces';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, Method } from 'axios';
 
-import { ClientResponse } from './client-response';
+import { Batch } from './batch';
+import { ClientRequest } from './request';
+import { ClientResponse } from './response';
+import { CircuitBreaker } from './circuit-breaker';
+import { ExponentialBackoffStrategy } from './retry';
 import { RequestException } from './exceptions/request-exception';
-import { ConnectionException } from './exceptions/connection-exception';
 import { TimeoutException } from './exceptions/timeout-exception';
-import type { FileAttachment, HttpRequestConfig, RetryOptions } from '../types/client.types';
+import type { FileAttachment, HttpRequestConfig } from '../interfaces';
+import { ConnectionException } from './exceptions/connection-exception';
+import { RequestSendingEvent, ResponseReceivedEvent, ConnectionFailedEvent } from './events';
 
 /**
  * Pending HTTP Request Builder
@@ -51,19 +58,30 @@ export class PendingRequest {
   protected timeoutMs?: number;
 
   /**
-   * Number of retry attempts.
+   * Retry strategy for advanced retry logic with exponential backoff.
+   * Defaults to ExponentialBackoffStrategy with sensible defaults.
    */
-  protected retryAttempts = 0;
+  protected retryStrategy: RetryStrategy = ExponentialBackoffStrategy.make({
+    maxAttempts: 0, // No retries by default
+    baseDelayMs: 100,
+    maxDelayMs: 5000,
+    jitter: 'full',
+  });
 
   /**
-   * Delay between retries in milliseconds.
+   * Circuit breaker for preventing cascading failures.
    */
-  protected retryDelayMs = 100;
+  protected circuitBreaker?: CircuitBreaker;
 
   /**
-   * Callback to determine if request should be retried.
+   * Circuit breaker manager for per-host breakers.
    */
-  protected retryCallback?: (error: any, attempt: number) => boolean;
+  protected circuitBreakerManager?: import('./circuit-breaker').CircuitBreakerManager;
+
+  /**
+   * Event emitter for HTTP events.
+   */
+  protected eventEmitter?: EventEmitter2;
 
   /**
    * Files to attach for multipart requests.
@@ -83,6 +101,21 @@ export class PendingRequest {
   constructor(config: HttpRequestConfig = {}) {
     this.config = config;
     this.client = axios.create();
+  }
+
+  /**
+   * Create a new PendingRequest instance (Laravel-style factory method).
+   *
+   * @param config - Optional initial configuration
+   * @returns A new PendingRequest instance
+   *
+   * @example
+   * ```typescript
+   * const request = PendingRequest.make({ timeout: 5000 });
+   * ```
+   */
+  public static make(config: HttpRequestConfig = {}): PendingRequest {
+    return new PendingRequest(config);
   }
 
   /**
@@ -331,40 +364,107 @@ export class PendingRequest {
   }
 
   /**
-   * Configure retry behavior.
+   * Configure retry behavior using ExponentialBackoffStrategy.
    *
-   * @param times - Number of retry attempts
-   * @param delay - Delay between retries in milliseconds or callback
-   * @param when - Callback to determine if request should be retried
+   * @param times - Number of retry attempts (0 = no retries)
+   * @param delayMs - Base delay in milliseconds (default: 100)
+   * @param when - Optional callback to determine if request should be retried
    * @returns This request for chaining
    *
    * @example
    * ```typescript
-   * request.retry(3, 100);
-   * request.retry(3, (attempt) => Math.pow(2, attempt) * 1000);
-   * request.retry(3, 100, (error, attempt) => error.isNetworkError());
+   * // Simple retry with exponential backoff
+   * request.retry(3);
+   *
+   * // Custom base delay
+   * request.retry(3, 1000);
+   *
+   * // Conditional retry
+   * request.retry(3, 100, (error, attempt) => {
+   *   return error.response?.status >= 500;
+   * });
    * ```
    */
   public retry(
     times: number,
-    delay: number | ((attempt: number) => number) = 100,
+    delayMs: number = 100,
     when?: (error: any, attempt: number) => boolean
   ): this {
-    this.retryAttempts = times;
-
-    if (typeof delay === 'number') {
-      this.retryDelayMs = delay;
-    }
-
-    if (when) {
-      this.retryCallback = when;
-    }
+    // Create ExponentialBackoffStrategy with provided parameters
+    this.retryStrategy = ExponentialBackoffStrategy.make({
+      maxAttempts: times,
+      baseDelayMs: delayMs,
+      maxDelayMs: 30000, // 30 seconds max
+      jitter: 'full',
+      retryableStatusCodes: [408, 429, 500, 502, 503, 504],
+      shouldRetryPredicate: when ? (context) => when(context.error, context.attempt) : undefined,
+    });
 
     return this;
   }
 
   /**
+   * Set retry strategy for advanced retry logic with exponential backoff.
+   *
+   * @param strategy - Retry strategy instance
+   * @returns This request for chaining
+   *
+   * @example
+   * ```typescript
+   * import { ExponentialBackoffStrategy } from '@nesvel/nestjs-http';
+   *
+   * request.withRetryStrategy(
+   *   ExponentialBackoffStrategy.make({
+   *     maxAttempts: 5,
+   *     baseDelayMs: 1000,
+   *     jitter: 'full'
+   *   })
+   * );
+   * ```
+   */
+  public withRetryStrategy(strategy: RetryStrategy): this {
+    this.retryStrategy = strategy;
+    return this;
+  }
+
+  /**
+   * Set circuit breaker for preventing cascading failures.
+   *
+   * @param breaker - Circuit breaker instance
+   * @returns This request for chaining
+   *
+   * @example
+   * ```typescript
+   * import { CircuitBreaker } from '@nesvel/nestjs-http';
+   *
+   * request.withCircuitBreaker(
+   *   CircuitBreaker.make({
+   *     failureThreshold: 5,
+   *     openTimeoutMs: 30000
+   *   })
+   * );
+   * ```
+   */
+  public withCircuitBreaker(breaker: CircuitBreaker): this {
+    this.circuitBreaker = breaker;
+    return this;
+  }
+
+  /**
+   * Set event emitter for HTTP events.
+   *
+   * @param emitter - EventEmitter2 instance
+   * @returns This request for chaining
+   * @internal
+   */
+  public withEventEmitter(emitter: EventEmitter2): this {
+    this.eventEmitter = emitter;
+    return this;
+  }
+
+  /**
    * Set callback to determine if request should be retried.
+   * Updates the current retry strategy with custom shouldRetry logic.
    *
    * @param callback - Callback function receiving attempt number and exception
    * @returns This request for chaining
@@ -377,7 +477,19 @@ export class PendingRequest {
    * ```
    */
   public retryWhen(callback: (attempt: number, exception: RequestException) => boolean): this {
-    this.retryCallback = (error, attempt) => callback(attempt, error);
+    // Get current strategy config
+    const currentStrategy = this.retryStrategy as ExponentialBackoffStrategy;
+    const maxAttempts = currentStrategy.getMaxAttempts();
+
+    // Create new strategy with custom shouldRetry
+    this.retryStrategy = ExponentialBackoffStrategy.make({
+      maxAttempts,
+      baseDelayMs: 100,
+      maxDelayMs: 30000,
+      jitter: 'full',
+      shouldRetryPredicate: (context) => callback(context.attempt, context.error),
+    });
+
     return this;
   }
 
@@ -452,166 +564,351 @@ export class PendingRequest {
   /**
    * Make a GET request.
    *
+   * @template T - The expected response data type
+   * @template D - The request data type
    * @param url - Request URL
    * @param query - Optional query parameters
    * @returns Promise resolving to ClientResponse
    *
    * @example
    * ```typescript
-   * const response = await request.get('/users');
+   * interface User { id: number; name: string; }
+   * const response = await request.get<User[]>('/users');
+   * const users = response.data; // Type: User[]
    * const response = await request.get('/users', { page: 1 });
    * ```
    */
-  public async get(url: string, query?: Record<string, any>): Promise<ClientResponse> {
+  public async get<T = any, D = any>(
+    url: string,
+    query?: Record<string, any>
+  ): Promise<ClientResponse> {
     if (query) {
       this.withQuery(query);
     }
-    return this.send('GET', url);
+    return this.send<T, D>('GET', url);
   }
 
   /**
    * Make a POST request.
    *
+   * @template T - The expected response data type
+   * @template D - The request data type
    * @param url - Request URL
    * @param data - Request body data
    * @returns Promise resolving to ClientResponse
    *
    * @example
    * ```typescript
-   * const response = await request.post('/users', { name: 'John' });
+   * interface User { id: number; name: string; }
+   * interface CreateUserDto { name: string; email: string; }
+   * const response = await request.post<User, CreateUserDto>('/users', { name: 'John', email: 'john@example.com' });
+   * const user = response.data; // Type: User
    * ```
    */
-  public async post(url: string, data?: any): Promise<ClientResponse> {
-    return this.send('POST', url, data);
+  public async post<T = any, D = any>(url: string, data?: D): Promise<ClientResponse> {
+    return this.send<T, D>('POST', url, data);
   }
 
   /**
    * Make a PUT request.
    *
+   * @template T - The expected response data type
+   * @template D - The request data type
    * @param url - Request URL
    * @param data - Request body data
    * @returns Promise resolving to ClientResponse
    *
    * @example
    * ```typescript
-   * const response = await request.put('/users/1', { name: 'Jane' });
+   * interface User { id: number; name: string; }
+   * interface UpdateUserDto { name: string; }
+   * const response = await request.put<User, UpdateUserDto>('/users/1', { name: 'Jane' });
+   * const user = response.data; // Type: User
    * ```
    */
-  public async put(url: string, data?: any): Promise<ClientResponse> {
-    return this.send('PUT', url, data);
+  public async put<T = any, D = any>(url: string, data?: D): Promise<ClientResponse> {
+    return this.send<T, D>('PUT', url, data);
   }
 
   /**
    * Make a PATCH request.
    *
+   * @template T - The expected response data type
+   * @template D - The request data type
    * @param url - Request URL
    * @param data - Request body data
    * @returns Promise resolving to ClientResponse
    *
    * @example
    * ```typescript
-   * const response = await request.patch('/users/1', { email: 'new@example.com' });
+   * interface User { id: number; name: string; email: string; }
+   * interface PatchUserDto { email?: string; }
+   * const response = await request.patch<User, PatchUserDto>('/users/1', { email: 'new@example.com' });
+   * const user = response.data; // Type: User
    * ```
    */
-  public async patch(url: string, data?: any): Promise<ClientResponse> {
-    return this.send('PATCH', url, data);
+  public async patch<T = any, D = any>(url: string, data?: D): Promise<ClientResponse> {
+    return this.send<T, D>('PATCH', url, data);
   }
 
   /**
    * Make a DELETE request.
    *
+   * @template T - The expected response data type
+   * @template D - The request data type
    * @param url - Request URL
    * @param data - Optional request body data
    * @returns Promise resolving to ClientResponse
    *
    * @example
    * ```typescript
-   * const response = await request.delete('/users/1');
+   * interface DeleteResponse { success: boolean; }
+   * const response = await request.delete<DeleteResponse>('/users/1');
+   * const result = response.data; // Type: DeleteResponse
    * ```
    */
-  public async delete(url: string, data?: any): Promise<ClientResponse> {
-    return this.send('DELETE', url, data);
+  public async delete<T = any, D = any>(url: string, data?: D): Promise<ClientResponse> {
+    return this.send<T, D>('DELETE', url, data);
   }
 
   /**
    * Make a HEAD request.
    *
+   * @template T - The expected response data type
+   * @template D - The request data type
    * @param url - Request URL
    * @returns Promise resolving to ClientResponse
    *
    * @example
    * ```typescript
    * const response = await request.head('/users');
+   * console.log(response.headers);
    * ```
    */
-  public async head(url: string): Promise<ClientResponse> {
-    return this.send('HEAD', url);
+  public async head<T = any, D = any>(url: string): Promise<ClientResponse> {
+    return this.send<T, D>('HEAD', url);
   }
 
   /**
    * Make an OPTIONS request.
    *
+   * @template T - The expected response data type
+   * @template D - The request data type
    * @param url - Request URL
    * @returns Promise resolving to ClientResponse
    *
    * @example
    * ```typescript
    * const response = await request.options('/users');
+   * console.log(response.headers['allow']);
    * ```
    */
-  public async options(url: string): Promise<ClientResponse> {
-    return this.send('OPTIONS', url);
+  public async options<T = any, D = any>(url: string): Promise<ClientResponse> {
+    return this.send<T, D>('OPTIONS', url);
+  }
+
+  /**
+   * Execute multiple requests concurrently with lifecycle callbacks (Laravel-style).
+   *
+   * Creates a new Batch instance and passes it to the callback function,
+   * allowing you to define multiple named requests with progress tracking.
+   *
+   * @param callback - Function that receives the batch and adds requests to it
+   * @returns Promise resolving to record of responses by key
+   *
+   * @example
+   * ```typescript
+   * const responses = await request.batch((batch) => {
+   *   batch.as('users').get('https://api.example.com/users');
+   *   batch.as('posts').get('https://api.example.com/posts');
+   *   batch.as('comments').get('https://api.example.com/comments');
+   * });
+   *
+   * console.log(responses.users.json());
+   * console.log(responses.posts.json());
+   * ```
+   *
+   * @example
+   * ```typescript
+   * // With lifecycle hooks
+   * const responses = await request.batch((batch) => {
+   *   batch
+   *     .as('users').get('https://api.example.com/users')
+   *     .as('posts').get('https://api.example.com/posts')
+   *     .before((b) => console.log('Starting batch...'))
+   *     .progress((b, key, response) => {
+   *       console.log(`${key}: ${response.status()}`);
+   *     })
+   *     .catch((b, key, error) => {
+   *       console.error(`${key} failed:`, error.message);
+   *     })
+   *     .then((b, responses) => {
+   *       console.log('All requests succeeded!');
+   *     });
+   * });
+   * ```
+   */
+  public async batch(
+    callback: (batch: Batch) => void | Promise<void>
+  ): Promise<Record<string, ClientResponse>> {
+    // Create batch with factory that clones this request's configuration
+    const batch = Batch.make(() => {
+      const request = PendingRequest.make();
+
+      // Clone configuration from this request
+      if (this.baseURL) request.baseUrl(this.baseURL);
+      if (Object.keys(this.headers).length > 0) request.withHeaders(this.headers);
+      if (this.timeoutMs) request.timeout(this.timeoutMs / 1000);
+      if (this.retryStrategy) request.withRetryStrategy(this.retryStrategy);
+      if (this.circuitBreaker) request.withCircuitBreaker(this.circuitBreaker);
+      if (this.circuitBreakerManager)
+        (request as any).circuitBreakerManager = this.circuitBreakerManager;
+      if (this.eventEmitter) request.withEventEmitter(this.eventEmitter);
+      if (this.bodyFormatType === 'json') request.asJson();
+      if (this.bodyFormatType === 'form') request.asForm();
+      if (this.bodyFormatType === 'multipart') request.asMultipart();
+
+      return request;
+    });
+
+    await callback(batch);
+    return batch.dispatch();
   }
 
   /**
    * Send the HTTP request.
    *
+   * @template T - The expected response data type
+   * @template D - The request data type
    * @param method - HTTP method
    * @param url - Request URL
    * @param data - Optional request body
    * @returns Promise resolving to ClientResponse
    */
-  protected async send(method: Method, url: string, data?: any): Promise<ClientResponse> {
+  protected async send<T = any, D = any>(
+    method: Method,
+    url: string,
+    data?: D
+  ): Promise<ClientResponse> {
     const config = this.buildConfig(method, url, data);
+    const requestStartTime = Date.now();
 
-    try {
-      const response = await this.executeWithRetry(config);
-      return new ClientResponse(response);
-    } catch (error: any) {
-      this.handleError(error);
-      throw error;
+    // Create ClientRequest for event emission
+    const clientRequest = ClientRequest.make(config);
+
+    // Emit request sending event
+    if (this.eventEmitter) {
+      await this.eventEmitter.emit(
+        RequestSendingEvent.EVENT_NAME,
+        RequestSendingEvent.make(clientRequest)
+      );
     }
+
+    // Wrap in circuit breaker if provided
+    const executeRequest = async () => {
+      try {
+        const response = await this.executeWithRetry(config);
+        const clientResponse = ClientResponse.make(response);
+        const duration = Date.now() - requestStartTime;
+
+        // Emit response received event
+        if (this.eventEmitter) {
+          await this.eventEmitter.emit(
+            ResponseReceivedEvent.EVENT_NAME,
+            ResponseReceivedEvent.make(clientRequest, clientResponse, duration)
+          );
+        }
+
+        return clientResponse;
+      } catch (error: any) {
+        // Emit connection failed event
+        if (this.eventEmitter && this.isConnectionError(error)) {
+          await this.eventEmitter.emit(
+            ConnectionFailedEvent.EVENT_NAME,
+            ConnectionFailedEvent.make(clientRequest, error)
+          );
+        }
+
+        this.handleError(error);
+        throw error;
+      }
+    };
+
+    // Execute with circuit breaker if provided
+    if (this.circuitBreaker) {
+      const host = this.extractHost(config.url || '');
+      return this.circuitBreaker.execute(executeRequest, host);
+    }
+
+    // Execute with circuit breaker manager if provided
+    if (this.circuitBreakerManager) {
+      const host = this.extractHost(config.url || '');
+      return this.circuitBreakerManager.execute(host, executeRequest);
+    }
+
+    return executeRequest();
   }
 
   /**
-   * Execute request with retry logic.
+   * Execute request with retry logic using ExponentialBackoffStrategy.
+   * Always uses the retry strategy (which may have 0 retries).
    *
    * @param config - Request configuration
    * @returns Promise resolving to Axios response
    */
   protected async executeWithRetry(config: AxiosRequestConfig): Promise<AxiosResponse> {
-    let lastError: any;
-    let attempt = 0;
+    // Always use retry strategy (ExponentialBackoffStrategy)
+    return this.executeWithRetryStrategy(config);
+  }
 
-    while (attempt <= this.retryAttempts) {
+  /**
+   * Execute request with ExponentialBackoffStrategy.
+   * Handles retry logic with exponential backoff, jitter, and Retry-After headers.
+   *
+   * @param config - Request configuration
+   * @returns Promise resolving to Axios response
+   * @private
+   */
+  private async executeWithRetryStrategy(config: AxiosRequestConfig): Promise<AxiosResponse> {
+    const startTime = Date.now();
+    let attempt = 0;
+    let lastError: any;
+    const maxAttempts = this.retryStrategy.getMaxAttempts();
+
+    // If no retries configured, just execute once
+    if (maxAttempts === 0) {
+      return await this.client.request(config);
+    }
+
+    // Execute with retries
+    while (attempt <= maxAttempts) {
       try {
         return await this.client.request(config);
       } catch (error: any) {
         lastError = error;
+        const elapsedMs = Date.now() - startTime;
+
+        // Build retry context
+        const context = {
+          attempt,
+          error,
+          statusCode: error.response?.status,
+          headers: error.response?.headers,
+          elapsedMs,
+          url: config.url || '',
+          method: (config.method || 'GET').toUpperCase(),
+        };
+
+        // Check if we should retry
+        if (!this.retryStrategy.shouldRetry(context)) {
+          break;
+        }
+
+        // Get delay (handles exponential backoff, jitter, Retry-After)
+        const delay = this.retryStrategy.getDelay(context);
+        await this.delay(delay);
+
         attempt++;
-
-        // Don't retry if we've exhausted attempts
-        if (attempt > this.retryAttempts) {
-          break;
-        }
-
-        // Check if we should retry this error
-        if (this.retryCallback && !this.retryCallback(error, attempt)) {
-          break;
-        }
-
-        // Wait before retrying
-        await this.delay(this.retryDelayMs);
       }
     }
 
@@ -699,5 +996,39 @@ export class PendingRequest {
    */
   protected delay(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Check if error is a connection error.
+   *
+   * @param error - Error object
+   * @returns true if connection error
+   * @private
+   */
+  private isConnectionError(error: any): boolean {
+    return (
+      !error.response ||
+      error.code === 'ECONNREFUSED' ||
+      error.code === 'ECONNRESET' ||
+      error.code === 'ETIMEDOUT' ||
+      error.code === 'ENOTFOUND' ||
+      error.code === 'ENETUNREACH'
+    );
+  }
+
+  /**
+   * Extract host from URL.
+   *
+   * @param url - Full URL or path
+   * @returns Host name
+   * @private
+   */
+  private extractHost(url: string): string {
+    try {
+      const parsed = new URL(url);
+      return parsed.hostname;
+    } catch {
+      return this.baseURL || 'unknown';
+    }
   }
 }

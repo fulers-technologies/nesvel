@@ -1,5 +1,10 @@
+import { Mixin } from 'ts-mixer';
 import type { AxiosResponse } from 'axios';
+import { Macroable } from '@nesvel/macroable';
+
 import { RequestException } from './exceptions/request-exception';
+import { DeterminesStatusCode } from './concerns/determines-status-code';
+import type { DeterminesStatusCodeInterface } from '../interfaces';
 
 /**
  * HTTP Client Response Wrapper
@@ -10,6 +15,9 @@ import { RequestException } from './exceptions/request-exception';
  *
  * This class makes it easy to work with HTTP responses by providing
  * methods to parse JSON, check status codes, access headers, and more.
+ *
+ * Uses mixins to provide status code checking functionality via the
+ * DeterminesStatusCode concern.
  *
  * @example
  * ```typescript
@@ -24,11 +32,20 @@ import { RequestException } from './exceptions/request-exception';
  *   console.log('Success!');
  * }
  *
+ * // Check specific status codes
+ * if (response.ok()) {
+ *   console.log('200 OK');
+ * }
+ *
  * // Access headers
  * const contentType = response.header('content-type');
  * ```
  */
-export class ClientResponse {
+@Macroable()
+export class ClientResponse
+  extends Mixin(DeterminesStatusCode)
+  implements DeterminesStatusCodeInterface
+{
   /**
    * The underlying Axios response object.
    */
@@ -45,7 +62,23 @@ export class ClientResponse {
    * @param response - The Axios response object to wrap
    */
   constructor(response: AxiosResponse) {
+    super();
     this.response = response;
+  }
+
+  /**
+   * Create a new ClientResponse instance (Laravel-style factory method).
+   *
+   * @param response - The Axios response object to wrap
+   * @returns A new ClientResponse instance
+   *
+   * @example
+   * ```typescript
+   * const response = ClientResponse.make(axiosResponse);
+   * ```
+   */
+  public static make(response: AxiosResponse): ClientResponse {
+    return new ClientResponse(response);
   }
 
   /**
@@ -310,150 +343,6 @@ export class ClientResponse {
    */
   public isStatus(status: number): boolean {
     return this.status() === status;
-  }
-
-  /**
-   * Check if the response is OK (status 200).
-   *
-   * @returns True if status is exactly 200
-   *
-   * @example
-   * ```typescript
-   * if (response.ok()) {
-   *   console.log('Status is 200 OK');
-   * }
-   * ```
-   */
-  public ok(): boolean {
-    return this.status() === 200;
-  }
-
-  /**
-   * Check if the response is Created (status 201).
-   *
-   * @returns True if status is exactly 201
-   *
-   * @example
-   * ```typescript
-   * if (response.created()) {
-   *   console.log('Resource was created');
-   * }
-   * ```
-   */
-  public created(): boolean {
-    return this.status() === 201;
-  }
-
-  /**
-   * Check if the response is Accepted (status 202).
-   *
-   * @returns True if status is exactly 202
-   *
-   * @example
-   * ```typescript
-   * if (response.accepted()) {
-   *   console.log('Request was accepted');
-   * }
-   * ```
-   */
-  public accepted(): boolean {
-    return this.status() === 202;
-  }
-
-  /**
-   * Check if the response is No Content (status 204).
-   *
-   * @returns True if status is exactly 204
-   *
-   * @example
-   * ```typescript
-   * if (response.noContent()) {
-   *   console.log('No content returned');
-   * }
-   * ```
-   */
-  public noContent(): boolean {
-    return this.status() === 204;
-  }
-
-  /**
-   * Check if the response is Moved Permanently (status 301).
-   *
-   * @returns True if status is exactly 301
-   *
-   * @example
-   * ```typescript
-   * if (response.movedPermanently()) {
-   *   console.log('Resource moved permanently');
-   * }
-   * ```
-   */
-  public movedPermanently(): boolean {
-    return this.status() === 301;
-  }
-
-  /**
-   * Check if the response is Found/Redirect (status 302).
-   *
-   * @returns True if status is exactly 302
-   *
-   * @example
-   * ```typescript
-   * if (response.found()) {
-   *   console.log('Temporary redirect');
-   * }
-   * ```
-   */
-  public found(): boolean {
-    return this.status() === 302;
-  }
-
-  /**
-   * Check if the response is Unauthorized (status 401).
-   *
-   * @returns True if status is exactly 401
-   *
-   * @example
-   * ```typescript
-   * if (response.unauthorized()) {
-   *   console.log('Authentication required');
-   * }
-   * ```
-   */
-  public unauthorized(): boolean {
-    return this.status() === 401;
-  }
-
-  /**
-   * Check if the response is Forbidden (status 403).
-   *
-   * @returns True if status is exactly 403
-   *
-   * @example
-   * ```typescript
-   * if (response.forbidden()) {
-   *   console.log('Access forbidden');
-   * }
-   * ```
-   */
-  public forbidden(): boolean {
-    return this.status() === 403;
-  }
-
-  /**
-   * Check if the response is Not Found (status 404).
-   *
-   * @returns True if status is exactly 404
-   *
-   * @example
-   * ```typescript
-   * if (response.notFound()) {
-   *   console.log('Resource not found');
-   * }
-   * ```
-   */
-  public notFound(): boolean {
-    return this.status() === 404;
   }
 
   /**

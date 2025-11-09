@@ -1,6 +1,8 @@
+import type { Method } from 'axios';
+
+import { ClientResponse } from './response';
 import { PendingRequest } from './pending-request';
-import { ClientResponse } from './client-response';
-import type { PoolRequest, PoolResult, HttpMethod } from '../types/client.types';
+import type { PoolRequest, PoolResult } from '../interfaces';
 
 /**
  * HTTP Request Pool
@@ -51,7 +53,7 @@ export class Pool {
     const promises = requests.map(async (request, index): Promise<PoolResult> => {
       try {
         // Create a new PendingRequest for each request
-        const pendingRequest = new PendingRequest(request.config || {});
+        const pendingRequest = PendingRequest.make(request.config || {});
 
         // Execute the request based on method
         let response: ClientResponse;
@@ -98,7 +100,7 @@ export class Pool {
 
     // Wait for all promises to resolve (either success or failure)
     const results = await Promise.all(promises);
-    return results.map((result) => new PoolResultWrapper(result));
+    return results.map((result) => PoolResultWrapper.make(result));
   }
 
   /**
@@ -125,7 +127,10 @@ export class Pool {
    * );
    * ```
    */
-  static async sendWithConfig(requests: PoolRequest[], globalConfig: any): Promise<PoolResultWrapper[]> {
+  static async sendWithConfig(
+    requests: PoolRequest[],
+    globalConfig: any
+  ): Promise<PoolResultWrapper[]> {
     const requestsWithConfig = requests.map((request) => ({
       ...request,
       config: { ...globalConfig, ...request.config },
@@ -185,6 +190,21 @@ export class PoolResultWrapper {
   constructor(private result: PoolResult) {}
 
   /**
+   * Create a new PoolResultWrapper instance (Laravel-style factory method).
+   *
+   * @param result - The pool result to wrap
+   * @returns A new PoolResultWrapper instance
+   *
+   * @example
+   * ```typescript
+   * const wrapper = PoolResultWrapper.make(poolResult);
+   * ```
+   */
+  public static make(result: PoolResult): PoolResultWrapper {
+    return new PoolResultWrapper(result);
+  }
+
+  /**
    * Check if the request was successful.
    */
   successful(): boolean {
@@ -234,7 +254,7 @@ export class PoolResultWrapper {
  * Fluent interface for building named request pools.
  */
 class NamedPoolBuilder {
-  private requests: Array<{ name: string; method: HttpMethod; url: string; config?: any }> = [];
+  private requests: Array<{ name: string; method: Method; url: string; config?: any }> = [];
   private currentName: string = '';
   private globalConfig: any = {};
 

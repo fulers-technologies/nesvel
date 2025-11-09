@@ -49,6 +49,22 @@ export class ResponseSequence {
   }
 
   /**
+   * Create a new ResponseSequence instance (Laravel-style factory method).
+   *
+   * @param responses - Optional initial array of responses
+   * @returns A new ResponseSequence instance
+   *
+   * @example
+   * ```typescript
+   * const sequence = ResponseSequence.make();
+   * const sequence = ResponseSequence.make([response1, response2]);
+   * ```
+   */
+  public static make(responses: AxiosResponse[] = []): ResponseSequence {
+    return new ResponseSequence(responses);
+  }
+
+  /**
    * Add a response to the end of the sequence.
    *
    * @param response - The response to add

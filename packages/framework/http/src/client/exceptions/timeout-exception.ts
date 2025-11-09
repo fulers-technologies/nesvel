@@ -1,5 +1,5 @@
-import { BaseException } from '@nesvel/exceptions';
 import type { AxiosError } from 'axios';
+import { BaseException } from '@nesvel/exceptions';
 
 /**
  * Exception thrown when an HTTP request times out.
