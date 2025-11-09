@@ -7,7 +7,7 @@ import type {
   InteractsWithInputInterface,
   InteractsWithFlashDataInterface,
   InteractsWithContentTypesInterface,
-} from './concerns/interfaces';
+} from '../interfaces';
 import { CanBePrecognitive } from './concerns/can-be-precognitive';
 import { InteractsWithInput } from './concerns/interacts-with-input';
 import { InteractsWithFlashData } from './concerns/interacts-with-flash-data';

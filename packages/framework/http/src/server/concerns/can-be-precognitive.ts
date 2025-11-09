@@ -1,4 +1,4 @@
-import type { CanBePrecognitiveInterface } from './interfaces';
+import type { CanBePrecognitiveInterface } from '@/interfaces';
 
 /**
  * Mixin that provides methods for Laravel Precognition support.

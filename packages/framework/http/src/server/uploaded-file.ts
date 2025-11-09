@@ -1,10 +1,8 @@
-import { Injectable, Inject, Optional } from '@nestjs/common';
-import * as path from 'path';
 import * as fs from 'fs';
+import * as path from 'path';
 import * as crypto from 'crypto';
-
-// Token for storage service injection
-export const STORAGE_SERVICE_TOKEN = 'STORAGE_SERVICE';
+import { Injectable, Optional } from '@nestjs/common';
+import { InjectStorage } from '@nesvel/nestjs-storage';
 
 /**
  * Uploaded File
@@ -85,10 +83,7 @@ export class UploadedFile {
    * const uploadedFile = new UploadedFile(multerFile, storageService);
    * ```
    */
-  constructor(
-    file: Express.Multer.File,
-    @Optional() @Inject(STORAGE_SERVICE_TOKEN) storageService?: any,
-  ) {
+  constructor(file: Express.Multer.File, @Optional() @InjectStorage() storageService?: any) {
     this.file = file;
     this.storageService = storageService;
   }

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 
 import { BaseHttpMiddleware } from '../base-http.middleware';
-import { AddLinkHeadersOptions } from './add-link-headers.interface';
+import type { AddLinkHeadersOptions } from '../../../interfaces';
 
 /**
  * Add Link Headers Middleware

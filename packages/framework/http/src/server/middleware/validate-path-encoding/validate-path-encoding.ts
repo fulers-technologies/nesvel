@@ -2,7 +2,7 @@ import { Injectable, HttpException } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 
 import { BaseHttpMiddleware } from '../base-http.middleware';
-import { ValidatePathEncodingOptions } from './validate-path-encoding.interface';
+import type { ValidatePathEncodingOptions } from '../../../interfaces';
 
 /**
  * Validate Path Encoding Middleware

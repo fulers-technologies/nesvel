@@ -1,5 +1,5 @@
 import { TrustHostsMiddleware } from './trust-hosts';
-import { TrustHostsOptions } from './trust-hosts.interface';
+import type { TrustHostsOptions } from '../../../interfaces';
 
 /**
  * Trust Hosts Factory Function

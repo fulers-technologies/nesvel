@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 
 import { BaseHttpMiddleware } from '../base-http.middleware';
-import { FrameGuardOptions } from './frame-guard.interface';
+import type { FrameGuardOptions } from '../../../interfaces';
 
 /**
  * Frame Guard Middleware

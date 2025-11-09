@@ -1,4 +1,4 @@
-import type { InteractsWithContentTypesInterface } from './interfaces';
+import type { InteractsWithContentTypesInterface } from '@/interfaces';
 
 /**
  * Mixin that provides methods for content type negotiation.

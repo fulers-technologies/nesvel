@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import { BaseHttpMiddleware } from '../base-http.middleware';
 
-import { ValidatePostSizeOptions } from './validate-post-size.interface';
+import type { ValidatePostSizeOptions } from '../../../interfaces';
 
 /**
  * Validate Post Size Middleware

@@ -1,4 +1,4 @@
-import type { InteractsWithInputInterface } from './interfaces';
+import type { InteractsWithInputInterface } from '@/interfaces';
 
 /**
  * Mixin that provides methods for interacting with request input.

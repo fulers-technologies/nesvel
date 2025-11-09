@@ -1,4 +1,4 @@
-import type { InteractsWithFilesInterface } from './interfaces';
+import type { InteractsWithFilesInterface } from '@/interfaces';
 
 /**
  * Mixin that provides methods for handling uploaded files.

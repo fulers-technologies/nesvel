@@ -2,7 +2,7 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 
 import { BaseHttpMiddleware } from '../base-http.middleware';
-import { TrustHostsOptions } from './trust-hosts.interface';
+import type { TrustHostsOptions } from '../../../interfaces';
 
 /**
  * Trust Hosts Middleware
@@ -117,7 +117,7 @@ export class TrustHostsMiddleware extends BaseHttpMiddleware {
     try {
       const url = new URL(this.options.appUrl);
       const host = url.hostname;
-      
+
       if (host) {
         // Escape special regex characters
         const escapedHost = host.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -189,7 +189,7 @@ export class TrustHostsMiddleware extends BaseHttpMiddleware {
       if (this.logger) {
         this.logger.warn('Untrusted host rejected', {
           host: hostWithoutPort,
-          trustedPatterns: this.trustedHostPatterns.map(p => p.source),
+          trustedPatterns: this.trustedHostPatterns.map((p) => p.source),
         });
       }
 

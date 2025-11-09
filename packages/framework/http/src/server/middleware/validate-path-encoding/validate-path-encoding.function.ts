@@ -1,5 +1,5 @@
 import { ValidatePathEncodingMiddleware } from './validate-path-encoding';
-import { ValidatePathEncodingOptions } from './validate-path-encoding.interface';
+import type { ValidatePathEncodingOptions } from '../../../interfaces';
 
 /**
  * Validate Path Encoding Factory Function
@@ -14,6 +14,8 @@ import { ValidatePathEncodingOptions } from './validate-path-encoding.interface'
  * consumer.apply(validatePathEncoding()).forRoutes('*');
  * ```
  */
-export function validatePathEncoding(options: ValidatePathEncodingOptions = {}): ValidatePathEncodingMiddleware {
+export function validatePathEncoding(
+  options: ValidatePathEncodingOptions = {}
+): ValidatePathEncodingMiddleware {
   return new ValidatePathEncodingMiddleware(options);
 }

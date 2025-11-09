@@ -1,5 +1,5 @@
 import { CheckResponseForModificationsMiddleware } from './check-response-for-modifications';
-import { CheckResponseForModificationsOptions } from './check-response-for-modifications.interface';
+import type { CheckResponseForModificationsOptions } from '../../../interfaces';
 
 /**
  * Check Response For Modifications Factory Function
@@ -14,6 +14,8 @@ import { CheckResponseForModificationsOptions } from './check-response-for-modif
  * consumer.apply(checkResponseForModifications()).forRoutes('*');
  * ```
  */
-export function checkResponseForModifications(options: CheckResponseForModificationsOptions = {}): CheckResponseForModificationsMiddleware {
+export function checkResponseForModifications(
+  options: CheckResponseForModificationsOptions = {}
+): CheckResponseForModificationsMiddleware {
   return new CheckResponseForModificationsMiddleware(options);
 }

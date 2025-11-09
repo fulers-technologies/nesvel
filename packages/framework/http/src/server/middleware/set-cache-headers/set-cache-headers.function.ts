@@ -1,5 +1,5 @@
 import { SetCacheHeadersMiddleware } from './set-cache-headers';
-import { SetCacheHeadersOptions } from './set-cache-headers.interface';
+import type { SetCacheHeadersOptions } from '../../../interfaces';
 
 /**
  * Set Cache Headers Factory Function

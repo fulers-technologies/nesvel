@@ -1,5 +1,5 @@
 import { HandleCorsMiddleware } from './handle-cors';
-import { HandleCorsOptions } from './handle-cors.interface';
+import type { HandleCorsOptions } from '../../../interfaces';
 
 /**
  * Handle CORS Factory Function

@@ -1,5 +1,5 @@
 import { FrameGuardMiddleware } from './frame-guard';
-import { FrameGuardOptions } from './frame-guard.interface';
+import type { FrameGuardOptions } from '../../../interfaces';
 
 /**
  * Frame Guard Factory Function

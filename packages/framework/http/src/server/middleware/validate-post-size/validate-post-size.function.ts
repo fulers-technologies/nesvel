@@ -1,5 +1,5 @@
 import { ValidatePostSizeMiddleware } from './validate-post-size';
-import { ValidatePostSizeOptions } from './validate-post-size.interface';
+import type { ValidatePostSizeOptions } from '../../../interfaces';
 
 /**
  * Validate Post Size Factory Function
@@ -46,6 +46,8 @@ import { ValidatePostSizeOptions } from './validate-post-size.interface';
  *   .forRoutes('*');
  * ```
  */
-export function validatePostSize(options: ValidatePostSizeOptions = {}): ValidatePostSizeMiddleware {
+export function validatePostSize(
+  options: ValidatePostSizeOptions = {}
+): ValidatePostSizeMiddleware {
   return new ValidatePostSizeMiddleware(options);
 }

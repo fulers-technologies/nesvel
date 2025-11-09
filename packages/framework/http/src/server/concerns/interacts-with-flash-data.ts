@@ -1,4 +1,4 @@
-import type { InteractsWithFlashDataInterface } from './interfaces';
+import type { InteractsWithFlashDataInterface } from '@/interfaces';
 
 /**
  * Mixin that provides methods for session flash data handling.

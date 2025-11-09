@@ -1,6 +1,6 @@
-import { Response as ExpressResponse } from 'express';
-import { Macroable } from '@nesvel/macroable';
 import { Writable } from 'stream';
+import { Macroable } from '@nesvel/macroable';
+import { Response as ExpressResponse } from 'express';
 
 /**
  * Streamed Response
@@ -53,7 +53,7 @@ export class StreamedResponse {
   constructor(
     callback: (stream: ExpressResponse | Writable) => void,
     status: number = 200,
-    headers: Record<string, string> = {},
+    headers: Record<string, string> = {}
   ) {
     this.callback = callback;
     this.statusCode = status;
@@ -73,7 +73,7 @@ export class StreamedResponse {
    *   const interval = setInterval(() => {
    *     stream.write(`data: ${JSON.stringify({ timestamp: Date.now() })}\n\n`);
    *   }, 1000);
-   *   
+   *
    *   // Cleanup on client disconnect
    *   stream.on('close', () => clearInterval(interval));
    * });
@@ -81,7 +81,7 @@ export class StreamedResponse {
    */
   public static serverSentEvents(
     callback: (stream: ExpressResponse | Writable) => void,
-    status: number = 200,
+    status: number = 200
   ): StreamedResponse {
     return new StreamedResponse(callback, status, {
       'Content-Type': 'text/event-stream',
@@ -113,7 +113,7 @@ export class StreamedResponse {
    */
   public static json(
     callback: (stream: ExpressResponse | Writable) => void,
-    status: number = 200,
+    status: number = 200
   ): StreamedResponse {
     return new StreamedResponse(callback, status, {
       'Content-Type': 'application/json',
@@ -142,7 +142,7 @@ export class StreamedResponse {
   public static csv(
     callback: (stream: ExpressResponse | Writable) => void,
     filename?: string,
-    status: number = 200,
+    status: number = 200
   ): StreamedResponse {
     const headers: Record<string, string> = {
       'Content-Type': 'text/csv',
@@ -291,10 +291,7 @@ export class StreamedResponse {
    * });
    * ```
    */
-  public sendSafely(
-    res: ExpressResponse,
-    onError?: (error: Error) => void,
-  ): void {
+  public sendSafely(res: ExpressResponse, onError?: (error: Error) => void): void {
     try {
       this.send(res);
     } catch (error) {

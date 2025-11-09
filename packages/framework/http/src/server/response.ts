@@ -1,5 +1,8 @@
+import { Macroable } from '@nesvel/macroable';
+import { Conditionable } from '@nesvel/conditionable';
 import type { Response as ExpressResponse } from 'express';
-import type { CookieOptions } from '../types/server.types';
+
+import type { CookieOptions } from '../interfaces';
 
 /**
  * Base Response Builder
@@ -23,6 +26,8 @@ import type { CookieOptions } from '../types/server.types';
  * }
  * ```
  */
+@Macroable()
+@Conditionable()
 export class Response {
   /**
    * The underlying Express response.
@@ -405,7 +410,7 @@ export class Response {
   public withCookie(
     cookie: string | { name: string; value: string; options?: CookieOptions },
     value?: string,
-    options?: CookieOptions,
+    options?: CookieOptions
   ): this {
     if (typeof cookie === 'string') {
       return this.cookie(cookie, value!, options);
@@ -431,7 +436,7 @@ export class Response {
   public withoutCookie(
     cookie: string | { name: string; path?: string; domain?: string },
     path?: string,
-    domain?: string,
+    domain?: string
   ): this {
     if (typeof cookie === 'string') {
       return this.clearCookie(cookie, { path, domain } as CookieOptions);

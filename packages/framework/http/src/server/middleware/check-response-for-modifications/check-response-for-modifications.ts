@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 
 import { BaseHttpMiddleware } from '../base-http.middleware';
-import { CheckResponseForModificationsOptions } from './check-response-for-modifications.interface';
+import type { CheckResponseForModificationsOptions } from '../../../interfaces';
 
 /**
  * Check Response For Modifications Middleware

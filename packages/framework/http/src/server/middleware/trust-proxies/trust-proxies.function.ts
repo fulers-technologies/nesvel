@@ -1,5 +1,5 @@
 import { TrustProxiesMiddleware } from './trust-proxies';
-import { TrustProxiesOptions } from './trust-proxies.interface';
+import type { TrustProxiesOptions } from '../../../interfaces';
 
 /**
  * Trust Proxies Factory Function

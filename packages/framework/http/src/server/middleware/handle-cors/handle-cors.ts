@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { HttpMethod } from '@nesvel/shared';
 
-import { HandleCorsOptions } from './handle-cors.interface';
+import type { HandleCorsOptions } from '../../../interfaces';
 import { BaseHttpMiddleware } from '../base-http.middleware';
 
 /**

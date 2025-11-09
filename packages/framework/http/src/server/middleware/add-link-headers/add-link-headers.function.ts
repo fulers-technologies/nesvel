@@ -1,5 +1,5 @@
 import { AddLinkHeadersMiddleware } from './add-link-headers';
-import { AddLinkHeadersOptions } from './add-link-headers.interface';
+import type { AddLinkHeadersOptions } from '../../../interfaces';
 
 /**
  * Add Link Headers Factory Function

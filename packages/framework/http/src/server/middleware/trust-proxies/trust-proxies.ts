@@ -3,7 +3,7 @@ import { Request, Response, NextFunction, Application } from 'express';
 
 import { BaseHttpMiddleware } from '../base-http.middleware';
 
-import { TrustProxiesOptions } from './trust-proxies.interface';
+import type { TrustProxiesOptions } from '../../../interfaces';
 
 /**
  * Trust Proxies Middleware

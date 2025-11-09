@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { createHash } from 'crypto';
 
 import { BaseHttpMiddleware } from '../base-http.middleware';
-import { SetCacheHeadersOptions } from './set-cache-headers.interface';
+import type { SetCacheHeadersOptions } from '../../../interfaces';
 
 /**
  * Set Cache Headers Middleware
