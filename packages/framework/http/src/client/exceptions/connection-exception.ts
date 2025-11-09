@@ -122,7 +122,7 @@ export class ConnectionException extends BaseException {
     if (!url) return undefined;
 
     try {
-      return new URL(url).hostname;
+      return URL.make(url).hostname;
     } catch {
       return undefined;
     }

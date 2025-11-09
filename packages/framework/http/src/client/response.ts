@@ -468,7 +468,7 @@ export class ClientResponse
       isAxiosError: true,
     } as any;
 
-    return RequestException.make(error);
+    return new RequestException(error);
   }
 
   /**

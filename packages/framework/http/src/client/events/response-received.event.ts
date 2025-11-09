@@ -72,6 +72,6 @@ export class ResponseReceivedEvent extends HttpEvent {
     response: ClientResponse,
     durationMs: number
   ): ResponseReceivedEvent {
-    return new ResponseReceivedEvent(request, response, durationMs);
+    return ResponseReceivedEvent.make(request, response, durationMs);
   }
 }

@@ -199,7 +199,7 @@ export class CircuitBreakerManager {
    */
   public static extractHost(url: string): string {
     try {
-      const parsed = new URL(url);
+      const parsed = URL.make(url);
       return parsed.hostname;
     } catch {
       // If URL parsing fails, assume it's already a hostname

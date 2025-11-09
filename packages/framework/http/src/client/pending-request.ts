@@ -23,7 +23,7 @@ import { RequestSendingEvent, ResponseReceivedEvent, ConnectionFailedEvent } fro
  *
  * @example
  * ```typescript
- * const response = await new PendingRequest()
+ * const response = await PendingRequest.make()
  *   .withHeaders({ 'X-Custom': 'value' })
  *   .withToken('token')
  *   .timeout(30)
@@ -955,7 +955,7 @@ export class PendingRequest {
    * @returns FormData instance
    */
   protected buildMultipartData(data: any): FormData {
-    const form = new FormData();
+    const form = FormData.make();
 
     // Add regular fields
     for (const [key, value] of Object.entries(data)) {
@@ -1025,7 +1025,7 @@ export class PendingRequest {
    */
   private extractHost(url: string): string {
     try {
-      const parsed = new URL(url);
+      const parsed = URL.make(url);
       return parsed.hostname;
     } catch {
       return this.baseURL || 'unknown';

@@ -44,7 +44,7 @@ import { Response as EnhancedResponse } from '../server/response';
  */
 export const Res = createParamDecorator((data: string | undefined, ctx: ExecutionContext) => {
   const response = ctx.switchToHttp().getResponse<ExpressResponse>();
-  const enhancedResponse = new EnhancedResponse(response);
+  const enhancedResponse = EnhancedResponse.make(response);
 
   // If a specific property is requested, return that
   if (data) {

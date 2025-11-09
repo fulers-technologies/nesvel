@@ -18,7 +18,7 @@ import type { DeterminesStatusCodeInterface } from './interfaces';
  *   // ... response implementation
  * }
  *
- * const response = new MyResponse(...);
+ * const response = MyResponse.make(...);
  * if (response.ok()) {
  *   console.log('Request successful');
  * }

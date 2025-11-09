@@ -9,7 +9,7 @@ import type { AxiosResponse } from 'axios';
  *
  * @example
  * ```typescript
- * const sequence = new ResponseSequence()
+ * const sequence = ResponseSequence.make()
  *   .push({ data: { id: 1 }, status: 200 })
  *   .push({ data: { id: 2 }, status: 200 })
  *   .push({ data: { id: 3 }, status: 200 });
