@@ -83,11 +83,11 @@ export class MeilisearchProvider implements ISearchProvider {
    *
    * @example
    * ```typescript
-   * const client = new MeiliSearch({
+   * const client = MeiliSearch.make({
    *   host: 'http://localhost:7700',
    *   apiKey: 'your-master-key',
    * });
-   * const provider = new MeilisearchProvider(client);
+   * const provider = MeilisearchProvider.make(client);
    * ```
    */
   constructor(private readonly client: MeiliSearch) {}
@@ -734,7 +734,7 @@ export class MeilisearchProvider implements ISearchProvider {
    * 3. Indexes data to temporary index in batches
    * 4. Verifies document count
    * 5. Deletes the old index (if deleteOldIndex=true)
-   * 6. The temp index becomes the new index (user should update references)
+   * 6. The temp index becomes the index.make(user should update references)
    *
    * Note: Unlike Elasticsearch, there's no alias swapping, so the application
    * needs to be aware of the new index name or you should manually handle renaming.

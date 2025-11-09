@@ -46,7 +46,7 @@ import type { SearchOptions } from '@/interfaces/search-options.interface';
  *
  * @example
  * ```typescript
- * const builder = new ElasticsearchQueryBuilder(provider);
+ * const builder = ElasticsearchQueryBuilder.make(provider);
  *
  * // Simple query
  * builder

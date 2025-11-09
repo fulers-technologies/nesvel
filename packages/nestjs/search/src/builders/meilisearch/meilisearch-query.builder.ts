@@ -39,7 +39,7 @@ import type { SearchOptions } from '@/interfaces/search-options.interface';
  *
  * @example
  * ```typescript
- * const builder = new MeilisearchQueryBuilder(searchService);
+ * const builder = MeilisearchQueryBuilder.make(searchService);
  *
  * // Simple query
  * builder

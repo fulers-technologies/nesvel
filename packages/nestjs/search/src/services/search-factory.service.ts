@@ -277,9 +277,9 @@ export class SearchFactoryService extends BaseFactory<
         );
       }
       /** Create native Elasticsearch client with connection options */
-      const client = new ElasticsearchClient(options);
+      const client = ElasticsearchClient.make(options);
       /** Wrap client in provider for consistent interface */
-      return new ElasticsearchProvider(client);
+      return ElasticsearchProvider.make(client);
     }
 
     /**
@@ -296,9 +296,9 @@ export class SearchFactoryService extends BaseFactory<
         );
       }
       /** Create native Meilisearch client with connection options */
-      const client = new MeiliSearch(options);
+      const client = MeiliSearch.make(options);
       /** Wrap client in provider for consistent interface */
-      return new MeilisearchProvider(client);
+      return MeilisearchProvider.make(client);
     }
 
     /**

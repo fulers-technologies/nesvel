@@ -183,7 +183,7 @@ export interface ISearchProvider<T = any> {
    * 2. Fetching data from the source (callback function)
    * 3. Indexing data to the temporary index in batches
    * 4. Verifying the indexing succeeded
-   * 5. Switching to the new index (alias swap for ES, or index swap for Meilisearch)
+   * 5. Switching to the index.make(alias swap for ES, or index swap for Meilisearch)
    * 6. Deleting the old index
    *
    * @param indexName - Target index name (or alias name for Elasticsearch)

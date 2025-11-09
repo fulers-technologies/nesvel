@@ -105,11 +105,11 @@ export class ElasticsearchProvider implements ISearchProvider {
    *
    * @example
    * ```typescript
-   * const client = new Client({
+   * const client = Client.make({
    *   node: 'http://localhost:9200',
    *   auth: { apiKey: 'your-api-key' },
    * });
-   * const provider = new ElasticsearchProvider(client);
+   * const provider = ElasticsearchProvider.make(client);
    * ```
    */
   constructor(private readonly client: Client) {}

@@ -75,7 +75,7 @@ import type { SearchConfig } from '@/interfaces';
  * @Injectable()
  * export class PostService {
  *   async createPost(data: CreatePostDto) {
- *     const post = new Post();
+ *     const post = Post.make();
  *     post.title = data.title;
  *     post.content = data.content;
  *     post.status = 'published';
@@ -213,7 +213,7 @@ export class SearchableSubscriber<T extends BaseEntity = BaseEntity> implements 
    * @example
    * ```typescript
    * // When this happens:
-   * const post = new Post();
+   * const post = Post.make();
    * post.title = 'My Post';
    * post.status = 'published';
    * await em.persistAndFlush(post);

@@ -158,7 +158,7 @@ async function testProvider(providerName: string, searchService: SearchService):
 
         // Test timestamped naming strategy
         console.log('\nTest 10a: Timestamped naming strategy...');
-        const namingService = new IndexNamingService({ indexNamingStrategy: 'timestamped' });
+        const namingService = IndexNamingService.make({ indexNamingStrategy: 'timestamped' });
         const baseIndexName = 'test_alias_products';
         const physicalIndexName = namingService.getPhysicalIndexName(baseIndexName);
         const aliasName = namingService.getAliasName(baseIndexName);
@@ -239,7 +239,9 @@ async function testProvider(providerName: string, searchService: SearchService):
 
         // Test versioned naming strategy
         console.log('\nTest 10c: Versioned naming strategy...');
-        const versionedNamingService = new IndexNamingService({ indexNamingStrategy: 'versioned' });
+        const versionedNamingService = IndexNamingService.make({
+          indexNamingStrategy: 'versioned',
+        });
         const versionedBaseIndex = 'test_versioned_products';
         const v1Index = versionedNamingService.getPhysicalIndexName(versionedBaseIndex, 1);
         const v2Index = versionedNamingService.getPhysicalIndexName(versionedBaseIndex, 2);
@@ -326,11 +328,11 @@ async function main() {
   if (meilisearchAvailable) {
     console.log('✓ Meilisearch is running');
     try {
-      const client = new MeiliSearch({
+      const client = MeiliSearch.make({
         host: 'http://localhost:7700',
       });
-      const provider = new MeilisearchProvider(client);
-      const searchService = new SearchService(provider);
+      const provider = MeilisearchProvider.make(client);
+      const searchService = SearchService.make(provider);
 
       const success = await testProvider('Meilisearch', searchService);
       results.push({ provider: 'Meilisearch', success });
@@ -350,11 +352,11 @@ async function main() {
   if (elasticsearchAvailable) {
     console.log('✓ Elasticsearch is running');
     try {
-      const client = new ElasticsearchClient({
+      const client = ElasticsearchClient.make({
         node: 'http://localhost:9200',
       });
-      const provider = new ElasticsearchProvider(client);
-      const searchService = new SearchService(provider);
+      const provider = ElasticsearchProvider.make(client);
+      const searchService = SearchService.make(provider);
 
       const success = await testProvider('Elasticsearch', searchService);
       results.push({ provider: 'Elasticsearch', success });
