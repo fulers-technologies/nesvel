@@ -145,7 +145,7 @@ declare module 'winston-slack-hook' {
    *
    * const logger = winston.createLogger({
    *   transports: [
-   *     new SlackHook({
+   *     SlackHook.make({
    *       webhookUrl: 'https://hooks.slack.com/services/...',
    *       channel: '#error-logs',
    *       username: 'App Logger',

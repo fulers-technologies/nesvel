@@ -1,7 +1,7 @@
 import * as winston from 'winston';
 
-import type { IHttpTransportOptions, ITransport } from '@interfaces';
 import { LogLevel } from '@enums/log-level.enum';
+import type { IHttpTransportOptions, ITransport } from '@interfaces';
 
 /**
  * HTTP transport implementation.
@@ -26,7 +26,7 @@ import { LogLevel } from '@enums/log-level.enum';
  *
  * @example
  * ```typescript
- * const transport = new HttpTransport({
+ * const transport = HttpTransport.make({
  *   type: TransportType.HTTP,
  *   level: LogLevel.INFO,
  *   host: 'logs.example.com',
@@ -59,7 +59,7 @@ export class HttpTransport implements ITransport {
    *
    * @example Basic HTTP endpoint
    * ```typescript
-   * const transport = new HttpTransport({
+   * const transport = HttpTransport.make({
    *   type: TransportType.HTTP,
    *   level: LogLevel.INFO,
    *   host: 'logs.myapp.com',
@@ -71,7 +71,7 @@ export class HttpTransport implements ITransport {
    *
    * @example With authentication
    * ```typescript
-   * const transport = new HttpTransport({
+   * const transport = HttpTransport.make({
    *   type: TransportType.HTTP,
    *   level: LogLevel.INFO,
    *   host: 'api.loggly.com',
@@ -87,7 +87,7 @@ export class HttpTransport implements ITransport {
    *
    * @example Logstash integration
    * ```typescript
-   * const transport = new HttpTransport({
+   * const transport = HttpTransport.make({
    *   type: TransportType.HTTP,
    *   level: LogLevel.INFO,
    *   host: 'logstash.internal',
@@ -139,6 +139,30 @@ export class HttpTransport implements ITransport {
     }
 
     this.winstonTransport = new winston.transports.Http(httpConfig);
+  }
+
+  /**
+   * Static factory method to create a new HTTP transport instance.
+   *
+   * This method provides a fluent interface for creating transport instances
+   * following the static factory pattern commonly used in Laravel and similar frameworks.
+   *
+   * @param options - HTTP transport configuration options
+   * @returns A new HttpTransport instance
+   *
+   * @example
+   * ```typescript
+   * const transport = HttpTransport.make({
+   *   type: TransportType.HTTP,
+   *   host: 'logs.example.com',
+   *   port: 443,
+   *   path: '/api/logs',
+   *   ssl: true
+   * });
+   * ```
+   */
+  static make(options: IHttpTransportOptions): HttpTransport {
+    return new HttpTransport(options);
   }
 
   /**

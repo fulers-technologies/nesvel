@@ -1,20 +1,25 @@
+import { Collection } from '@nesvel/collections';
 import { Injectable, Scope } from '@nestjs/common';
 
 /**
  * Logger context service for managing contextual logging data.
  *
- * This service provides a mechanism to attach persistent contextual information
- * to log messages. Context is useful for adding common data like request IDs,
- * user IDs, or session information without passing it to every log call.
+ * This service extends Collection to provide a fluent, Laravel-style API for managing
+ * contextual information attached to log messages. Context is useful for adding common
+ * data like request IDs, user IDs, or session information without passing it to every log call.
+ *
+ * By extending Collection, this service inherits 100+ methods for data manipulation,
+ * filtering, transformation, and querying with full TypeScript type safety.
  *
  * The service uses request scope to ensure context isolation between requests
  * in web applications, preventing context leakage between concurrent requests.
  *
  * @class LoggerContextService
+ * @extends {Collection<any>}
  * @injectable
  * @scope REQUEST
  *
- * @example
+ * @example Basic usage
  * ```typescript
  * @Injectable()
  * class AuthService {
@@ -24,184 +29,58 @@ import { Injectable, Scope } from '@nestjs/common';
  *   ) {}
  *
  *   async login(userId: string) {
- *     this.context.set('userId', userId);
- *     this.context.set('requestId', ulid());
+ *     this.context.put('userId', userId);
+ *     this.context.put('requestId', ulid());
  *
  *     this.logger.info('User logging in');
  *     // Log will automatically include userId and requestId
  *   }
  * }
  * ```
+ *
+ * @example Using Collection methods
+ * ```typescript
+ * // Filter context data
+ * const sensitiveKeys = context.filter((value, key) =>
+ *   key.includes('token') || key.includes('secret')
+ * );
+ *
+ * // Transform context values
+ * const masked = context.map((value, key) =>
+ *   key.includes('password') ? '***' : value
+ * );
+ *
+ * // Check if context contains specific data
+ * if (context.has('userId') && context.has('sessionId')) {
+ *   // Both user and session context available
+ * }
+ * ```
  */
 @Injectable({ scope: Scope.REQUEST })
-export class LoggerContextService {
+export class LoggerContextService extends Collection<any> {
   /**
-   * Internal storage for context data.
-   * Uses a Map for efficient key-value lookups.
+   * Creates a new logger context service instance.
+   *
+   * Initializes the service with an empty collection.
    */
-  private readonly contextData: Map<string, any> = new Map();
-
-  /**
-   * Sets a context value.
-   *
-   * This method stores a key-value pair that will be included with all
-   * subsequent log messages until cleared or the request ends (in REQUEST scope).
-   *
-   * @param key - The context key/identifier
-   * @param value - The context value to store
-   *
-   * @returns The service instance for method chaining
-   *
-   * @example
-   * ```typescript
-   * context
-   *   .set('userId', '123')
-   *   .set('requestId', 'req_abc')
-   *   .set('tenant', 'acme-corp');
-   * ```
-   */
-  set(key: string, value: any): this {
-    this.contextData.set(key, value);
-    return this;
+  constructor() {
+    super({});
   }
 
   /**
-   * Gets a context value by key.
+   * Static factory method to create a new logger context service instance.
    *
-   * This method retrieves a previously stored context value.
-   * Returns undefined if the key doesn't exist.
+   * This method provides a fluent interface for creating service instances
+   * following the static factory pattern commonly used in Laravel and similar frameworks.
    *
-   * @param key - The context key to retrieve
-   *
-   * @returns The stored value or undefined
+   * @returns A new LoggerContextService instance
    *
    * @example
    * ```typescript
-   * const userId = context.get('userId');
-   * if (userId) {
-   *   // Use the userId
-   * }
+   * const contextService = LoggerContextService.make();
    * ```
    */
-  get(key: string): any {
-    return this.contextData.get(key);
-  }
-
-  /**
-   * Checks if a context key exists.
-   *
-   * @param key - The context key to check
-   *
-   * @returns True if the key exists in the context
-   *
-   * @example
-   * ```typescript
-   * if (context.has('userId')) {
-   *   // User context is available
-   * }
-   * ```
-   */
-  has(key: string): boolean {
-    return this.contextData.has(key);
-  }
-
-  /**
-   * Removes a context value by key.
-   *
-   * This method deletes a specific key from the context.
-   * Useful for clearing sensitive data or temporary context values.
-   *
-   * @param key - The context key to remove
-   *
-   * @returns The service instance for method chaining
-   *
-   * @example
-   * ```typescript
-   * context.delete('temporaryToken');
-   * ```
-   */
-  delete(key: string): this {
-    this.contextData.delete(key);
-    return this;
-  }
-
-  /**
-   * Clears all context data.
-   *
-   * This method removes all stored context values, resetting the
-   * context to an empty state. Useful for cleanup or resetting
-   * context between operations.
-   *
-   * @returns The service instance for method chaining
-   *
-   * @example
-   * ```typescript
-   * context.clear();
-   * ```
-   */
-  clear(): this {
-    this.contextData.clear();
-    return this;
-  }
-
-  /**
-   * Gets all context data as a plain object.
-   *
-   * This method returns a snapshot of all context data as a plain
-   * JavaScript object. This is useful for including context in log
-   * messages or for debugging purposes.
-   *
-   * @returns Plain object containing all context data
-   *
-   * @example
-   * ```typescript
-   * const context = contextService.getAll();
-   * logger.info('Operation completed', context);
-   * // Logs: { userId: '123', requestId: 'req_abc', ... }
-   * ```
-   */
-  getAll(): Record<string, any> {
-    return Object.fromEntries(this.contextData);
-  }
-
-  /**
-   * Merges additional context data.
-   *
-   * This method adds multiple key-value pairs to the context at once.
-   * Existing keys will be overwritten with new values.
-   *
-   * @param data - Object containing key-value pairs to merge
-   *
-   * @returns The service instance for method chaining
-   *
-   * @example
-   * ```typescript
-   * context.merge({
-   *   userId: '123',
-   *   requestId: 'req_abc',
-   *   ipAddress: '192.168.1.1'
-   * });
-   * ```
-   */
-  merge(data: Record<string, any>): this {
-    Object.entries(data).forEach(([key, value]) => {
-      this.contextData.set(key, value);
-    });
-    return this;
-  }
-
-  /**
-   * Gets the number of context entries.
-   *
-   * @returns The number of key-value pairs in the context
-   *
-   * @example
-   * ```typescript
-   * const count = context.size();
-   * console.log(`Context has ${count} entries`);
-   * ```
-   */
-  size(): number {
-    return this.contextData.size;
+  static override make(): LoggerContextService {
+    return new LoggerContextService();
   }
 }

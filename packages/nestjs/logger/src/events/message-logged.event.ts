@@ -46,7 +46,7 @@ export class MessageLoggedEvent {
    *
    * @example
    * ```typescript
-   * const event = new MessageLoggedEvent(
+   * const event = MessageLoggedEvent.make(
    *   LogLevel.ERROR,
    *   'Database connection failed',
    *   'DatabaseService',
@@ -62,5 +62,29 @@ export class MessageLoggedEvent {
   ) {
     this.id = ulid();
     this.timestamp = new Date();
+  }
+
+  /**
+   * Static factory method to create a new message logged event instance.
+   *
+   * This method provides a fluent interface for creating event instances
+   * following the static factory pattern commonly used in Laravel and similar frameworks.
+   *
+   * @param level - The severity level of the log message
+   * @param message - The log message content
+   * @param context - Optional name/identifier for the logging context
+   * @returns A new MessageLoggedEvent instance
+   *
+   * @example
+   * ```typescript
+   * const event = MessageLoggedEvent.make(
+   *   LogLevel.ERROR,
+   *   'Database connection failed',
+   *   'DatabaseService'
+   * );
+   * ```
+   */
+  static make(level: LogLevel | string, message: string, context?: string): MessageLoggedEvent {
+    return new MessageLoggedEvent(level, message, context);
   }
 }

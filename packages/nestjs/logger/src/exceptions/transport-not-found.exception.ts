@@ -15,22 +15,6 @@
  */
 export class TransportNotFoundException extends Error {
   /**
-   * Creates a new TransportNotFoundException instance.
-   *
-   * @param transportType - The requested transport type that wasn't found
-   * @param availableTransports - List of available transport types
-   *
-   * @example
-   * ```typescript
-   * const error = TransportNotFoundException.make('unknown', ['console', 'file']);
-   * ```
-   */
-  static make(transportType: string, availableTransports: string[]): TransportNotFoundException {
-    const message = `Transport '${transportType}' not found. Available transports: ${availableTransports.join(', ')}`;
-    return new TransportNotFoundException(message, transportType, availableTransports);
-  }
-
-  /**
    * Creates a new TransportNotFoundException.
    *
    * @param message - The error message

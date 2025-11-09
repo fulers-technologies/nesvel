@@ -97,7 +97,7 @@ export class LoggerService extends Mixin(
    *
    * @example
    * ```typescript
-   * const logger = new LoggerService(
+   * const logger = LoggerService.make(
    *   eventEmitter,
    *   contextService,
    *   'UserService',
@@ -135,6 +135,37 @@ export class LoggerService extends Mixin(
   }
 
   /**
+   * Static factory method to create a new logger service instance.
+   *
+   * This method provides a fluent interface for creating logger instances
+   * following the static factory pattern commonly used in Laravel and similar frameworks.
+   *
+   * @param eventEmitter - Optional event emitter for dispatching log and activity events
+   * @param contextService - Optional context service for managing request-scoped context
+   * @param contextIdentifier - Optional context identifier (e.g., class or service name)
+   * @param initialLevel - Optional initial log level (defaults to 'info')
+   * @returns A new LoggerService instance
+   *
+   * @example
+   * ```typescript
+   * const logger = LoggerService.make(
+   *   eventEmitter,
+   *   contextService,
+   *   'UserService',
+   *   LogLevel.DEBUG
+   * );
+   * ```
+   */
+  static make(
+    eventEmitter?: EventEmitter2,
+    contextService?: LoggerContextService,
+    contextIdentifier?: string,
+    initialLevel?: LogLevel | string
+  ): LoggerService {
+    return new LoggerService(eventEmitter, contextService, contextIdentifier, initialLevel);
+  }
+
+  /**
    * Adds a transport to the logger.
    *
    * This method registers a new transport for log message delivery.
@@ -147,7 +178,7 @@ export class LoggerService extends Mixin(
    *
    * @example
    * ```typescript
-   * const consoleTransport = new ConsoleTransport({ level: 'debug' });
+   * const consoleTransport = ConsoleTransport.make({ level: 'debug' });
    * logger.addTransport(consoleTransport);
    * ```
    */
@@ -169,8 +200,8 @@ export class LoggerService extends Mixin(
    * @example
    * ```typescript
    * logger.addTransports([
-   *   new ConsoleTransport({ level: 'debug' }),
-   *   new FileTransport({ filename: 'app.log' })
+   *   ConsoleTransport.make({ level: 'debug' }),
+   *   FileTransport.make({ filename: 'app.log' })
    * ]);
    * ```
    */
@@ -328,7 +359,7 @@ export class LoggerService extends Mixin(
    * ```
    */
   child(context: string): LoggerService {
-    const childLogger = new LoggerService(
+    const childLogger = LoggerService.make(
       this.eventEmitter,
       this.contextService,
       context,

@@ -1,15 +1,15 @@
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { DynamicModule, Module, Provider } from '@nestjs/common';
 
-import { LoggerService } from '@services/logger.service';
-import { LOGGER_SERVICE, LOGGER_MODULE_OPTIONS } from './constants';
-import { LoggerContextService } from '@services/logger-context.service';
-import { TransportFactoryService } from '@services/transport-factory.service';
 import {
-  ILoggerAsyncModuleAsyncOptions,
   ILoggerModuleOptions,
   ILoggerModuleOptionsFactory,
+  ILoggerAsyncModuleAsyncOptions,
 } from './interfaces';
+import { LoggerService } from './services/logger.service';
+import { LOGGER_SERVICE, LOGGER_MODULE_OPTIONS } from './constants';
+import { LoggerContextService } from './services/logger-context.service';
+import { TransportFactoryService } from './services/transport-factory.service';
 
 /**
  * NestJS module for structured logging functionality.
@@ -166,17 +166,14 @@ export class LoggerModule {
    * ```
    */
   static forRootAsync(options: ILoggerAsyncModuleAsyncOptions): DynamicModule {
-    // Create async providers
-    const asyncProviders = this.createAsyncProviders(options);
-
-    // Create core providers
-    const coreProviders = this.createCoreProviders();
+    // Create all async providers (options + core)
+    const providers = this.createAsyncProviders(options);
 
     return {
       module: LoggerModule,
       global: options.isGlobal || false,
       imports: [EventEmitterModule.forRoot(), ...(options.imports || [])],
-      providers: [...asyncProviders, ...coreProviders],
+      providers,
       exports: [LOGGER_SERVICE, LoggerService, LoggerContextService],
     };
   }
@@ -195,53 +192,87 @@ export class LoggerModule {
    */
   private static createProviders(options: ILoggerModuleOptions): Provider[] {
     return [
-      // Options provider
+      // Options provider - synchronous configuration
       {
         provide: LOGGER_MODULE_OPTIONS,
         useValue: options,
       },
-
-      // Context service (request-scoped)
-      LoggerContextService,
-
-      // Factory service
-      TransportFactoryService,
-
-      // Service provider
-      {
-        provide: LOGGER_SERVICE,
-        useFactory: (factory: TransportFactoryService, context: LoggerContextService) => {
-          // Filter and build enabled transports
-          const enabledTransports = this.buildTransports(options, factory);
-
-          // Create logger service
-          const logger = new LoggerService();
-
-          // Set default log level
-          if (options.level) {
-            logger.setLogLevel(options.level);
-          }
-
-          // Add all enabled transports
-          enabledTransports.forEach((transport) => logger.addTransport(transport));
-
-          return logger;
-        },
-        inject: [TransportFactoryService, LoggerContextService],
-      },
-
-      // Export service with class token as well
-      {
-        provide: LoggerService,
-        useExisting: LOGGER_SERVICE,
-      },
+      ...this.createCoreProviders(),
     ];
+  }
+
+  /**
+   * Creates async providers for module configuration.
+   *
+   * Handles three configuration patterns:
+   * - useFactory: Creates options using a factory function
+   * - useClass: Creates options using a factory class
+   * - useExisting: Uses an existing factory provider
+   *
+   * This method returns all providers needed for async configuration,
+   * including the options provider and core providers.
+   *
+   * @param options - The async configuration options
+   * @returns An array of providers
+   */
+  private static createAsyncProviders(options: ILoggerAsyncModuleAsyncOptions): Provider[] {
+    let optionsProvider: Provider;
+
+    if (options.useFactory) {
+      optionsProvider = {
+        provide: LOGGER_MODULE_OPTIONS,
+        useFactory: async (...args: any[]) => {
+          const opts = await options.useFactory!(...args);
+          return opts;
+        },
+        inject: options.inject || [],
+      };
+      return [optionsProvider, ...this.createCoreProviders()];
+    }
+
+    if (options.useClass) {
+      return [
+        {
+          provide: LOGGER_MODULE_OPTIONS,
+          useFactory: async (factory: ILoggerModuleOptionsFactory) => {
+            const opts = await factory.createLoggerOptions();
+            return opts;
+          },
+          inject: [options.useClass],
+        },
+        {
+          provide: options.useClass,
+          useClass: options.useClass,
+        },
+        ...this.createCoreProviders(),
+      ];
+    }
+
+    if (options.useExisting) {
+      return [
+        {
+          provide: LOGGER_MODULE_OPTIONS,
+          useFactory: async (factory: ILoggerModuleOptionsFactory) => {
+            const opts = await factory.createLoggerOptions();
+            return opts;
+          },
+          inject: [options.useExisting],
+        },
+        ...this.createCoreProviders(),
+      ];
+    }
+
+    throw new Error(
+      'Invalid async configuration. Must provide useFactory, useClass, or useExisting.'
+    );
   }
 
   /**
    * Creates the core providers without options (for async configuration).
    *
-   * These providers depend on the async options provider created separately.
+   * These providers are shared between synchronous and asynchronous configurations.
+   * They depend on LOGGER_MODULE_OPTIONS being provided by either createProviders
+   * or createAsyncProviders.
    *
    * @returns An array of providers
    */
@@ -253,7 +284,7 @@ export class LoggerModule {
       // Factory service
       TransportFactoryService,
 
-      // Service provider
+      // Service provider - main logger instance
       {
         provide: LOGGER_SERVICE,
         useFactory: (
@@ -264,15 +295,15 @@ export class LoggerModule {
           // Filter and build enabled transports
           const enabledTransports = this.buildTransports(options, factory);
 
-          // Create logger service
-          const logger = new LoggerService();
+          // Create logger service instance
+          const logger = LoggerService.make();
 
-          // Set default log level
+          // Set default log level if specified
           if (options.level) {
             logger.setLogLevel(options.level);
           }
 
-          // Add all enabled transports
+          // Add all enabled transports to the logger
           enabledTransports.forEach((transport) => logger.addTransport(transport));
 
           return logger;
@@ -280,7 +311,7 @@ export class LoggerModule {
         inject: [LOGGER_MODULE_OPTIONS, TransportFactoryService, LoggerContextService],
       },
 
-      // Export service with class token as well
+      // Export service with class token as well for class-based injection
       {
         provide: LoggerService,
         useExisting: LOGGER_SERVICE,
@@ -330,65 +361,5 @@ export class LoggerModule {
 
     // No transports configured
     return [];
-  }
-
-  /**
-   * Creates async providers for module configuration.
-   *
-   * Handles three configuration patterns:
-   * - useFactory: Creates options using a factory function
-   * - useClass: Creates options using a factory class
-   * - useExisting: Uses an existing factory provider
-   *
-   * @param options - The async configuration options
-   * @returns An array of providers
-   */
-  private static createAsyncProviders(options: ILoggerAsyncModuleAsyncOptions): Provider[] {
-    if (options.useFactory) {
-      return [
-        {
-          provide: LOGGER_MODULE_OPTIONS,
-          useFactory: async (...args: any[]) => {
-            const opts = await options.useFactory!(...args);
-            return opts;
-          },
-          inject: options.inject || [],
-        },
-      ];
-    }
-
-    if (options.useClass) {
-      return [
-        {
-          provide: LOGGER_MODULE_OPTIONS,
-          useFactory: async (factory: ILoggerModuleOptionsFactory) => {
-            const opts = await factory.createLoggerOptions();
-            return opts;
-          },
-          inject: [options.useClass],
-        },
-        {
-          provide: options.useClass,
-          useClass: options.useClass,
-        },
-      ];
-    }
-
-    if (options.useExisting) {
-      return [
-        {
-          provide: LOGGER_MODULE_OPTIONS,
-          useFactory: async (factory: ILoggerModuleOptionsFactory) => {
-            const opts = await factory.createLoggerOptions();
-            return opts;
-          },
-          inject: [options.useExisting],
-        },
-      ];
-    }
-
-    throw new Error(
-      'Invalid async configuration. Must provide useFactory, useClass, or useExisting.'
-    );
   }
 }

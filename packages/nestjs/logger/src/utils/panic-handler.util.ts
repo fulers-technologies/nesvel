@@ -44,9 +44,7 @@ import type { PanicData, PanicResponse } from '@/types';
  * // Output: "Could not create project because /invalid/path is not a valid path."
  * ```
  */
-export const panicHandler = (
-  panicData: PanicData = {} as PanicData
-): PanicResponse => {
+export const panicHandler = (panicData: PanicData = {} as PanicData): PanicResponse => {
   const { id, context } = panicData;
 
   // Match panic ID to specific error condition and generate appropriate message

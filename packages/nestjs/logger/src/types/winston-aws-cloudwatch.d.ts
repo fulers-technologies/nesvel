@@ -210,7 +210,7 @@ declare module 'winston-aws-cloudwatch' {
    *
    * const logger = winston.createLogger({
    *   transports: [
-   *     new CloudWatchTransport({
+   *     CloudWatchTransport.make({
    *       logGroupName: '/aws/application/my-app',
    *       logStreamName: `${new Date().toISOString().split('T')[0]}`,
    *       awsRegion: 'us-east-1',

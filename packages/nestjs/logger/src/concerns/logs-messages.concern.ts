@@ -331,7 +331,7 @@ export class LogsMessagesConcern {
    * @protected
    */
   protected fireLogEvent(level: LogLevel | string, message: string, context: any = []): void {
-    const event = new MessageLoggedEvent(level, message, context);
+    const event = MessageLoggedEvent.make(level, message, context);
 
     if ((this as any).eventEmitter) {
       (this as any).eventEmitter.emit('log-message.logged', event);

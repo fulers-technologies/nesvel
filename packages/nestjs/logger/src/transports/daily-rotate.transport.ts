@@ -26,7 +26,7 @@ import type { IDailyTransportOptions, ITransport } from '@interfaces';
  *
  * @example
  * ```typescript
- * const transport = new DailyRotateTransport({
+ * const transport = DailyRotateTransport.make({
  *   type: TransportType.DAILY,
  *   level: LogLevel.INFO,
  *   filename: './logs/application-%DATE%.log',
@@ -57,7 +57,7 @@ export class DailyRotateTransport implements ITransport {
    *
    * @example
    * ```typescript
-   * const transport = new DailyRotateTransport({
+   * const transport = DailyRotateTransport.make({
    *   type: TransportType.DAILY,
    *   level: LogLevel.INFO,
    *   filename: './logs/app-%DATE%.log',
@@ -76,7 +76,7 @@ export class DailyRotateTransport implements ITransport {
       winston.format.errors({ stack: true })
     );
 
-    this.winstonTransport = new DailyRotateFile({
+    this.winstonTransport = DailyRotateFile.make({
       format,
       filename: options.filename,
       maxSize: options.maxSize || '20m',
@@ -87,6 +87,29 @@ export class DailyRotateTransport implements ITransport {
       handleExceptions: options.handleExceptions ?? true,
       handleRejections: options.handleRejections ?? true,
     });
+  }
+
+  /**
+   * Static factory method to create a new daily rotate transport instance.
+   *
+   * This method provides a fluent interface for creating transport instances
+   * following the static factory pattern commonly used in Laravel and similar frameworks.
+   *
+   * @param options - Daily rotate transport configuration options
+   * @returns A new DailyRotateTransport instance
+   *
+   * @example
+   * ```typescript
+   * const transport = DailyRotateTransport.make({
+   *   type: TransportType.DAILY,
+   *   filename: './logs/app-%DATE%.log',
+   *   maxSize: '20m',
+   *   maxFiles: '14d'
+   * });
+   * ```
+   */
+  static make(options: IDailyTransportOptions): DailyRotateTransport {
+    return new DailyRotateTransport(options);
   }
 
   /**

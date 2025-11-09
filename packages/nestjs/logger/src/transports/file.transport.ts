@@ -18,7 +18,7 @@ import type { IFileTransportOptions, ITransport } from '@interfaces';
  *
  * @example
  * ```typescript
- * const transport = new FileTransport({
+ * const transport = FileTransport.make({
  *   type: TransportType.FILE,
  *   level: LogLevel.INFO,
  *   filename: './logs/app.log',
@@ -42,7 +42,7 @@ export class FileTransport implements ITransport {
    *
    * @example
    * ```typescript
-   * const transport = new FileTransport({
+   * const transport = FileTransport.make({
    *   type: TransportType.FILE,
    *   level: LogLevel.INFO,
    *   filename: './logs/application.log',
@@ -68,6 +68,29 @@ export class FileTransport implements ITransport {
       handleExceptions: options.handleExceptions ?? true,
       handleRejections: options.handleRejections ?? true,
     });
+  }
+
+  /**
+   * Static factory method to create a new file transport instance.
+   *
+   * This method provides a fluent interface for creating transport instances
+   * following the static factory pattern commonly used in Laravel and similar frameworks.
+   *
+   * @param options - File transport configuration options
+   * @returns A new FileTransport instance
+   *
+   * @example
+   * ```typescript
+   * const transport = FileTransport.make({
+   *   type: TransportType.FILE,
+   *   level: LogLevel.INFO,
+   *   filename: './logs/app.log',
+   *   maxsize: 5242880
+   * });
+   * ```
+   */
+  static make(options: IFileTransportOptions): FileTransport {
+    return new FileTransport(options);
   }
 
   /**

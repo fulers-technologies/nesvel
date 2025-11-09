@@ -29,7 +29,7 @@ import { ICloudWatchTransportOptions, ITransport } from '@/interfaces';
  *
  * @example
  * ```typescript
- * const transport = new CloudWatchTransport({
+ * const transport = CloudWatchTransport.make({
  *   type: TransportType.CLOUDWATCH,
  *   level: LogLevel.INFO,
  *   logGroupName: '/aws/application/myapp',
@@ -59,7 +59,7 @@ export class CloudWatchTransport implements ITransport {
    *
    * @example With explicit credentials
    * ```typescript
-   * const transport = new CloudWatchTransport({
+   * const transport = CloudWatchTransport.make({
    *   type: TransportType.CLOUDWATCH,
    *   level: LogLevel.INFO,
    *   logGroupName: '/aws/myapp/logs',
@@ -74,7 +74,7 @@ export class CloudWatchTransport implements ITransport {
    *
    * @example Using IAM roles (EC2/ECS/Lambda)
    * ```typescript
-   * const transport = new CloudWatchTransport({
+   * const transport = CloudWatchTransport.make({
    *   type: TransportType.CLOUDWATCH,
    *   level: LogLevel.INFO,
    *   logGroupName: '/aws/myapp/logs',
@@ -132,7 +132,30 @@ export class CloudWatchTransport implements ITransport {
       cloudWatchConfig.batchSize = options.batchSize;
     }
 
-    this.winstonTransport = new WinstonCloudWatch(cloudWatchConfig);
+    this.winstonTransport = WinstonCloudWatch.make(cloudWatchConfig);
+  }
+
+  /**
+   * Static factory method to create a new CloudWatch transport instance.
+   *
+   * This method provides a fluent interface for creating transport instances
+   * following the static factory pattern commonly used in Laravel and similar frameworks.
+   *
+   * @param options - CloudWatch transport configuration options
+   * @returns A new CloudWatchTransport instance
+   *
+   * @example
+   * ```typescript
+   * const transport = CloudWatchTransport.make({
+   *   type: TransportType.CLOUDWATCH,
+   *   logGroupName: '/aws/application/myapp',
+   *   logStreamName: 'production',
+   *   awsRegion: 'us-east-1'
+   * });
+   * ```
+   */
+  static make(options: ICloudWatchTransportOptions): CloudWatchTransport {
+    return new CloudWatchTransport(options);
   }
 
   /**

@@ -28,12 +28,13 @@
   },
   "dependencies": {
     "@medusajs/telemetry": "^2.11.3",
-    "@nestjs/event-emitter": "^2.1.0",
-    "nest-winston": "^1.10.0",
+    "@nestjs/event-emitter": "^3.0.1",
+    "@nesvel/collections": "workspace:*",
+    "nest-winston": "^1.10.2",
     "stack-trace": "^1.0.0-pre2",
     "ts-mixer": "^6.0.4",
-    "ulid": "^2.3.0",
-    "winston": "^3.15.0",
+    "ulid": "^3.0.1",
+    "winston": "^3.18.3",
     "winston-aws-cloudwatch": "^3.0.0",
     "winston-daily-rotate-file": "^5.0.0",
     "winston-slack-hook": "^0.3.0"
@@ -54,7 +55,7 @@
     "@nesvel/macroable": "workspace:*",
     "@nesvel/tsup-config": "workspace:*",
     "@nesvel/typescript-config": "workspace:*",
-    "@types/node": "^22.0.0",
+    "@types/node": "^24.10.0",
     "@types/stack-trace": "^0.0.33",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2"

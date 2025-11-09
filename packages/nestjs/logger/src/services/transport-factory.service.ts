@@ -204,7 +204,10 @@ export class TransportFactoryService extends BaseFactory<
     driverOptions: Record<string, any> | undefined,
     config: LoggerConfig
   ): ITransport {
-    return new TransportClass(driverOptions || config);
+    // Use static make() method if available (Laravel-style factory pattern)
+    // Otherwise fall back to direct instantiation
+    const options = driverOptions || config;
+    return TransportClass.make(options);
   }
 
   /**

@@ -29,7 +29,7 @@ import type { ISlackTransportOptions, ITransport } from '@interfaces';
  *
  * @example
  * ```typescript
- * const transport = new SlackTransport({
+ * const transport = SlackTransport.make({
  *   type: TransportType.SLACK,
  *   level: LogLevel.ERROR,  // Only send errors to Slack
  *   webhookUrl: 'https://hooks.slack.com/services/YOUR/WEBHOOK/URL',
@@ -58,7 +58,7 @@ export class SlackTransport implements ITransport {
    *
    * @example Error notifications
    * ```typescript
-   * const transport = new SlackTransport({
+   * const transport = SlackTransport.make({
    *   type: TransportType.SLACK,
    *   level: LogLevel.ERROR,
    *   webhookUrl: process.env.SLACK_WEBHOOK_URL,
@@ -71,7 +71,7 @@ export class SlackTransport implements ITransport {
    *
    * @example Custom formatting
    * ```typescript
-   * const transport = new SlackTransport({
+   * const transport = SlackTransport.make({
    *   type: TransportType.SLACK,
    *   level: LogLevel.WARN,
    *   webhookUrl: process.env.SLACK_WEBHOOK_URL,
@@ -128,7 +128,30 @@ export class SlackTransport implements ITransport {
       slackConfig.formatter = options.formatter;
     }
 
-    this.winstonTransport = new SlackHook(slackConfig);
+    this.winstonTransport = SlackHook.make(slackConfig);
+  }
+
+  /**
+   * Static factory method to create a new Slack transport instance.
+   *
+   * This method provides a fluent interface for creating transport instances
+   * following the static factory pattern commonly used in Laravel and similar frameworks.
+   *
+   * @param options - Slack transport configuration options
+   * @returns A new SlackTransport instance
+   *
+   * @example
+   * ```typescript
+   * const transport = SlackTransport.make({
+   *   type: TransportType.SLACK,
+   *   level: LogLevel.ERROR,
+   *   webhookUrl: process.env.SLACK_WEBHOOK_URL,
+   *   channel: '#errors'
+   * });
+   * ```
+   */
+  static make(options: ISlackTransportOptions): SlackTransport {
+    return new SlackTransport(options);
   }
 
   /**

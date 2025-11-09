@@ -18,7 +18,7 @@ import type { IConsoleTransportOptions, ITransport } from '@interfaces';
  *
  * @example
  * ```typescript
- * const transport = new ConsoleTransport({
+ * const transport = ConsoleTransport.make({
  *   type: TransportType.CONSOLE,
  *   level: LogLevel.DEBUG,
  *   colorize: true,
@@ -41,7 +41,7 @@ export class ConsoleTransport implements ITransport {
    *
    * @example
    * ```typescript
-   * const transport = new ConsoleTransport({
+   * const transport = ConsoleTransport.make({
    *   type: TransportType.CONSOLE,
    *   level: LogLevel.DEBUG,
    *   colorize: true
@@ -57,6 +57,28 @@ export class ConsoleTransport implements ITransport {
       handleExceptions: options.handleExceptions ?? true,
       handleRejections: options.handleRejections ?? true,
     });
+  }
+
+  /**
+   * Static factory method to create a new console transport instance.
+   *
+   * This method provides a fluent interface for creating transport instances
+   * following the static factory pattern commonly used in Laravel and similar frameworks.
+   *
+   * @param options - Console transport configuration options
+   * @returns A new ConsoleTransport instance
+   *
+   * @example
+   * ```typescript
+   * const transport = ConsoleTransport.make({
+   *   type: TransportType.CONSOLE,
+   *   level: LogLevel.DEBUG,
+   *   colorize: true
+   * });
+   * ```
+   */
+  static make(options: IConsoleTransportOptions): ConsoleTransport {
+    return new ConsoleTransport(options);
   }
 
   /**
