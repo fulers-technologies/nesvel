@@ -37,7 +37,7 @@ describe('FileNotFoundException', () => {
       const path = 'uploads/document.pdf';
 
       // Act
-      const exception = new FileNotFoundException(path);
+      const exception = FileNotFoundException.make(path);
 
       // Assert
       expect(exception).toBeInstanceOf(StorageException);
@@ -57,7 +57,7 @@ describe('FileNotFoundException', () => {
       const path = 'uploads/file with spaces & special.pdf';
 
       // Act
-      const exception = new FileNotFoundException(path);
+      const exception = FileNotFoundException.make(path);
 
       // Assert
       expect(exception.message).toContain(path);
@@ -75,7 +75,7 @@ describe('FileNotFoundException', () => {
       const path = 'very/long/path/with/many/nested/directories/and/a/very/long/filename.pdf';
 
       // Act
-      const exception = new FileNotFoundException(path);
+      const exception = FileNotFoundException.make(path);
 
       // Assert
       expect(exception.message).toContain(path);
@@ -92,7 +92,7 @@ describe('FileNotFoundException', () => {
       const path = 'file.txt';
 
       // Act
-      const exception = new FileNotFoundException(path);
+      const exception = FileNotFoundException.make(path);
 
       // Assert
       expect(exception.message).toContain(path);
@@ -117,7 +117,7 @@ describe('FileNotFoundException', () => {
 
       // Act & Assert
       expect(() => {
-        throw new FileNotFoundException(path);
+        throw FileNotFoundException.make(path);
       }).toThrow(FileNotFoundException);
     });
 
@@ -133,7 +133,7 @@ describe('FileNotFoundException', () => {
 
       // Act
       try {
-        throw new FileNotFoundException(path);
+        throw FileNotFoundException.make(path);
       } catch (error: Error | any) {
         // Assert
         expect(error).toBeInstanceOf(FileNotFoundException);
@@ -153,7 +153,7 @@ describe('FileNotFoundException', () => {
 
       // Act & Assert
       expect(() => {
-        throw new FileNotFoundException(path);
+        throw FileNotFoundException.make(path);
       }).toThrow(StorageException);
     });
   });
@@ -174,7 +174,7 @@ describe('FileNotFoundException', () => {
       const path = '';
 
       // Act
-      const exception = new FileNotFoundException(path);
+      const exception = FileNotFoundException.make(path);
 
       // Assert
       expect(exception).toBeInstanceOf(FileNotFoundException);
@@ -192,7 +192,7 @@ describe('FileNotFoundException', () => {
       const path = 'uploads/文档.pdf';
 
       // Act
-      const exception = new FileNotFoundException(path);
+      const exception = FileNotFoundException.make(path);
 
       // Assert
       expect(exception.message).toContain(path);
@@ -209,7 +209,7 @@ describe('FileNotFoundException', () => {
       const path = 'uploads\\documents\\file.pdf';
 
       // Act
-      const exception = new FileNotFoundException(path);
+      const exception = FileNotFoundException.make(path);
 
       // Assert
       expect(exception.message).toContain(path);

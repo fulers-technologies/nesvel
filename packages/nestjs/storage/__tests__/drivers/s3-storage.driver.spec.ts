@@ -55,7 +55,7 @@ describe('S3StorageDriver', () => {
       },
     };
 
-    driver = new S3StorageDriver(options);
+    driver = S3StorageDriver.make(options);
     (driver as any).client = mockS3Client;
   });
 
@@ -90,7 +90,7 @@ describe('S3StorageDriver', () => {
       };
 
       // Act
-      const newDriver = new S3StorageDriver(options);
+      const newDriver = S3StorageDriver.make(options);
 
       // Assert
       expect(newDriver).toBeDefined();
@@ -115,7 +115,7 @@ describe('S3StorageDriver', () => {
       };
 
       // Act
-      const newDriver = new S3StorageDriver(options);
+      const newDriver = S3StorageDriver.make(options);
 
       // Assert
       expect(newDriver).toBeDefined();
@@ -247,7 +247,7 @@ describe('S3StorageDriver', () => {
       // Arrange
       const path = 'uploads/test.pdf';
       const mockBody = {
-        transformToByteArray: jest.fn().mockResolvedValue(new Uint8Array([1, 2, 3])),
+        transformToByteArray: jest.fn().mockResolvedValue(Uint8Array.make([1, 2, 3])),
       };
 
       mockS3Client.send.mockResolvedValueOnce({
@@ -273,7 +273,7 @@ describe('S3StorageDriver', () => {
       const path = 'large-file.bin';
       const options = { range: { start: 0, end: 1024 } };
       const mockBody = {
-        transformToByteArray: jest.fn().mockResolvedValue(new Uint8Array(1024)),
+        transformToByteArray: jest.fn().mockResolvedValue(Uint8Array.make(1024)),
       };
 
       mockS3Client.send.mockResolvedValueOnce({

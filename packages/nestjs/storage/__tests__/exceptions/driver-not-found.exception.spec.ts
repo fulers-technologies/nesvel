@@ -41,7 +41,7 @@ describe('DriverNotFoundException', () => {
       const availableDrivers = ['s3', 'minio'];
 
       // Act
-      const exception = new DriverNotFoundException(driverType, availableDrivers);
+      const exception = DriverNotFoundException.make(driverType, availableDrivers);
 
       // Assert
       expect(exception).toBeInstanceOf(StorageException);
@@ -64,7 +64,7 @@ describe('DriverNotFoundException', () => {
       const availableDrivers = ['s3'];
 
       // Act
-      const exception = new DriverNotFoundException(driverType, availableDrivers);
+      const exception = DriverNotFoundException.make(driverType, availableDrivers);
 
       // Assert
       expect(exception.message).toContain('unknown');
@@ -84,7 +84,7 @@ describe('DriverNotFoundException', () => {
       const availableDrivers: string[] = [];
 
       // Act
-      const exception = new DriverNotFoundException(driverType, availableDrivers);
+      const exception = DriverNotFoundException.make(driverType, availableDrivers);
 
       // Assert
       expect(exception.message).toContain('test');
@@ -103,7 +103,7 @@ describe('DriverNotFoundException', () => {
       const availableDrivers = ['s3', 'minio', 'gcs', 'azure'];
 
       // Act
-      const exception = new DriverNotFoundException(driverType, availableDrivers);
+      const exception = DriverNotFoundException.make(driverType, availableDrivers);
 
       // Assert
       expect(exception.message).toContain('custom');
@@ -134,7 +134,7 @@ describe('DriverNotFoundException', () => {
 
       // Act & Assert
       expect(() => {
-        throw new DriverNotFoundException(driverType, availableDrivers);
+        throw DriverNotFoundException.make(driverType, availableDrivers);
       }).toThrow(DriverNotFoundException);
     });
 
@@ -151,7 +151,7 @@ describe('DriverNotFoundException', () => {
 
       // Act
       try {
-        throw new DriverNotFoundException(driverType, availableDrivers);
+        throw DriverNotFoundException.make(driverType, availableDrivers);
       } catch (error: Error | any) {
         // Assert
         expect(error).toBeInstanceOf(DriverNotFoundException);
@@ -173,7 +173,7 @@ describe('DriverNotFoundException', () => {
 
       // Act & Assert
       expect(() => {
-        throw new DriverNotFoundException(driverType, availableDrivers);
+        throw DriverNotFoundException.make(driverType, availableDrivers);
       }).toThrow(StorageException);
     });
   });
@@ -196,7 +196,7 @@ describe('DriverNotFoundException', () => {
       const availableDrivers = ['s3'];
 
       // Act
-      const exception = new DriverNotFoundException(driverType, availableDrivers);
+      const exception = DriverNotFoundException.make(driverType, availableDrivers);
 
       // Assert
       expect(exception.message).toContain(driverType);
@@ -214,7 +214,7 @@ describe('DriverNotFoundException', () => {
       const availableDrivers = ['s3', 'minío', '存储'];
 
       // Act
-      const exception = new DriverNotFoundException(driverType, availableDrivers);
+      const exception = DriverNotFoundException.make(driverType, availableDrivers);
 
       // Assert
       expect(exception.message).toContain('minío');

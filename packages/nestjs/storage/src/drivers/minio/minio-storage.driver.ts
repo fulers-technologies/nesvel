@@ -28,7 +28,7 @@ import type { IMinIOOptions } from './minio-options.interface';
  *
  * @example
  * ```typescript
- * const driver = new MinIOStorageDriver({
+ * const driver = MinIOStorageDriver.make({
  *   endPoint: 'localhost',
  *   port: 9000,
  *   useSSL: false,
@@ -159,7 +159,7 @@ export class MinIOStorageDriver implements IStorageDriver {
 
       return file;
     } catch (error: Error | any) {
-      throw new UploadFailedException(path, error);
+      throw UploadFailedException.make(path, error);
     }
   }
 
@@ -193,9 +193,9 @@ export class MinIOStorageDriver implements IStorageDriver {
       });
     } catch (error: Error | any) {
       if (error.code === 'NoSuchKey') {
-        throw new FileNotFoundException(path);
+        throw FileNotFoundException.make(path);
       }
-      throw new DownloadFailedException(path, error);
+      throw DownloadFailedException.make(path, error);
     }
   }
 
@@ -207,9 +207,9 @@ export class MinIOStorageDriver implements IStorageDriver {
       return await this.client.getObject(this.options.bucket, path);
     } catch (error: Error | any) {
       if (error.code === 'NoSuchKey') {
-        throw new FileNotFoundException(path);
+        throw FileNotFoundException.make(path);
       }
-      throw new DownloadFailedException(path, error);
+      throw DownloadFailedException.make(path, error);
     }
   }
 
@@ -235,7 +235,7 @@ export class MinIOStorageDriver implements IStorageDriver {
     try {
       await this.client.removeObject(this.options.bucket, path);
     } catch (error: Error | any) {
-      throw new DeleteFailedException(path, error);
+      throw DeleteFailedException.make(path, error);
     }
   }
 
@@ -246,7 +246,7 @@ export class MinIOStorageDriver implements IStorageDriver {
     try {
       await this.client.removeObjects(this.options.bucket, paths);
     } catch (error: Error | any) {
-      throw new DeleteFailedException(paths.join(', '), error);
+      throw DeleteFailedException.make(paths.join(', '), error);
     }
   }
 
@@ -262,7 +262,7 @@ export class MinIOStorageDriver implements IStorageDriver {
       );
     } catch (error: Error | any) {
       if (error.code === 'NoSuchKey') {
-        throw new FileNotFoundException(sourcePath);
+        throw FileNotFoundException.make(sourcePath);
       }
       throw error;
     }
@@ -292,7 +292,7 @@ export class MinIOStorageDriver implements IStorageDriver {
       };
     } catch (error: Error | any) {
       if (error.code === 'NotFound') {
-        throw new FileNotFoundException(path);
+        throw FileNotFoundException.make(path);
       }
       throw error;
     }

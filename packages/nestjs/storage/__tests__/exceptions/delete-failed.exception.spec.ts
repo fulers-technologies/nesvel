@@ -12,7 +12,7 @@ describe('DeleteFailedException', () => {
     it('should create exception with path and error', () => {
       const path = 'files/file.pdf';
       const originalError = new Error('Permission denied');
-      const exception = new DeleteFailedException(path, originalError);
+      const exception = DeleteFailedException.make(path, originalError);
 
       expect(exception).toBeInstanceOf(StorageException);
       expect(exception).toBeInstanceOf(DeleteFailedException);
@@ -28,7 +28,7 @@ describe('DeleteFailedException', () => {
       const error = new Error('Test error');
 
       expect(() => {
-        throw new DeleteFailedException(path, error);
+        throw DeleteFailedException.make(path, error);
       }).toThrow(DeleteFailedException);
     });
   });

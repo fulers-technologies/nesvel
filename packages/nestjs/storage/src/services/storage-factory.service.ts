@@ -203,7 +203,7 @@ export class StorageFactoryService extends BaseFactory<
    * connects the driver if autoConnect is enabled in the configuration.
    *
    * Storage drivers use a simple constructor pattern rather than static
-   * factory methods, so instantiation is straightforward: `new DriverClass(options)`.
+   * factory methods, so instantiation is straightforward: `DriverClass.make(options)`.
    *
    * @param DriverClass - The driver class constructor (S3StorageDriver, MinIOStorageDriver)
    * @param driverOptions - Driver-specific configuration (connection details, bucket, etc.)
@@ -233,7 +233,7 @@ export class StorageFactoryService extends BaseFactory<
     config: IStorageOptions
   ): IStorageDriver {
     // Instantiate driver with driver-specific options
-    const driver = new DriverClass(driverOptions);
+    const driver = DriverClass.make(driverOptions);
 
     // Auto-connect if requested (fire and forget for compatibility)
     // Note: This maintains async behavior without blocking factory creation

@@ -21,7 +21,7 @@ describe('DownloadFailedException', () => {
     it('should create exception with path and error', () => {
       const path = 'downloads/file.pdf';
       const originalError = new Error('Network error');
-      const exception = new DownloadFailedException(path, originalError);
+      const exception = DownloadFailedException.make(path, originalError);
 
       expect(exception).toBeInstanceOf(StorageException);
       expect(exception).toBeInstanceOf(DownloadFailedException);
@@ -33,7 +33,7 @@ describe('DownloadFailedException', () => {
     it('should handle error without message', () => {
       const path = 'test.txt';
       const originalError = new Error();
-      const exception = new DownloadFailedException(path, originalError);
+      const exception = DownloadFailedException.make(path, originalError);
 
       expect(exception.message).toContain(path);
     });
@@ -45,7 +45,7 @@ describe('DownloadFailedException', () => {
       const error = new Error('Test error');
 
       expect(() => {
-        throw new DownloadFailedException(path, error);
+        throw DownloadFailedException.make(path, error);
       }).toThrow(DownloadFailedException);
     });
 
@@ -54,7 +54,7 @@ describe('DownloadFailedException', () => {
       const error = new Error('Connection timeout');
 
       try {
-        throw new DownloadFailedException(path, error);
+        throw DownloadFailedException.make(path, error);
       } catch (caught) {
         expect(caught).toBeInstanceOf(DownloadFailedException);
         expect(caught.message).toContain(path);

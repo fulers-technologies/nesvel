@@ -37,7 +37,7 @@ describe('UploadFailedException', () => {
       const originalError = new Error('Network error');
 
       // Act
-      const exception = new UploadFailedException(path, originalError);
+      const exception = UploadFailedException.make(path, originalError);
 
       // Assert
       expect(exception).toBeInstanceOf(StorageException);
@@ -58,7 +58,7 @@ describe('UploadFailedException', () => {
       const originalError = new Error();
 
       // Act
-      const exception = new UploadFailedException(path, originalError);
+      const exception = UploadFailedException.make(path, originalError);
 
       // Assert
       expect(exception.message).toContain(path);
@@ -79,7 +79,7 @@ describe('UploadFailedException', () => {
       (originalError as any).statusCode = 500;
 
       // Act
-      const exception = new UploadFailedException(path, originalError);
+      const exception = UploadFailedException.make(path, originalError);
 
       // Assert
       expect(exception.message).toContain(path);
@@ -106,7 +106,7 @@ describe('UploadFailedException', () => {
 
       // Act & Assert
       expect(() => {
-        throw new UploadFailedException(path, error);
+        throw UploadFailedException.make(path, error);
       }).toThrow(UploadFailedException);
     });
 
@@ -123,7 +123,7 @@ describe('UploadFailedException', () => {
 
       // Act
       try {
-        throw new UploadFailedException(path, error);
+        throw UploadFailedException.make(path, error);
       } catch (caught) {
         // Assert
         expect(caught).toBeInstanceOf(UploadFailedException);
@@ -145,7 +145,7 @@ describe('UploadFailedException', () => {
 
       // Act & Assert
       expect(() => {
-        throw new UploadFailedException(path, error);
+        throw UploadFailedException.make(path, error);
       }).toThrow(StorageException);
     });
   });
@@ -168,7 +168,7 @@ describe('UploadFailedException', () => {
       const originalError = { message: 'Custom error' } as any;
 
       // Act
-      const exception = new UploadFailedException(path, originalError);
+      const exception = UploadFailedException.make(path, originalError);
 
       // Assert
       expect(exception).toBeInstanceOf(UploadFailedException);
@@ -187,7 +187,7 @@ describe('UploadFailedException', () => {
       const originalError = new Error(longMessage);
 
       // Act
-      const exception = new UploadFailedException(path, originalError);
+      const exception = UploadFailedException.make(path, originalError);
 
       // Assert
       expect(exception).toBeInstanceOf(UploadFailedException);

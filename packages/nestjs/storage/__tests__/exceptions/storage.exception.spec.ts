@@ -39,7 +39,7 @@ describe('StorageException', () => {
       const message = 'Test storage error';
 
       // Act
-      const exception = new StorageException('TEST_ERROR', message);
+      const exception = StorageException.make('TEST_ERROR', message);
 
       // Assert
       expect(exception).toBeInstanceOf(Error);
@@ -65,7 +65,7 @@ describe('StorageException', () => {
           this.name = 'CustomStorageException';
         }
       }
-      const exception = new CustomStorageException(message);
+      const exception = CustomStorageException.make(message);
 
       // Assert
       expect(exception.name).toBe('CustomStorageException');
@@ -82,7 +82,7 @@ describe('StorageException', () => {
      */
     it('should maintain proper prototype chain', () => {
       // Arrange & Act
-      const exception = new StorageException('TEST_CODE', 'Test');
+      const exception = StorageException.make('TEST_CODE', 'Test');
 
       // Assert
       expect(Object.getPrototypeOf(exception)).toBe(StorageException.prototype);
@@ -98,7 +98,7 @@ describe('StorageException', () => {
      */
     it('should capture stack trace', () => {
       // Arrange & Act
-      const exception = new StorageException('TEST_ERROR', 'Test error');
+      const exception = StorageException.make('TEST_ERROR', 'Test error');
 
       // Assert
       expect(exception.stack).toBeDefined();
@@ -123,7 +123,7 @@ describe('StorageException', () => {
     it('should serialize to JSON correctly', () => {
       // Arrange
       const message = 'Serialization test';
-      const exception = new StorageException('SERIALIZE_TEST', message);
+      const exception = StorageException.make('SERIALIZE_TEST', message);
 
       // Act
       const json = JSON.stringify(exception);
@@ -143,7 +143,7 @@ describe('StorageException', () => {
     it('should convert to string correctly', () => {
       // Arrange
       const message = 'String conversion test';
-      const exception = new StorageException('STRING_TEST', message);
+      const exception = StorageException.make('STRING_TEST', message);
 
       // Act
       const str = exception.toString();
@@ -173,7 +173,7 @@ describe('StorageException', () => {
 
       // Act & Assert
       expect(() => {
-        throw new StorageException('CATCH_ERROR', message);
+        throw StorageException.make('CATCH_ERROR', message);
       }).toThrow(Error);
     });
 
@@ -189,7 +189,7 @@ describe('StorageException', () => {
 
       // Act & Assert
       expect(() => {
-        throw new StorageException('SPECIFIC_ERROR', message);
+        throw StorageException.make('SPECIFIC_ERROR', message);
       }).toThrow(StorageException);
     });
 
@@ -205,7 +205,7 @@ describe('StorageException', () => {
 
       // Act
       try {
-        throw new StorageException('PRESERVE_ERROR', message);
+        throw StorageException.make('PRESERVE_ERROR', message);
       } catch (error: Error | any) {
         // Assert
         expect(error).toBeInstanceOf(StorageException);
@@ -221,8 +221,8 @@ describe('StorageException', () => {
      */
     it('should create independent exception instances', () => {
       // Arrange & Act
-      const exception1 = new StorageException('ERROR_1', 'Error 1');
-      const exception2 = new StorageException('ERROR_2', 'Error 2');
+      const exception1 = StorageException.make('ERROR_1', 'Error 1');
+      const exception2 = StorageException.make('ERROR_2', 'Error 2');
 
       // Assert
       expect(exception1.message).toBe('Error 1');

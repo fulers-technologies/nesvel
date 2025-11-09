@@ -66,7 +66,7 @@ describe('StorageService', () => {
       providers: [
         {
           provide: StorageService,
-          useFactory: () => new StorageService(mockDriver, { driver: 'test', driverOptions: {} }),
+          useFactory: () => StorageService.make(mockDriver, { driver: 'test', driverOptions: {} }),
         },
       ],
     }).compile();

@@ -59,7 +59,7 @@ describe('MinIOStorageDriver', () => {
       bucket: 'test-bucket',
     };
 
-    driver = new MinIOStorageDriver(options);
+    driver = MinIOStorageDriver.make(options);
 
     // Ensure client is connected for tests that need it
     await driver.connect();
@@ -96,7 +96,7 @@ describe('MinIOStorageDriver', () => {
       };
 
       // Act
-      const newDriver = new MinIOStorageDriver(options);
+      const newDriver = MinIOStorageDriver.make(options);
 
       // Assert
       expect(newDriver).toBeDefined();
@@ -119,7 +119,7 @@ describe('MinIOStorageDriver', () => {
       };
 
       // Act
-      const newDriver = new MinIOStorageDriver(options as any);
+      const newDriver = MinIOStorageDriver.make(options as any);
 
       // Assert
       expect(newDriver).toBeDefined();
@@ -137,7 +137,7 @@ describe('MinIOStorageDriver', () => {
      */
     it('should connect successfully', async () => {
       // Arrange - create a fresh driver for this test
-      const freshDriver = new MinIOStorageDriver({
+      const freshDriver = MinIOStorageDriver.make({
         endPoint: 'localhost',
         port: 9000,
         useSSL: false,
@@ -156,7 +156,7 @@ describe('MinIOStorageDriver', () => {
      */
     it('should create bucket if not exists', async () => {
       // Arrange - create a fresh driver and mock bucket doesn't exist
-      const freshDriver = new MinIOStorageDriver({
+      const freshDriver = MinIOStorageDriver.make({
         endPoint: 'localhost',
         port: 9000,
         useSSL: false,
@@ -540,7 +540,7 @@ describe('MinIOStorageDriver', () => {
      */
     it('should handle connection errors', async () => {
       // Arrange - create fresh driver and mock error
-      const freshDriver = new MinIOStorageDriver({
+      const freshDriver = MinIOStorageDriver.make({
         endPoint: 'localhost',
         port: 9000,
         useSSL: false,

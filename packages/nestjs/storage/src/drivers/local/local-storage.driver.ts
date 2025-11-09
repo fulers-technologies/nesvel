@@ -35,7 +35,7 @@ import type { ILocalOptions } from './local-options.interface';
  *
  * @example
  * ```typescript
- * const driver = new LocalStorageDriver({
+ * const driver = LocalStorageDriver.make({
  *   root: './storage/uploads',
  *   baseUrl: 'http://localhost:3000/files',
  *   ensureDirectoryExists: true
@@ -63,7 +63,7 @@ export class LocalStorageDriver implements IStorageDriver {
    *
    * @example
    * ```typescript
-   * const driver = new LocalStorageDriver({
+   * const driver = LocalStorageDriver.make({
    *   root: './storage/uploads',
    *   baseUrl: 'http://localhost:3000/files'
    * });
@@ -207,7 +207,7 @@ export class LocalStorageDriver implements IStorageDriver {
       };
     } catch (error: Error | any) {
       const size = Buffer.isBuffer(content) ? content.length : undefined;
-      throw new UploadFailedException(filePath, error, size);
+      throw UploadFailedException.make(filePath, error, size);
     }
   }
 
@@ -258,7 +258,7 @@ export class LocalStorageDriver implements IStorageDriver {
     try {
       const exists = await this.exists(filePath);
       if (!exists) {
-        throw new FileNotFoundException(filePath);
+        throw FileNotFoundException.make(filePath);
       }
 
       return await fs.readFile(absolutePath);
@@ -266,7 +266,7 @@ export class LocalStorageDriver implements IStorageDriver {
       if (error instanceof FileNotFoundException) {
         throw error;
       }
-      throw new DownloadFailedException(filePath, error);
+      throw DownloadFailedException.make(filePath, error);
     }
   }
 
@@ -293,7 +293,7 @@ export class LocalStorageDriver implements IStorageDriver {
     try {
       const exists = await this.exists(filePath);
       if (!exists) {
-        throw new FileNotFoundException(filePath);
+        throw FileNotFoundException.make(filePath);
       }
 
       return createReadStream(absolutePath);
@@ -301,7 +301,7 @@ export class LocalStorageDriver implements IStorageDriver {
       if (error instanceof FileNotFoundException) {
         throw error;
       }
-      throw new DownloadFailedException(filePath, error);
+      throw DownloadFailedException.make(filePath, error);
     }
   }
 
@@ -351,7 +351,7 @@ export class LocalStorageDriver implements IStorageDriver {
     try {
       const exists = await this.exists(filePath);
       if (!exists) {
-        throw new FileNotFoundException(filePath);
+        throw FileNotFoundException.make(filePath);
       }
 
       await fs.unlink(absolutePath);
@@ -359,7 +359,7 @@ export class LocalStorageDriver implements IStorageDriver {
       if (error instanceof FileNotFoundException) {
         throw error;
       }
-      throw new DeleteFailedException(filePath, error);
+      throw DeleteFailedException.make(filePath, error);
     }
   }
 
@@ -410,7 +410,7 @@ export class LocalStorageDriver implements IStorageDriver {
     try {
       const exists = await this.exists(sourcePath);
       if (!exists) {
-        throw new FileNotFoundException(sourcePath);
+        throw FileNotFoundException.make(sourcePath);
       }
 
       // Ensure destination directory exists
@@ -457,7 +457,7 @@ export class LocalStorageDriver implements IStorageDriver {
     try {
       const exists = await this.exists(sourcePath);
       if (!exists) {
-        throw new FileNotFoundException(sourcePath);
+        throw FileNotFoundException.make(sourcePath);
       }
 
       // Ensure destination directory exists
@@ -499,7 +499,7 @@ export class LocalStorageDriver implements IStorageDriver {
     try {
       const exists = await this.exists(filePath);
       if (!exists) {
-        throw new FileNotFoundException(filePath);
+        throw FileNotFoundException.make(filePath);
       }
 
       const stats = await fs.stat(absolutePath);
@@ -542,7 +542,7 @@ export class LocalStorageDriver implements IStorageDriver {
   async setMetadata(filePath: string, metadata: IStorageMetadata): Promise<void> {
     const exists = await this.exists(filePath);
     if (!exists) {
-      throw new FileNotFoundException(filePath);
+      throw FileNotFoundException.make(filePath);
     }
 
     // Local filesystem has limited metadata support
@@ -653,7 +653,7 @@ export class LocalStorageDriver implements IStorageDriver {
     try {
       const exists = await this.exists(filePath);
       if (!exists) {
-        throw new FileNotFoundException(filePath);
+        throw FileNotFoundException.make(filePath);
       }
 
       // Set file permissions based on visibility
@@ -689,7 +689,7 @@ export class LocalStorageDriver implements IStorageDriver {
     try {
       const exists = await this.exists(filePath);
       if (!exists) {
-        throw new FileNotFoundException(filePath);
+        throw FileNotFoundException.make(filePath);
       }
 
       const stats = await fs.stat(absolutePath);

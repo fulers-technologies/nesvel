@@ -54,7 +54,7 @@ describe('@InjectStorage() Decorator', () => {
 
       // Assert
       expect(TestService).toBeDefined();
-      expect(new TestService({} as any)).toBeInstanceOf(TestService);
+      expect(TestService.make({} as any)).toBeInstanceOf(TestService);
     });
 
     /**
@@ -73,7 +73,7 @@ describe('@InjectStorage() Decorator', () => {
 
       // Assert
       expect(TestService).toBeDefined();
-      const instance = new TestService({} as any, {} as any);
+      const instance = TestService.make({} as any, {} as any);
       expect(instance).toBeInstanceOf(TestService);
     });
   });
@@ -153,7 +153,7 @@ describe('@InjectStorage() Decorator', () => {
       // Assert
       expect(FileService).toBeDefined();
       const mockStorage = { upload: jest.fn() };
-      const service = new FileService(mockStorage);
+      const service = FileService.make(mockStorage);
       expect(service).toBeInstanceOf(FileService);
     });
 
@@ -174,7 +174,7 @@ describe('@InjectStorage() Decorator', () => {
 
       // Assert
       expect(DocumentService).toBeDefined();
-      const instance = new DocumentService({}, {}, {});
+      const instance = DocumentService.make({}, {}, {});
       expect(instance).toBeInstanceOf(DocumentService);
     });
 
@@ -197,7 +197,7 @@ describe('@InjectStorage() Decorator', () => {
       // Assert
       expect(UploadController).toBeDefined();
       const mockStorage = { upload: jest.fn() };
-      const controller = new UploadController(mockStorage);
+      const controller = UploadController.make(mockStorage);
       expect(controller).toBeInstanceOf(UploadController);
     });
   });
@@ -263,7 +263,7 @@ describe('@InjectStorage() Decorator', () => {
       // Assert
       expect(BaseService).toBeDefined();
       expect(ConcreteService).toBeDefined();
-      const instance = new ConcreteService({});
+      const instance = ConcreteService.make({});
       expect(instance).toBeInstanceOf(ConcreteService);
       expect(instance).toBeInstanceOf(BaseService);
     });
@@ -304,7 +304,7 @@ describe('@InjectStorage() Decorator', () => {
         upload: jest.fn().mockResolvedValue({ path: 'test.pdf' }),
         download: jest.fn().mockResolvedValue(Buffer.from('test')),
       };
-      const service = new TestService(mockStorage);
+      const service = TestService.make(mockStorage);
       expect(service).toBeInstanceOf(TestService);
     });
   });

@@ -33,7 +33,7 @@ import type { IS3Options } from './s3-options.interface';
  *
  * @example
  * ```typescript
- * const driver = new S3StorageDriver({
+ * const driver = S3StorageDriver.make({
  *   region: 'us-east-1',
  *   bucket: 'my-bucket',
  *   credentials: {
@@ -70,7 +70,7 @@ export class S3StorageDriver implements IStorageDriver {
    *
    * @example
    * ```typescript
-   * const driver = new S3StorageDriver({
+   * const driver = S3StorageDriver.make({
    *   region: 'us-east-1',
    *   bucket: 'my-bucket',
    *   credentials: {
@@ -106,7 +106,7 @@ export class S3StorageDriver implements IStorageDriver {
       const { S3Client } = await import('@aws-sdk/client-s3');
 
       // Create S3 client with configuration
-      this.client = new S3Client({
+      this.client = S3Client.make({
         region: this.options.region,
         credentials: this.options.credentials,
         endpoint: this.options.endpoint,
@@ -215,7 +215,7 @@ export class S3StorageDriver implements IStorageDriver {
       };
 
       // Execute upload
-      const result = await this.client.send(new PutObjectCommand(params));
+      const result = await this.client.send(PutObjectCommand.make(params));
 
       // Build file metadata response
       const file: IStorageFile = {
@@ -231,7 +231,7 @@ export class S3StorageDriver implements IStorageDriver {
 
       return file;
     } catch (error: Error | any) {
-      throw new UploadFailedException(path, error);
+      throw UploadFailedException.make(path, error);
     }
   }
 
@@ -305,7 +305,7 @@ export class S3StorageDriver implements IStorageDriver {
         params.Range = `bytes=${options.range.start}-${options.range.end}`;
       }
 
-      const result = await this.client.send(new GetObjectCommand(params));
+      const result = await this.client.send(GetObjectCommand.make(params));
 
       // Convert stream to buffer using transformToByteArray if available (mock compatibility)
       if (result.Body && typeof (result.Body as any).transformToByteArray === 'function') {
@@ -322,9 +322,9 @@ export class S3StorageDriver implements IStorageDriver {
       return Buffer.concat(chunks);
     } catch (error: Error | any) {
       if (error.name === 'NoSuchKey') {
-        throw new FileNotFoundException(path);
+        throw FileNotFoundException.make(path);
       }
-      throw new DownloadFailedException(path, error);
+      throw DownloadFailedException.make(path, error);
     }
   }
 
@@ -362,13 +362,13 @@ export class S3StorageDriver implements IStorageDriver {
         params.Range = `bytes=${options.range.start}-${options.range.end}`;
       }
 
-      const result = await this.client.send(new GetObjectCommand(params));
+      const result = await this.client.send(GetObjectCommand.make(params));
       return result.Body as Readable;
     } catch (error: Error | any) {
       if (error.name === 'NoSuchKey') {
-        throw new FileNotFoundException(path);
+        throw FileNotFoundException.make(path);
       }
-      throw new DownloadFailedException(path, error);
+      throw DownloadFailedException.make(path, error);
     }
   }
 
@@ -391,7 +391,7 @@ export class S3StorageDriver implements IStorageDriver {
       const { HeadObjectCommand } = await import('@aws-sdk/client-s3');
 
       await this.client.send(
-        new HeadObjectCommand({
+        HeadObjectCommand.make({
           Bucket: this.options.bucket,
           Key: path,
         })
@@ -426,13 +426,13 @@ export class S3StorageDriver implements IStorageDriver {
       const { DeleteObjectCommand } = await import('@aws-sdk/client-s3');
 
       await this.client.send(
-        new DeleteObjectCommand({
+        DeleteObjectCommand.make({
           Bucket: this.options.bucket,
           Key: path,
         })
       );
     } catch (error: Error | any) {
-      throw new DeleteFailedException(path, error);
+      throw DeleteFailedException.make(path, error);
     }
   }
 
@@ -461,7 +461,7 @@ export class S3StorageDriver implements IStorageDriver {
       const { DeleteObjectsCommand } = await import('@aws-sdk/client-s3');
 
       await this.client.send(
-        new DeleteObjectsCommand({
+        DeleteObjectsCommand.make({
           Bucket: this.options.bucket,
           Delete: {
             Objects: paths.map((path) => ({ Key: path })),
@@ -469,7 +469,7 @@ export class S3StorageDriver implements IStorageDriver {
         })
       );
     } catch (error: Error | any) {
-      throw new DeleteFailedException(paths.join(', '), error);
+      throw DeleteFailedException.make(paths.join(', '), error);
     }
   }
 
@@ -497,7 +497,7 @@ export class S3StorageDriver implements IStorageDriver {
       const { CopyObjectCommand } = await import('@aws-sdk/client-s3');
 
       await this.client.send(
-        new CopyObjectCommand({
+        CopyObjectCommand.make({
           Bucket: this.options.bucket,
           CopySource: `${this.options.bucket}/${sourcePath}`,
           Key: destinationPath,
@@ -505,7 +505,7 @@ export class S3StorageDriver implements IStorageDriver {
       );
     } catch (error: Error | any) {
       if (error.name === 'NoSuchKey') {
-        throw new FileNotFoundException(sourcePath);
+        throw FileNotFoundException.make(sourcePath);
       }
       throw error;
     }
@@ -558,7 +558,7 @@ export class S3StorageDriver implements IStorageDriver {
       const { HeadObjectCommand } = await import('@aws-sdk/client-s3');
 
       const result = await this.client.send(
-        new HeadObjectCommand({
+        HeadObjectCommand.make({
           Bucket: this.options.bucket,
           Key: path,
         })
@@ -575,7 +575,7 @@ export class S3StorageDriver implements IStorageDriver {
       };
     } catch (error: Error | any) {
       if (error.name === 'NotFound' || error.name === 'NoSuchKey') {
-        throw new FileNotFoundException(path);
+        throw FileNotFoundException.make(path);
       }
       throw error;
     }
@@ -606,7 +606,7 @@ export class S3StorageDriver implements IStorageDriver {
       const { CopyObjectCommand } = await import('@aws-sdk/client-s3');
 
       await this.client.send(
-        new CopyObjectCommand({
+        CopyObjectCommand.make({
           Bucket: this.options.bucket,
           CopySource: `${this.options.bucket}/${path}`,
           Key: path,
@@ -621,7 +621,7 @@ export class S3StorageDriver implements IStorageDriver {
       );
     } catch (error: Error | any) {
       if (error.name === 'NoSuchKey') {
-        throw new FileNotFoundException(path);
+        throw FileNotFoundException.make(path);
       }
       throw error;
     }
@@ -663,7 +663,7 @@ export class S3StorageDriver implements IStorageDriver {
         params.Delimiter = '/';
       }
 
-      const result = await this.client.send(new ListObjectsV2Command(params));
+      const result = await this.client.send(ListObjectsV2Command.make(params));
 
       const files: IStorageFile[] = [];
 
@@ -730,7 +730,7 @@ export class S3StorageDriver implements IStorageDriver {
     const { getSignedUrl } = await import('@aws-sdk/s3-request-presigner');
     const { GetObjectCommand } = await import('@aws-sdk/client-s3');
 
-    const command = new GetObjectCommand({
+    const command = GetObjectCommand.make({
       Bucket: this.options.bucket,
       Key: path,
       ResponseCacheControl: options?.responseHeaders?.['Cache-Control'],
@@ -772,7 +772,7 @@ export class S3StorageDriver implements IStorageDriver {
       const acl = this.getACLFromVisibility(visibility);
 
       await this.client.send(
-        new PutObjectAclCommand({
+        PutObjectAclCommand.make({
           Bucket: this.options.bucket,
           Key: path,
           ACL: acl as any,
@@ -780,7 +780,7 @@ export class S3StorageDriver implements IStorageDriver {
       );
     } catch (error: Error | any) {
       if (error.name === 'NoSuchKey') {
-        throw new FileNotFoundException(path);
+        throw FileNotFoundException.make(path);
       }
       throw error;
     }
@@ -805,7 +805,7 @@ export class S3StorageDriver implements IStorageDriver {
       const { GetObjectAclCommand } = await import('@aws-sdk/client-s3');
 
       const result = await this.client.send(
-        new GetObjectAclCommand({
+        GetObjectAclCommand.make({
           Bucket: this.options.bucket,
           Key: path,
         })
@@ -821,7 +821,7 @@ export class S3StorageDriver implements IStorageDriver {
       return hasPublicRead ? StorageVisibility.PUBLIC : StorageVisibility.PRIVATE;
     } catch (error: Error | any) {
       if (error.name === 'NoSuchKey') {
-        throw new FileNotFoundException(path);
+        throw FileNotFoundException.make(path);
       }
       throw error;
     }
