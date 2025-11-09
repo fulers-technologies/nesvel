@@ -105,7 +105,7 @@ export class GooglePubSubDriver extends BasePubSubDriver implements IPubSubDrive
         clientConfig.apiEndpoint = this.googleOptions.apiEndpoint;
       }
 
-      this.pubSubClient = new PubSub(clientConfig);
+      this.pubSubClient = PubSub.make(clientConfig);
 
       this.connected = true;
 

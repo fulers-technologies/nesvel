@@ -101,7 +101,7 @@ export class KafkaPubSubDriver extends BasePubSubDriver implements IPubSubDriver
     try {
       const { Kafka, Partitioners } = await this.loadKafkaJS();
 
-      this.kafka = new Kafka({
+      this.kafka = Kafka.make({
         clientId: this.kafkaOptions.clientId,
         brokers: this.kafkaOptions.brokers,
         ssl: this.kafkaOptions.ssl,

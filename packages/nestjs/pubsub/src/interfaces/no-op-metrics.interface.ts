@@ -8,7 +8,7 @@ import { IPubSubMetrics } from './metrics.interface';
  *
  * @example
  * ```typescript
- * const metrics = new NoOpMetrics();
+ * const metrics = NoOpMetrics.make();
  * metrics.incrementCounter('test'); // Does nothing
  * ```
  */

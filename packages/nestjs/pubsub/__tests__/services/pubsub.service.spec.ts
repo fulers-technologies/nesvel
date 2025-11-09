@@ -25,7 +25,7 @@ describe('PubSubService', () => {
     };
 
     // Create service instance with mock driver
-    service = new PubSubService(mockDriver, false);
+    service = PubSubService.make(mockDriver, false);
   });
 
   /**
@@ -64,7 +64,7 @@ describe('PubSubService', () => {
      */
     it('should auto-connect when autoConnect is true', async () => {
       // Arrange
-      const autoConnectService = new PubSubService(mockDriver, true);
+      const autoConnectService = PubSubService.make(mockDriver, true);
 
       // Act
       await autoConnectService.onModuleInit();
@@ -81,7 +81,7 @@ describe('PubSubService', () => {
      */
     it('should not auto-connect when autoConnect is false', () => {
       // Arrange & Act
-      const noAutoConnectService = new PubSubService(mockDriver, false);
+      const noAutoConnectService = PubSubService.make(mockDriver, false);
 
       // Assert
       expect(mockDriver.connect).not.toHaveBeenCalled();

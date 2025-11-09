@@ -95,7 +95,7 @@ export class MemoryPubSubDriver extends BasePubSubDriver implements IPubSubDrive
 
     try {
       // Initialize EventEmitter2 with options
-      this.emitter = new EventEmitter2({
+      this.emitter = EventEmitter2.make({
         wildcard: this.emitterOptions.wildcard ?? true,
         delimiter: this.emitterOptions.delimiter ?? '.',
         newListener: this.emitterOptions.newListener ?? false,

@@ -93,7 +93,7 @@ export interface IMessageValidator {
    * });
    *
    * if (!result.valid) {
-   *   throw new ValidationError(result.errors);
+   *   throw ValidationError.make(result.errors);
    * }
    * ```
    */
@@ -140,7 +140,7 @@ export interface IMessageValidator {
  *
  * @example
  * ```typescript
- * const validator = new NoOpValidator();
+ * const validator = NoOpValidator.make();
  * const result = validator.validate('any.topic', { any: 'data' });
  * console.log(result.valid); // true
  * ```

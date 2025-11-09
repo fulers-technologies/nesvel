@@ -104,17 +104,17 @@ export class RedisPubSubDriver extends BasePubSubDriver implements IPubSubDriver
       // Initialize clients
       if (this.redisOptions.cluster) {
         const { Cluster } = await import('ioredis');
-        this.publishClient = new Cluster(
+        this.publishClient = Cluster.make(
           this.redisOptions.cluster.nodes,
           this.redisOptions.cluster.options,
         );
-        this.subscribeClient = new Cluster(
+        this.subscribeClient = Cluster.make(
           this.redisOptions.cluster.nodes,
           this.redisOptions.cluster.options,
         );
       } else {
-        this.publishClient = new Redis(config);
-        this.subscribeClient = new Redis(config);
+        this.publishClient = Redis.make(config);
+        this.subscribeClient = Redis.make(config);
       }
 
       // Wait for both clients to be ready

@@ -16,7 +16,7 @@ describe('JsonMessageSerializer', () => {
    * tests don't interfere with each other.
    */
   beforeEach(() => {
-    serializer = new JsonMessageSerializer();
+    serializer = JsonMessageSerializer.make();
   });
 
   /**

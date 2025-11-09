@@ -116,7 +116,7 @@ export abstract class BasePubSubDriver implements IPubSubDriver {
     this.namespace = options.namespace;
     this.maxMessageSize = options.maxMessageSize;
     this.deadLetterQueue = options.deadLetterQueue;
-    this.metrics = options.metrics || new NoOpMetrics();
+    this.metrics = options.metrics || NoOpMetrics.make();
     this.logSamplingRate = options.logSamplingRate ?? 1.0;
     this.maxHandlersPerTopic = options.maxHandlersPerTopic ?? 100;
     this.enableCorrelationId = options.enableCorrelationId ?? true;
@@ -151,7 +151,7 @@ export abstract class BasePubSubDriver implements IPubSubDriver {
     // Create a new instance using the constructor with all provided arguments
     // 'this' refers to the actual driver class (e.g., RedisPubSubDriver)
     // The spread operator passes all arguments to the constructor
-    return new this(...args);
+    return this.make(...args);
   }
 
   // ========================================

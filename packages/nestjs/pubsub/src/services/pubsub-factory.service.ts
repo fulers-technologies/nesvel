@@ -89,7 +89,7 @@ import { DriverNotFoundException } from '@exceptions/driver-not-found.exception'
  * ```typescript
  * class CustomPubSubDriver implements IPubSubDriver {
  *   static make(options: any, baseOptions: IBaseDriverOptions) {
- *     return new CustomPubSubDriver(options, baseOptions);
+ *     return CustomPubSubDriver.make(options, baseOptions);
  *   }
  *   async publish(topic: string, message: any): Promise<void> { ... }
  *   async subscribe(pattern: string, handler: Function): Promise<void> { ... }

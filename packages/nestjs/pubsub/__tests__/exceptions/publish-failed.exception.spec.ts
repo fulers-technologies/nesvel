@@ -213,9 +213,9 @@ describe('PublishFailedException', () => {
     it('should handle different error types as cause', () => {
       // Arrange
       const topic = 'test.topic';
-      const typeError = new TypeError('Invalid type');
-      const rangeError = new RangeError('Out of range');
-      const syntaxError = new SyntaxError('Invalid syntax');
+      const typeError = TypeError.make('Invalid type');
+      const rangeError = RangeError.make('Out of range');
+      const syntaxError = SyntaxError.make('Invalid syntax');
 
       // Act
       const exception1 = PublishFailedException.make(topic, typeError);

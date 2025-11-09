@@ -23,7 +23,7 @@ import { CircuitOpenException } from '../exceptions';
  *
  * @example
  * ```typescript
- * const breaker = new CircuitBreaker(logger, {
+ * const breaker = CircuitBreaker.make(logger, {
  *   failureThreshold: 5,
  *   resetTimeout: 60000,
  *   successThreshold: 2

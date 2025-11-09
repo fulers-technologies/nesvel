@@ -38,7 +38,7 @@ describe('@InjectPubSub() Decorator', () => {
 
       // Assert
       expect(TestService).toBeDefined();
-      expect(new TestService({} as any)).toBeInstanceOf(TestService);
+      expect(TestService.make({} as any)).toBeInstanceOf(TestService);
     });
 
     /**
@@ -57,7 +57,7 @@ describe('@InjectPubSub() Decorator', () => {
 
       // Assert
       expect(TestService).toBeDefined();
-      const instance = new TestService({} as any, {} as any);
+      const instance = TestService.make({} as any, {} as any);
       expect(instance).toBeInstanceOf(TestService);
     });
   });
@@ -137,7 +137,7 @@ describe('@InjectPubSub() Decorator', () => {
       // Assert
       expect(UserService).toBeDefined();
       const mockPubSub = { publish: jest.fn() };
-      const service = new UserService(mockPubSub);
+      const service = UserService.make(mockPubSub);
       expect(service).toBeInstanceOf(UserService);
     });
 
@@ -158,7 +158,7 @@ describe('@InjectPubSub() Decorator', () => {
 
       // Assert
       expect(OrderService).toBeDefined();
-      const instance = new OrderService({}, {}, {});
+      const instance = OrderService.make({}, {}, {});
       expect(instance).toBeInstanceOf(OrderService);
     });
 
@@ -181,7 +181,7 @@ describe('@InjectPubSub() Decorator', () => {
       // Assert
       expect(EventController).toBeDefined();
       const mockPubSub = { publish: jest.fn() };
-      const controller = new EventController(mockPubSub);
+      const controller = EventController.make(mockPubSub);
       expect(controller).toBeInstanceOf(EventController);
     });
   });
@@ -247,7 +247,7 @@ describe('@InjectPubSub() Decorator', () => {
       // Assert
       expect(BaseService).toBeDefined();
       expect(ConcreteService).toBeDefined();
-      const instance = new ConcreteService({});
+      const instance = ConcreteService.make({});
       expect(instance).toBeInstanceOf(ConcreteService);
       expect(instance).toBeInstanceOf(BaseService);
     });
@@ -286,7 +286,7 @@ describe('@InjectPubSub() Decorator', () => {
       const mockPubSub: IPubSubService = {
         publish: jest.fn().mockResolvedValue(undefined),
       };
-      const service = new TestService(mockPubSub);
+      const service = TestService.make(mockPubSub);
       expect(service).toBeInstanceOf(TestService);
     });
   });

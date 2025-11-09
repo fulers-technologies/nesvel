@@ -16,7 +16,7 @@ import { RateLimitExceededException } from '../exceptions';
  *
  * @example
  * ```typescript
- * const rateLimiter = new RateLimiter(logger, {
+ * const rateLimiter = RateLimiter.make(logger, {
  *   maxRequestsPerWindow: 100,
  *   windowSize: 60000, // 1 minute
  *   useSlidingWindow: true
@@ -123,7 +123,7 @@ export class RateLimiter {
       const oldestRequest = recentRequests[0]!; // Safe: array has at least maxRequests items
       const resetAt = new Date(oldestRequest + this.options.windowSize);
 
-      const error = new RateLimitExceededException(
+      const error = RateLimitExceededException.make(
         `Rate limit exceeded for topic "${topic}": ${recentRequests.length}/${this.options.maxRequestsPerWindow} requests in ${this.options.windowSize}ms window`,
         topic,
         recentRequests.length,
@@ -193,7 +193,7 @@ export class RateLimiter {
     if (windowData.count >= this.options.maxRequestsPerWindow) {
       const resetAt = new Date(windowEnd);
 
-      const error = new RateLimitExceededException(
+      const error = RateLimitExceededException.make(
         `Rate limit exceeded for topic "${topic}": ${windowData.count}/${this.options.maxRequestsPerWindow} requests in current window`,
         topic,
         windowData.count,

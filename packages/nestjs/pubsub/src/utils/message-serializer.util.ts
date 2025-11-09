@@ -41,7 +41,7 @@ export class JsonMessageSerializer implements IMessageSerializer {
    *
    * @example
    * ```typescript
-   * const serializer = new JsonMessageSerializer();
+   * const serializer = JsonMessageSerializer.make();
    * const json = serializer.serialize({ userId: 123, action: 'login' });
    * // Result: '{"userId":123,"action":"login"}'
    * ```
@@ -72,7 +72,7 @@ export class JsonMessageSerializer implements IMessageSerializer {
    *
    * @example
    * ```typescript
-   * const serializer = new JsonMessageSerializer();
+   * const serializer = JsonMessageSerializer.make();
    * const data = serializer.deserialize<UserEvent>('{"userId":123,"action":"login"}');
    * console.log(data.userId); // 123
    * ```
@@ -103,7 +103,7 @@ export class JsonMessageSerializer implements IMessageSerializer {
  * ```
  */
 export function getDefaultSerializer(): IMessageSerializer {
-  return new JsonMessageSerializer();
+  return JsonMessageSerializer.make();
 }
 
 /**

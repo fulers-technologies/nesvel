@@ -12,7 +12,7 @@ describe('PubSubFactoryService', () => {
    * Ensures that each test starts with a clean factory state.
    */
   beforeEach(() => {
-    factory = new PubSubFactoryService();
+    factory = PubSubFactoryService.make();
   });
 
   /**

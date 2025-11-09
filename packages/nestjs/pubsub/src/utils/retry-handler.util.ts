@@ -16,7 +16,7 @@ import { MaxRetriesExceededException } from '../exceptions';
  *
  * @example
  * ```typescript
- * const retryHandler = new RetryHandler(logger);
+ * const retryHandler = RetryHandler.make(logger);
  *
  * try {
  *   const result = await retryHandler.executeWithRetry(

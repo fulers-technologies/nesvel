@@ -168,17 +168,14 @@ export class PubSubModule {
    * ```
    */
   static forRootAsync(options: IPubSubAsyncOptions): DynamicModule {
-    // Create async providers
-    const asyncProviders = this.createAsyncProviders(options);
-
-    // Create core providers
-    const coreProviders = this.createCoreProviders();
+    // Create all async providers (options + core)
+    const providers = this.createAsyncProviders(options);
 
     return {
       module: PubSubModule,
       global: options.global || false,
       imports: [DiscoveryModule, ...(options.imports || [])],
-      providers: [...asyncProviders, ...coreProviders],
+      providers,
       exports: [PUBSUB_SERVICE, PubSubService, SubscriptionDiscoveryService],
     };
   }
@@ -197,84 +194,12 @@ export class PubSubModule {
    */
   private static createProviders(options: IPubSubOptions): Provider[] {
     return [
-      // Options provider
+      // Options provider - synchronous configuration
       {
         provide: PUBSUB_MODULE_OPTIONS,
         useValue: options,
       },
-
-      // Factory service
-      PubSubFactoryService,
-
-      // Driver provider
-      {
-        provide: PUBSUB_DRIVER,
-        useFactory: (factory: PubSubFactoryService) => {
-          factory.validateConfig(options);
-          return factory.createDriver(options);
-        },
-        inject: [PubSubFactoryService],
-      },
-
-      // Service provider
-      {
-        provide: PUBSUB_SERVICE,
-        useFactory: (driver: any) => {
-          return new PubSubService(driver, options.autoConnect ?? true);
-        },
-        inject: [PUBSUB_DRIVER],
-      },
-
-      // Export service with class token as well
-      {
-        provide: PubSubService,
-        useExisting: PUBSUB_SERVICE,
-      },
-
-      // Subscription discovery service
-      SubscriptionDiscoveryService,
-    ];
-  }
-
-  /**
-   * Creates the core providers without options (for async configuration).
-   *
-   * These providers depend on the async options provider created separately.
-   *
-   * @returns An array of providers
-   */
-  private static createCoreProviders(): Provider[] {
-    return [
-      // Factory service
-      PubSubFactoryService,
-
-      // Driver provider
-      {
-        provide: PUBSUB_DRIVER,
-        useFactory: (options: IPubSubOptions, factory: PubSubFactoryService) => {
-          factory.validateConfig(options);
-          return factory.createDriver(options);
-        },
-        inject: [PUBSUB_MODULE_OPTIONS, PubSubFactoryService],
-      },
-
-      // Service provider
-      {
-        provide: PUBSUB_SERVICE,
-        useFactory: (driver: any, options: IPubSubOptions) => {
-          return new PubSubService(driver, options.autoConnect ?? true);
-        },
-        inject: [PUBSUB_DRIVER, PUBSUB_MODULE_OPTIONS],
-      },
-
-      // Export service with class token as well
-      {
-        provide: PubSubService,
-        useExisting: PUBSUB_SERVICE,
-      },
-
-      // Subscription discovery service
-      SubscriptionDiscoveryService,
+      ...this.createCoreProviders(),
     ];
   }
 
@@ -285,6 +210,9 @@ export class PubSubModule {
    * - useFactory: Creates options using a factory function
    * - useClass: Creates options using a factory class
    * - useExisting: Uses an existing factory provider
+   *
+   * This method returns all providers needed for async configuration,
+   * including the options provider and core providers.
    *
    * @param options - The async configuration options
    * @returns An array of providers
@@ -303,6 +231,7 @@ export class PubSubModule {
           },
           inject: options.inject || [],
         },
+        ...this.createCoreProviders(),
       ];
     }
 
@@ -323,6 +252,7 @@ export class PubSubModule {
           provide: options.useClass,
           useClass: options.useClass,
         },
+        ...this.createCoreProviders(),
       ];
     }
 
@@ -339,11 +269,57 @@ export class PubSubModule {
           },
           inject: [options.useExisting],
         },
+        ...this.createCoreProviders(),
       ];
     }
 
     throw new Error(
       'Invalid async configuration. Must provide useFactory, useClass, or useExisting.',
     );
+  }
+
+  /**
+   * Creates the core providers without options (for async configuration).
+   *
+   * These providers are shared between synchronous and asynchronous configurations.
+   * They depend on PUBSUB_MODULE_OPTIONS being provided by either createProviders
+   * or createAsyncProviders.
+   *
+   * @returns An array of providers
+   */
+  private static createCoreProviders(): Provider[] {
+    return [
+      // Factory service
+      PubSubFactoryService,
+
+      // Driver provider - creates the messaging backend driver
+      {
+        provide: PUBSUB_DRIVER,
+        useFactory: (options: IPubSubOptions, factory: PubSubFactoryService) => {
+          // Validate configuration before creating driver
+          factory.validateConfig(options);
+          return factory.createDriver(options);
+        },
+        inject: [PUBSUB_MODULE_OPTIONS, PubSubFactoryService],
+      },
+
+      // Service provider - main PubSub service instance
+      {
+        provide: PUBSUB_SERVICE,
+        useFactory: (driver: any, options: IPubSubOptions) => {
+          return PubSubService.make(driver, options.autoConnect ?? true);
+        },
+        inject: [PUBSUB_DRIVER, PUBSUB_MODULE_OPTIONS],
+      },
+
+      // Export service with class token as well for class-based injection
+      {
+        provide: PubSubService,
+        useExisting: PUBSUB_SERVICE,
+      },
+
+      // Subscription discovery service
+      SubscriptionDiscoveryService,
+    ];
   }
 }

@@ -19,7 +19,7 @@ import { BackpressureTimeoutException } from '../exceptions';
  *
  * @example
  * ```typescript
- * const backpressure = new BackpressureController(logger, {
+ * const backpressure = BackpressureController.make(logger, {
  *   maxInflight: 1000,
  *   waitTimeout: 30000 // 30 seconds
  * });
@@ -138,7 +138,7 @@ export class BackpressureController {
       if (this.options.waitTimeout) {
         const elapsed = Date.now() - startWait;
         if (elapsed >= this.options.waitTimeout) {
-          throw new BackpressureTimeoutException(
+          throw BackpressureTimeoutException.make(
             `Backpressure wait timeout exceeded: ${elapsed}ms (${this.inflightCount}/${this.options.maxInflight} inflight)`,
             this.inflightCount,
             this.options.maxInflight,

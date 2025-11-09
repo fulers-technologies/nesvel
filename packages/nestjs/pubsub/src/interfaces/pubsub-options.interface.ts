@@ -170,7 +170,7 @@ export interface IPubSubOptions {
    * @example
    * ```typescript
    * {
-   *   metrics: new PrometheusMetrics(registry)
+   *   metrics: PrometheusMetrics.make(registry)
    * }
    * ```
    */
@@ -187,7 +187,7 @@ export interface IPubSubOptions {
    * @example
    * ```typescript
    * {
-   *   validator: new JoiValidator(schemas)
+   *   validator: JoiValidator.make(schemas)
    * }
    * ```
    */
