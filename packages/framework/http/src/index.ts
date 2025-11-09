@@ -73,9 +73,16 @@ export { HttpService } from '@nestjs/axios';
 // Main HTTP client factory and fluent request builder
 export * from './client/http-client';
 export * from './client/pending-request';
-export * from './client/client-response';
+export * from './client/response';
 export * from './client/response-sequence';
 export * from './client/pool';
+
+// ============================================================================
+// HTTP Client Retry & Circuit Breaker
+// ============================================================================
+// Enterprise-grade retry strategies and circuit breakers for resilience
+export * from './client/retry';
+export * from './client/circuit-breaker';
 
 // ============================================================================
 // HTTP Client Exceptions
@@ -87,9 +94,7 @@ export * from './client/exceptions';
 // HTTP Client Concerns (mixins/traits)
 // ============================================================================
 // Reusable concerns for HTTP client functionality
-// export * from './client/concerns/handles-retries';
-// export * from './client/concerns/handles-testing';
-// export * from './client/concerns/builds-requests';
+export * from './client/concerns';
 
 // ============================================================================
 // HTTP Server - Enhanced Request/Response (PRIMARY EXPORTS)
@@ -98,7 +103,7 @@ export * from './client/exceptions';
 // They wrap Express Request/Response with Laravel-style helper methods
 export { Request } from './server/request';
 export { Response } from './server/response';
-export { UploadedFile, STORAGE_SERVICE_TOKEN } from './server/uploaded-file';
+export { UploadedFile } from './server/uploaded-file';
 export * from './server/json-response';
 export * from './server/redirect-response';
 export * from './server/streamed-response';
@@ -108,7 +113,6 @@ export * from './server/file-response';
 // HTTP Server Concerns
 // ============================================================================
 // Concerns for server-side request/response handling (mixins)
-export * from './server/concerns/interfaces';
 export * from './server/concerns/interacts-with-input';
 export * from './server/concerns/interacts-with-files';
 export * from './server/concerns/interacts-with-content-types';
@@ -125,11 +129,18 @@ export * from './server/middleware/trust-proxies';
 export * from './server/middleware/validate-post-size';
 
 // ============================================================================
+// Rate Limiting - @nestjs/throttler
+// ============================================================================
+// Re-export NestJS's official throttler for server-side rate limiting.
+// Use @Throttle() decorator or ThrottlerGuard for protecting your endpoints.
+// Documentation: https://docs.nestjs.com/security/rate-limiting
+export * from '@nestjs/throttler';
+
+// ============================================================================
 // TypeScript Types and Interfaces
 // ============================================================================
-// Type definitions for HTTP client and server
-export * from './types/client.types';
-export * from './types/server.types';
+// All interfaces are now centralized in the interfaces directory
+export * from './interfaces';
 
 // ============================================================================
 // Decorators - Drop-in replacements for @Req() and @Res()

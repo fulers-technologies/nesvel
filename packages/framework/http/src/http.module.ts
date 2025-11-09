@@ -1,5 +1,5 @@
-import { DynamicModule, Module, Global } from '@nestjs/common';
 import { HttpModule as NestHttpModule } from '@nestjs/axios';
+import { DynamicModule, Module, Global } from '@nestjs/common';
 
 /**
  * HTTP Module for NestJS
@@ -53,7 +53,7 @@ export class HttpModule {
   static register(config?: any): DynamicModule {
     return {
       module: HttpModule,
-      imports: [NestHttpModule.register(config || {})],
+      imports: [],
       exports: [NestHttpModule],
     };
   }
@@ -81,7 +81,7 @@ export class HttpModule {
   static registerAsync(options: any): DynamicModule {
     return {
       module: HttpModule,
-      imports: [NestHttpModule.registerAsync(options)],
+      imports: [],
       exports: [NestHttpModule],
     };
   }

@@ -11,4 +11,15 @@ import { nestLibPreset } from '@nesvel/tsup-config';
 export default defineConfig({
   ...nestLibPreset,
   bundle: true, // Bundle internal modules
+  external: [
+    '@nestjs/axios',
+    '@nestjs/common',
+    '@nestjs/core',
+    'axios',
+    'express',
+    'form-data',
+    'qs',
+    'rxjs',
+    'reflect-metadata',
+  ],
 });

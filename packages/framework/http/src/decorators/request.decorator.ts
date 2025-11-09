@@ -45,7 +45,7 @@ import { Request as EnhancedRequest } from '../server/request';
  */
 export const Req = createParamDecorator((data: string | undefined, ctx: ExecutionContext) => {
   const request = ctx.switchToHttp().getRequest<ExpressRequest>();
-  
+
   // Cast the Express request to our enhanced Request type
   // This works because Express request objects at runtime already have all properties
   const enhancedRequest = request as any as EnhancedRequest;

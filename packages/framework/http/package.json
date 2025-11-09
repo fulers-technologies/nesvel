@@ -28,6 +28,7 @@
     "format": "prettier --write \"src/**/*.ts\""
   },
   "dependencies": {
+    "@nesvel/nestjs-storage": "workspace:*",
     "@nesvel/exceptions": "workspace:*",
     "@nesvel/shared": "workspace:*",
     "@types/express": "^5.0.5",
