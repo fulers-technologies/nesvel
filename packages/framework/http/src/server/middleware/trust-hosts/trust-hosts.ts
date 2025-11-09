@@ -22,7 +22,7 @@ import type { TrustHostsOptions } from '../../../interfaces';
  * export class AppModule {
  *   configure(consumer: MiddlewareConsumer) {
  *     consumer
- *       .apply(new TrustHostsMiddleware({
+ *       .apply(TrustHostsMiddleware.make({
  *         appUrl: 'https://example.com'
  *       }))
  *       .forRoutes('*');
@@ -32,7 +32,7 @@ import type { TrustHostsOptions } from '../../../interfaces';
  *
  * @example With specific hosts
  * ```typescript
- * const middleware = new TrustHostsMiddleware({
+ * const middleware = TrustHostsMiddleware.make({
  *   hosts: ['^(.+\\.)?example\\.com$', 'api\\.trusted\\.com'],
  *   trustSubdomains: false,
  * });
@@ -115,7 +115,7 @@ export class TrustHostsMiddleware extends BaseHttpMiddleware {
     }
 
     try {
-      const url = new URL(this.options.appUrl);
+      const url = URL.make(this.options.appUrl);
       const host = url.hostname;
 
       if (host) {
@@ -172,7 +172,7 @@ export class TrustHostsMiddleware extends BaseHttpMiddleware {
     const host = req.get('host');
 
     if (!host) {
-      throw new HttpException(
+      throw HttpException.make(
         {
           statusCode: HttpStatus.BAD_REQUEST,
           message: 'Missing Host header',
@@ -193,7 +193,7 @@ export class TrustHostsMiddleware extends BaseHttpMiddleware {
         });
       }
 
-      throw new HttpException(
+      throw HttpException.make(
         {
           statusCode: HttpStatus.FORBIDDEN,
           message: 'Untrusted host',

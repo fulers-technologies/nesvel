@@ -11,7 +11,7 @@ import { Response as ExpressResponse } from 'express';
  * @example
  * ```typescript
  * // Stream CSV data
- * return new StreamedResponse((stream) => {
+ * return StreamedResponse.make((stream) => {
  *   stream.write('Name,Email\n');
  *   users.forEach(user => {
  *     stream.write(`${user.name},${user.email}\n`);
@@ -43,7 +43,7 @@ export class StreamedResponse {
    *
    * @example
    * ```typescript
-   * new StreamedResponse((stream) => {
+   * StreamedResponse.make((stream) => {
    *   stream.write('Hello ');
    *   stream.write('World');
    *   stream.end();
@@ -83,7 +83,7 @@ export class StreamedResponse {
     callback: (stream: ExpressResponse | Writable) => void,
     status: number = 200
   ): StreamedResponse {
-    return new StreamedResponse(callback, status, {
+    return StreamedResponse.make(callback, status, {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
       Connection: 'keep-alive',
@@ -115,7 +115,7 @@ export class StreamedResponse {
     callback: (stream: ExpressResponse | Writable) => void,
     status: number = 200
   ): StreamedResponse {
-    return new StreamedResponse(callback, status, {
+    return StreamedResponse.make(callback, status, {
       'Content-Type': 'application/json',
     });
   }
@@ -152,7 +152,7 @@ export class StreamedResponse {
       headers['Content-Disposition'] = `attachment; filename="${filename}"`;
     }
 
-    return new StreamedResponse(callback, status, headers);
+    return StreamedResponse.make(callback, status, headers);
   }
 
   /**
@@ -241,7 +241,7 @@ export class StreamedResponse {
    *
    * @example
    * ```typescript
-   * const streamed = new StreamedResponse((stream) => {
+   * const streamed = StreamedResponse.make((stream) => {
    *   stream.write('Hello');
    *   stream.end();
    * });

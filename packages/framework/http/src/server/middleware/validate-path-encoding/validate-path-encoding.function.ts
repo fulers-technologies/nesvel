@@ -17,5 +17,5 @@ import type { ValidatePathEncodingOptions } from '../../../interfaces';
 export function validatePathEncoding(
   options: ValidatePathEncodingOptions = {}
 ): ValidatePathEncodingMiddleware {
-  return new ValidatePathEncodingMiddleware(options);
+  return ValidatePathEncodingMiddleware.make(options);
 }

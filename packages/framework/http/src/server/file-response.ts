@@ -48,7 +48,7 @@ export class FileResponse {
     fileName?: string,
     headers?: Record<string, string>
   ): FileResponse {
-    const response = new FileResponse();
+    const response = FileResponse.make();
     response.filePath = filePath;
     response.fileName = fileName || path.basename(filePath);
     response.disposition = 'attachment';
@@ -78,7 +78,7 @@ export class FileResponse {
     fileName?: string,
     headers?: Record<string, string>
   ): FileResponse {
-    const response = new FileResponse();
+    const response = FileResponse.make();
     response.filePath = filePath;
     response.fileName = fileName || path.basename(filePath);
     response.disposition = 'inline';
@@ -256,7 +256,7 @@ export class FileResponse {
     fileName?: string,
     disposition: 'attachment' | 'inline' = 'attachment'
   ): void {
-    const response = new FileResponse();
+    const response = FileResponse.make();
     response.filePath = filePath;
     response.fileName = fileName;
     response.disposition = disposition;

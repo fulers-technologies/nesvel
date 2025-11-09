@@ -55,5 +55,5 @@ import type { TrustProxiesOptions } from '../../../interfaces';
  * ```
  */
 export function trustProxies(options: TrustProxiesOptions = {}): TrustProxiesMiddleware {
-  return new TrustProxiesMiddleware(options);
+  return TrustProxiesMiddleware.make(options);
 }

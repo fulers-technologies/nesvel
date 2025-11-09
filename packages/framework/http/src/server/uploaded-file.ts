@@ -18,7 +18,7 @@ import { InjectStorage } from '@nesvel/nestjs-storage';
  * async upload(@UploadFile() file: UploadedFile) {
  *   // Validate
  *   if (!file.isValid()) {
- *     throw new BadRequestException('Invalid file');
+ *     throw BadRequestException.make('Invalid file');
  *   }
  *
  *   // Store with random name
@@ -41,12 +41,12 @@ import { InjectStorage } from '@nesvel/nestjs-storage';
  *
  * // Validate extension
  * if (!file.hasExtension(['jpg', 'png', 'gif'])) {
- *   throw new BadRequestException('Invalid image format');
+ *   throw BadRequestException.make('Invalid image format');
  * }
  *
  * // Check MIME type
  * if (file.mimeType() !== 'application/pdf') {
- *   throw new BadRequestException('Only PDF files allowed');
+ *   throw BadRequestException.make('Only PDF files allowed');
  * }
  * ```
  */
@@ -77,10 +77,10 @@ export class UploadedFile {
    * @example
    * ```typescript
    * // Manual construction
-   * const uploadedFile = new UploadedFile(multerFile);
+   * const uploadedFile = UploadedFile.make(multerFile);
    *
    * // With dependency injection (automatically handled by NestJS)
-   * const uploadedFile = new UploadedFile(multerFile, storageService);
+   * const uploadedFile = UploadedFile.make(multerFile, storageService);
    * ```
    */
   constructor(file: Express.Multer.File, @Optional() @InjectStorage() storageService?: any) {
@@ -102,7 +102,7 @@ export class UploadedFile {
    * ```
    */
   public static createFromMulter(file: Express.Multer.File, storageService?: any): UploadedFile {
-    return new UploadedFile(file, storageService);
+    return UploadedFile.make(file, storageService);
   }
 
   /**
@@ -352,7 +352,7 @@ export class UploadedFile {
     try {
       // Dynamically import optional image-size package
       // Using Function constructor to avoid TypeScript module resolution
-      const importImageSize = new Function('specifier', 'return import(specifier)');
+      const importImageSize = Function.make('specifier', 'return import(specifier)');
       const imageSizeModule = await importImageSize('image-size').catch(() => null);
 
       if (!imageSizeModule) {

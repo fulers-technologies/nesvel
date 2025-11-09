@@ -49,5 +49,5 @@ import type { ValidatePostSizeOptions } from '../../../interfaces';
 export function validatePostSize(
   options: ValidatePostSizeOptions = {}
 ): ValidatePostSizeMiddleware {
-  return new ValidatePostSizeMiddleware(options);
+  return ValidatePostSizeMiddleware.make(options);
 }

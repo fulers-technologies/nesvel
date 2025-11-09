@@ -22,7 +22,7 @@ import type { ValidatePathEncodingOptions } from '../../../interfaces';
  * export class AppModule {
  *   configure(consumer: MiddlewareConsumer) {
  *     consumer
- *       .apply(new ValidatePathEncodingMiddleware())
+ *       .apply(ValidatePathEncodingMiddleware.make())
  *       .forRoutes('*');
  *   }
  * }
@@ -60,7 +60,7 @@ export class ValidatePathEncodingMiddleware extends BaseHttpMiddleware {
     const decodedPath = decodeURIComponent(path);
 
     if (!this.isValidUTF8(decodedPath)) {
-      throw new HttpException(
+      throw HttpException.make(
         {
           statusCode: this.options.statusCode,
           message: this.options.errorMessage,
@@ -93,8 +93,8 @@ export class ValidatePathEncodingMiddleware extends BaseHttpMiddleware {
   private isValidUTF8(str: string): boolean {
     try {
       // Try to encode and decode the string
-      const encoder = new TextEncoder();
-      const decoder = new TextDecoder('utf-8', { fatal: true });
+      const encoder = TextEncoder.make();
+      const decoder = TextDecoder.make('utf-8', { fatal: true });
       const encoded = encoder.encode(str);
       decoder.decode(encoded);
       return true;

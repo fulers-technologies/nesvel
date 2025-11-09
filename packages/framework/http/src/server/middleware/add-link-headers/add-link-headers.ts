@@ -21,7 +21,7 @@ import type { AddLinkHeadersOptions } from '../../../interfaces';
  * export class AppModule {
  *   configure(consumer: MiddlewareConsumer) {
  *     consumer
- *       .apply(new AddLinkHeadersMiddleware({
+ *       .apply(AddLinkHeadersMiddleware.make({
  *         assets: {
  *           '/assets/app.js': ['rel=preload', 'as=script'],
  *           '/assets/style.css': ['rel=preload', 'as=style'],
@@ -34,7 +34,7 @@ import type { AddLinkHeadersOptions } from '../../../interfaces';
  *
  * @example With limit
  * ```typescript
- * consumer.apply(new AddLinkHeadersMiddleware({
+ * consumer.apply(AddLinkHeadersMiddleware.make({
  *   assets: {...},
  *   limit: 10,
  * })).forRoutes('*');

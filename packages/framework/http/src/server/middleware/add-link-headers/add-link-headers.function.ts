@@ -20,5 +20,5 @@ import type { AddLinkHeadersOptions } from '../../../interfaces';
  * ```
  */
 export function addLinkHeaders(options: AddLinkHeadersOptions = {}): AddLinkHeadersMiddleware {
-  return new AddLinkHeadersMiddleware(options);
+  return AddLinkHeadersMiddleware.make(options);
 }

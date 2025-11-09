@@ -20,5 +20,5 @@ import type { SetCacheHeadersOptions } from '../../../interfaces';
  * ```
  */
 export function setCacheHeaders(options: SetCacheHeadersOptions = {}): SetCacheHeadersMiddleware {
-  return new SetCacheHeadersMiddleware(options);
+  return SetCacheHeadersMiddleware.make(options);
 }

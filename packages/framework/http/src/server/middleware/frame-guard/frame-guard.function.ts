@@ -20,5 +20,5 @@ import type { FrameGuardOptions } from '../../../interfaces';
  * ```
  */
 export function frameGuard(options: FrameGuardOptions = {}): FrameGuardMiddleware {
-  return new FrameGuardMiddleware(options);
+  return FrameGuardMiddleware.make(options);
 }

@@ -22,7 +22,7 @@ import type { SetCacheHeadersOptions } from '../../../interfaces';
  * export class AppModule {
  *   configure(consumer: MiddlewareConsumer) {
  *     consumer
- *       .apply(new SetCacheHeadersMiddleware({ maxAge: 3600, public: true }))
+ *       .apply(SetCacheHeadersMiddleware.make({ maxAge: 3600, public: true }))
  *       .forRoutes('api/public/*');
  *   }
  * }
@@ -30,7 +30,7 @@ import type { SetCacheHeadersOptions } from '../../../interfaces';
  *
  * @example With ETag
  * ```typescript
- * consumer.apply(new SetCacheHeadersMiddleware({
+ * consumer.apply(SetCacheHeadersMiddleware.make({
  *   maxAge: 3600,
  *   etag: true,
  * })).forRoutes('*');

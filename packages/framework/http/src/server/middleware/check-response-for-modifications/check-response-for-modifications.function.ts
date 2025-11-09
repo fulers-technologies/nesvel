@@ -17,5 +17,5 @@ import type { CheckResponseForModificationsOptions } from '../../../interfaces';
 export function checkResponseForModifications(
   options: CheckResponseForModificationsOptions = {}
 ): CheckResponseForModificationsMiddleware {
-  return new CheckResponseForModificationsMiddleware(options);
+  return CheckResponseForModificationsMiddleware.make(options);
 }

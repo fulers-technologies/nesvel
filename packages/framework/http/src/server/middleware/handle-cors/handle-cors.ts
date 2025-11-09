@@ -22,7 +22,7 @@ import { BaseHttpMiddleware } from '../base-http.middleware';
  * export class AppModule {
  *   configure(consumer: MiddlewareConsumer) {
  *     consumer
- *       .apply(new HandleCorsMiddleware())
+ *       .apply(HandleCorsMiddleware.make())
  *       .forRoutes('*');
  *   }
  * }
@@ -30,7 +30,7 @@ import { BaseHttpMiddleware } from '../base-http.middleware';
  *
  * @example With custom options
  * ```typescript
- * const corsMiddleware = new HandleCorsMiddleware({
+ * const corsMiddleware = HandleCorsMiddleware.make({
  *   origin: ['https://example.com', 'https://app.example.com'],
  *   credentials: true,
  *   methods: ['GET', 'POST', 'PUT', 'DELETE'],

@@ -22,7 +22,7 @@ import type { ValidatePostSizeOptions } from '../../../interfaces';
  * export class AppModule {
  *   configure(consumer: MiddlewareConsumer) {
  *     consumer
- *       .apply(new ValidatePostSizeMiddleware({ maxSize: '10mb' }))
+ *       .apply(ValidatePostSizeMiddleware.make({ maxSize: '10mb' }))
  *       .forRoutes('*');
  *   }
  * }
@@ -77,7 +77,7 @@ export class ValidatePostSizeMiddleware extends BaseHttpMiddleware {
       const size = parseInt(contentLength, 10);
 
       if (!isNaN(size) && size > this.maxSizeBytes) {
-        throw new HttpException(
+        throw HttpException.make(
           {
             statusCode: this.options.statusCode,
             message: this.options.errorMessage,
@@ -110,7 +110,7 @@ export class ValidatePostSizeMiddleware extends BaseHttpMiddleware {
         req.pause();
         req.unpipe();
 
-        throw new HttpException(
+        throw HttpException.make(
           {
             statusCode: this.options.statusCode,
             message: this.options.errorMessage,

@@ -21,7 +21,7 @@ import type { FrameGuardOptions } from '../../../interfaces';
  * export class AppModule {
  *   configure(consumer: MiddlewareConsumer) {
  *     consumer
- *       .apply(new FrameGuardMiddleware())
+ *       .apply(FrameGuardMiddleware.make())
  *       .forRoutes('*');
  *   }
  * }
@@ -29,7 +29,7 @@ import type { FrameGuardOptions } from '../../../interfaces';
  *
  * @example Deny all framing
  * ```typescript
- * const middleware = new FrameGuardMiddleware({ action: 'DENY' });
+ * const middleware = FrameGuardMiddleware.make({ action: 'DENY' });
  * ```
  */
 @Injectable()

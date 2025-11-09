@@ -25,7 +25,7 @@ import type { TrustProxiesOptions } from '../../../interfaces';
  * export class AppModule {
  *   configure(consumer: MiddlewareConsumer) {
  *     consumer
- *       .apply(new TrustProxiesMiddleware({
+ *       .apply(TrustProxiesMiddleware.make({
  *         proxies: true // Trust all proxies
  *       }))
  *       .forRoutes('*');
@@ -35,7 +35,7 @@ import type { TrustProxiesOptions } from '../../../interfaces';
  *
  * @example Trust specific proxies
  * ```typescript
- * const middleware = new TrustProxiesMiddleware({
+ * const middleware = TrustProxiesMiddleware.make({
  *   proxies: ['10.0.0.1', '192.168.1.1'],
  *   headers: {
  *     xForwardedFor: 'X-Forwarded-For',

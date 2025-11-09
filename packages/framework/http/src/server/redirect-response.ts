@@ -58,7 +58,7 @@ export class RedirectResponse {
    * ```
    */
   public static to(url: string, status: number = 302): RedirectResponse {
-    return new RedirectResponse(url, status);
+    return RedirectResponse.make(url, status);
   }
 
   /**
@@ -76,7 +76,7 @@ export class RedirectResponse {
    */
   public static back(status: number = 302, fallback: string = '/'): RedirectResponse {
     const url = 'back'; // Will be resolved in send() method
-    const response = new RedirectResponse(url, status);
+    const response = RedirectResponse.make(url, status);
     response.flashData['_fallback'] = fallback;
     return response;
   }
@@ -101,7 +101,7 @@ export class RedirectResponse {
   ): RedirectResponse {
     // Route resolution would be handled by a URL generator
     // For now, we'll store the route info
-    const response = new RedirectResponse(route, status);
+    const response = RedirectResponse.make(route, status);
     response.flashData['_route'] = { name: route, parameters };
     return response;
   }

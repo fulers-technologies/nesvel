@@ -22,7 +22,7 @@ import type { CheckResponseForModificationsOptions } from '../../../interfaces';
  * export class AppModule {
  *   configure(consumer: MiddlewareConsumer) {
  *     consumer
- *       .apply(new CheckResponseForModificationsMiddleware())
+ *       .apply(CheckResponseForModificationsMiddleware.make())
  *       .forRoutes('*');
  *   }
  * }

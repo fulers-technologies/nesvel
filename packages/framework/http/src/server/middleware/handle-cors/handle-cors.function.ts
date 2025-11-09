@@ -56,5 +56,5 @@ import type { HandleCorsOptions } from '../../../interfaces';
  * ```
  */
 export function handleCors(options: HandleCorsOptions = {}): HandleCorsMiddleware {
-  return new HandleCorsMiddleware(options);
+  return HandleCorsMiddleware.make(options);
 }

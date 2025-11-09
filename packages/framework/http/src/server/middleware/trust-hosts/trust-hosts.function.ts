@@ -48,5 +48,5 @@ import type { TrustHostsOptions } from '../../../interfaces';
  * ```
  */
 export function trustHosts(options: TrustHostsOptions = {}): TrustHostsMiddleware {
-  return new TrustHostsMiddleware(options);
+  return TrustHostsMiddleware.make(options);
 }
