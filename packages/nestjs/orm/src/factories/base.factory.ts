@@ -32,7 +32,7 @@ import { BaseEntity } from '@/entities/base.entity';
  * }
  *
  * // Usage in seeders
- * const userFactory = new UserFactory(em);
+ * const userFactory = UserFactory.make(em);
  * // Or using static method:
  * const userFactory = UserFactory.make(em);
  *
@@ -89,7 +89,7 @@ export abstract class BaseFactory<T extends BaseEntity = BaseEntity> extends Fac
    *
    * @example
    * ```typescript
-   * // Instead of: const factory = new UserFactory(em);
+   * // Instead of: const factory = UserFactory.make(em);
    * const factory = UserFactory.make(em);
    *
    * // Usage:
@@ -101,7 +101,7 @@ export abstract class BaseFactory<T extends BaseEntity = BaseEntity> extends Fac
     this: new (em: EntityManager) => BaseFactory<T>,
     em: EntityManager,
   ): BaseFactory<T> {
-    return new this(em);
+    return this.make(em);
   }
 
   // ========================================================================

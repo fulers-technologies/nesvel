@@ -29,7 +29,7 @@ class TestUser extends HasSoftDeletes(HasTimestamps(BaseTestEntity)) {
 describe('Entity Integration', () => {
   describe('entity with mixins', () => {
     it('should create entity with mixin features', () => {
-      const user = new TestUser();
+      const user = TestUser.make();
       user.name = 'Test User';
       user.email = 'test@example.com';
 
@@ -40,7 +40,7 @@ describe('Entity Integration', () => {
     });
 
     it('should handle soft delete functionality', () => {
-      const user = new TestUser();
+      const user = TestUser.make();
       user.name = 'Delete Test';
       user.email = 'delete@example.com';
 
@@ -53,7 +53,7 @@ describe('Entity Integration', () => {
 
   describe('business logic methods', () => {
     it('should execute business logic methods', () => {
-      const user = new TestUser();
+      const user = TestUser.make();
       user.name = 'Business User';
       user.email = 'business@example.com';
 

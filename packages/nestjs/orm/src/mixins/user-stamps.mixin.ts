@@ -29,7 +29,7 @@ import { IHasUserstamps } from '@/interfaces/has-user-stamps.interface';
  * }
  *
  * // Usage in code
- * const post = new Post();
+ * const post = Post.make();
  * post.setCreatedBy(currentUserId);
  * post.setUpdatedBy(currentUserId);
  * ```
@@ -87,7 +87,7 @@ export function HasUserstamps<TBase extends new (...args: any[]) => object>(Base
      *
      * @example
      * ```typescript
-     * const post = new Post();
+     * const post = Post.make();
      * post.setCreatedBy(123); // numeric ID
      * post.setCreatedBy('550e8400-e29b-41d4-a716-446655440000'); // UUID
      * ```

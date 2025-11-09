@@ -41,7 +41,7 @@ import type { Dictionary, EntityManager } from '@mikro-orm/core';
  * export class PostSeeder extends BaseSeeder {
  *   async run(em: EntityManager): Promise<void> {
  *     // Use factory to create multiple entities
- *     const factory = new PostFactory(em);
+ *     const factory = PostFactory.make(em);
  *     const posts = factory.make(100);
  *
  *     await em.persistAndFlush(posts);
@@ -75,7 +75,7 @@ import type { Dictionary, EntityManager } from '@mikro-orm/core';
  * export class ConfigurableSeeder extends BaseSeeder<SeederContext> {
  *   async run(em: EntityManager, context?: SeederContext): Promise<void> {
  *     const count = context?.count ?? 10;
- *     const factory = new UserFactory(em);
+ *     const factory = UserFactory.make(em);
  *
  *     const users = factory.make(count);
  *     await em.persistAndFlush(users);

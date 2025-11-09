@@ -112,7 +112,7 @@ export abstract class BaseAction<TInput = any, TOutput = any> {
    * async execute(data: CreatePostDto): Promise<Post> {
    *   // Validate input
    *   if (!data.title) {
-   *     throw new BadRequestException('Title is required');
+   *     throw BadRequestException.make('Title is required');
    *   }
    *
    *   // Perform business logic
@@ -170,10 +170,10 @@ export abstract class BaseAction<TInput = any, TOutput = any> {
    * ```typescript
    * protected validateInput(data: CreateUserDto): void {
    *   if (!data.email) {
-   *     throw new BadRequestException('Email is required');
+   *     throw BadRequestException.make('Email is required');
    *   }
    *   if (!data.email.includes('@')) {
-   *     throw new BadRequestException('Invalid email format');
+   *     throw BadRequestException.make('Invalid email format');
    *   }
    * }
    * ```

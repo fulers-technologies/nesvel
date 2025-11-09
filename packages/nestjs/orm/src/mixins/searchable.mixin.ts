@@ -80,7 +80,7 @@ type Constructor<T = object> = new (...args: any[]) => T;
  * const searchTerm = 'typescript';
  *
  * // Use the searchable config
- * const config = new Post().getSearchableConfig();
+ * const config = Post.make().getSearchableConfig();
  * const conditions = config.searchableColumns.map(column =>
  *   query.getKnex().raw(`LOWER(${column}) LIKE ?`, [`%${searchTerm.toLowerCase()}%`])
  * );
@@ -117,7 +117,7 @@ export function HasSearchable<TBase extends Constructor<object>>(
      *
      * @example
      * ```typescript
-     * const post = new Post();
+     * const post = Post.make();
      * const config = post.getSearchableConfig();
      * console.log(config.searchableColumns); // ['title', 'content', 'excerpt']
      * ```
@@ -195,7 +195,7 @@ export function HasSearchable<TBase extends Constructor<object>>(
      *
      * @example
      * ```typescript
-     * const post = new Post();
+     * const post = Post.make();
      * const filter = post.buildSearchFilter('typescript tutorial');
      *
      * // Use with repository

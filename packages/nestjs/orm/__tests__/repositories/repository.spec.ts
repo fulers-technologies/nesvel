@@ -132,7 +132,7 @@ describe('Repository', () => {
   let repository: MockUserRepository;
 
   beforeEach(() => {
-    repository = new MockUserRepository();
+    repository = MockUserRepository.make();
   });
 
   describe('basic repository functionality', () => {

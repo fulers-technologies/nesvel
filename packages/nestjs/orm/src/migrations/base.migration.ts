@@ -105,7 +105,7 @@ export abstract class BaseMigration extends Migration {
     const builder = this.getKnex().schema.createTable(
       tableName,
       (tableBuilder: Knex.CreateTableBuilder) => {
-        const table = new Blueprint(tableBuilder);
+        const table = Blueprint.make(tableBuilder);
         callback(table);
       },
     );
@@ -132,7 +132,7 @@ export abstract class BaseMigration extends Migration {
     const builder = this.getKnex().schema.table(
       tableName,
       (tableBuilder: Knex.AlterTableBuilder) => {
-        const table = new Blueprint(tableBuilder);
+        const table = Blueprint.make(tableBuilder);
         callback(table);
       },
     );

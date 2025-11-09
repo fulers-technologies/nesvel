@@ -77,7 +77,7 @@ describe('ORM Mixins Integration', () => {
      */
     it('should add timestamp properties to entity', () => {
       // Act
-      const entity = new TimestampedEntity();
+      const entity = TimestampedEntity.make();
       entity.name = 'Test Entity';
 
       // Assert
@@ -95,7 +95,7 @@ describe('ORM Mixins Integration', () => {
      */
     it('should update timestamp when touched', async () => {
       // Arrange
-      const entity = new TimestampedEntity();
+      const entity = TimestampedEntity.make();
       entity.name = 'Touchable Entity';
       const originalUpdateTime = entity.updatedAt;
 
@@ -117,7 +117,7 @@ describe('ORM Mixins Integration', () => {
      */
     it('should correctly identify recently created/updated entities', () => {
       // Arrange
-      const entity = new TimestampedEntity();
+      const entity = TimestampedEntity.make();
       entity.name = 'Recent Entity';
 
       // Act & Assert
@@ -142,7 +142,7 @@ describe('ORM Mixins Integration', () => {
      */
     it('should soft delete entities correctly', () => {
       // Arrange
-      const entity = new SoftDeletableEntity();
+      const entity = SoftDeletableEntity.make();
       entity.name = 'Deletable Entity';
 
       // Act
@@ -163,7 +163,7 @@ describe('ORM Mixins Integration', () => {
      */
     it('should restore soft deleted entities', () => {
       // Arrange
-      const entity = new SoftDeletableEntity();
+      const entity = SoftDeletableEntity.make();
       entity.name = 'Restorable Entity';
       entity.softDelete();
       expect(entity.isDeleted).toBe(true);
@@ -185,7 +185,7 @@ describe('ORM Mixins Integration', () => {
      */
     it('should allow custom deletion timestamps', () => {
       // Arrange
-      const entity = new SoftDeletableEntity();
+      const entity = SoftDeletableEntity.make();
       entity.name = 'Custom Delete Entity';
       const customDate = new Date('2024-01-01');
 
@@ -205,7 +205,7 @@ describe('ORM Mixins Integration', () => {
      */
     it('should identify recently deleted entities', () => {
       // Arrange
-      const entity = new SoftDeletableEntity();
+      const entity = SoftDeletableEntity.make();
       entity.name = 'Recently Deleted Entity';
 
       // Act
@@ -232,7 +232,7 @@ describe('ORM Mixins Integration', () => {
      */
     it('should generate UUID for entities', () => {
       // Act
-      const entity = new UuidEntity();
+      const entity = UuidEntity.make();
       entity.name = 'UUID Entity';
 
       // Assert
@@ -250,7 +250,7 @@ describe('ORM Mixins Integration', () => {
      */
     it('should validate UUIDs correctly', () => {
       // Arrange
-      const entity = new UuidEntity();
+      const entity = UuidEntity.make();
       entity.name = 'Validated UUID Entity';
 
       // Act & Assert
@@ -267,7 +267,7 @@ describe('ORM Mixins Integration', () => {
      */
     it('should provide UUID utility methods', () => {
       // Arrange
-      const entity = new UuidEntity();
+      const entity = UuidEntity.make();
       entity.name = 'UUID Utilities Entity';
 
       // Act & Assert
@@ -285,7 +285,7 @@ describe('ORM Mixins Integration', () => {
      */
     it('should allow setting custom valid UUIDs', () => {
       // Arrange
-      const entity = new UuidEntity();
+      const entity = UuidEntity.make();
       const customUuid = '123e4567-e89b-42d3-a456-426614174000'; // Valid UUID v4 format
 
       // Act
@@ -312,7 +312,7 @@ describe('ORM Mixins Integration', () => {
      */
     it('should add user stamp properties', () => {
       // Act
-      const entity = new FullFeaturedEntity();
+      const entity = FullFeaturedEntity.make();
       entity.name = 'User Stamped Entity';
 
       // Assert
@@ -330,7 +330,7 @@ describe('ORM Mixins Integration', () => {
      */
     it('should set creator and updater correctly', () => {
       // Arrange
-      const entity = new FullFeaturedEntity();
+      const entity = FullFeaturedEntity.make();
       entity.name = 'Stamped Entity';
       const creator = { id: 'user-1', name: 'Creator' };
       const updater = { id: 'user-2', name: 'Updater' };
@@ -354,7 +354,7 @@ describe('ORM Mixins Integration', () => {
      */
     it('should correctly identify creators and updaters', () => {
       // Arrange
-      const entity = new FullFeaturedEntity();
+      const entity = FullFeaturedEntity.make();
       entity.name = 'User Compared Entity';
       const user1 = { id: 'user-1', name: 'User 1' };
       const user2 = { id: 'user-2', name: 'User 2' };
@@ -385,7 +385,7 @@ describe('ORM Mixins Integration', () => {
      */
     it('should provide all mixin features when combined', () => {
       // Act
-      const entity = new FullFeaturedEntity();
+      const entity = FullFeaturedEntity.make();
       entity.name = 'Full Featured Entity';
 
       // Assert - ID features (numeric ID from BaseEntity)
@@ -416,7 +416,7 @@ describe('ORM Mixins Integration', () => {
      */
     it('should handle mixin method interactions correctly', () => {
       // Arrange
-      const entity = new FullFeaturedEntity();
+      const entity = FullFeaturedEntity.make();
       entity.name = 'Interactive Entity';
       const user = { id: 'user-1', name: 'Test User' };
 
@@ -453,7 +453,7 @@ describe('ORM Mixins Integration', () => {
       }
 
       // Act
-      const entity = new SelectiveEntity();
+      const entity = SelectiveEntity.make();
       entity.name = 'Selective Entity';
 
       // Assert - Has UUID and timestamps
@@ -475,7 +475,7 @@ describe('ORM Mixins Integration', () => {
      */
     it('should maintain proper inheritance chain', () => {
       // Arrange
-      const entity = new FullFeaturedEntity();
+      const entity = FullFeaturedEntity.make();
 
       // Assert - Instance checks
       expect(entity).toBeInstanceOf(FullFeaturedEntity);
@@ -524,7 +524,7 @@ describe('ORM Mixins Integration', () => {
      */
     it('should integrate with entity lifecycle hooks', () => {
       // Act
-      const entity = new FullFeaturedEntity();
+      const entity = FullFeaturedEntity.make();
       entity.name = 'Lifecycle Entity';
 
       // Simulate beforeCreate hook
@@ -543,7 +543,7 @@ describe('ORM Mixins Integration', () => {
      */
     it('should update timestamps on entity updates', () => {
       // Arrange
-      const entity = new FullFeaturedEntity();
+      const entity = FullFeaturedEntity.make();
       entity.name = 'Update Entity';
       const originalUpdateTime = entity.updatedAt;
 
@@ -570,7 +570,7 @@ describe('ORM Mixins Integration', () => {
      */
     it('should handle invalid UUIDs gracefully', () => {
       // Arrange
-      const entity = new UuidEntity();
+      const entity = UuidEntity.make();
       entity.name = 'Invalid UUID Entity';
 
       // Act & Assert
@@ -586,7 +586,7 @@ describe('ORM Mixins Integration', () => {
      */
     it('should handle null/undefined users gracefully', () => {
       // Arrange
-      const entity = new FullFeaturedEntity();
+      const entity = FullFeaturedEntity.make();
       entity.name = 'Null User Entity';
 
       // Act & Assert
@@ -602,7 +602,7 @@ describe('ORM Mixins Integration', () => {
      */
     it('should handle multiple soft delete operations', () => {
       // Arrange
-      const entity = new SoftDeletableEntity();
+      const entity = SoftDeletableEntity.make();
       entity.name = 'Multiple Delete Entity';
 
       // Act

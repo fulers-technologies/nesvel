@@ -110,7 +110,7 @@ export abstract class BaseEvent {
     // Create a new instance using the constructor with all provided arguments
     // 'this' refers to the actual event class (e.g., UserCreatedEvent)
     // The spread operator passes all arguments to the constructor
-    return new this(...args);
+    return this.make(...args);
   }
 
   /**
@@ -126,7 +126,7 @@ export abstract class BaseEvent {
    *
    * @example
    * ```typescript
-   * const event = new UserCreatedEvent('123', 'user@example.com');
+   * const event = UserCreatedEvent.make('123', 'user@example.com');
    * console.log(event.getEventName()); // 'user.created'
    * ```
    */
@@ -152,7 +152,7 @@ export abstract class BaseEvent {
    *
    * @example
    * ```typescript
-   * const event = new UserCreatedEvent('123', 'user@example.com');
+   * const event = UserCreatedEvent.make('123', 'user@example.com');
    * const json = event.toJSON();
    * console.log(JSON.stringify(json));
    * ```
@@ -203,7 +203,7 @@ export abstract class BaseEvent {
    *   }
    * }
    *
-   * const event = new UserCreatedEvent('123', 'user@example.com');
+   * const event = UserCreatedEvent.make('123', 'user@example.com');
    * console.log(event.getPayload()); // { userId: '123', email: 'user@example.com' }
    * ```
    */
@@ -351,7 +351,7 @@ export abstract class BaseEvent {
    *   }
    *
    *   static fromJSON(json: any): UserCreatedEvent {
-   *     const event = new UserCreatedEvent(
+   *     const event = UserCreatedEvent.make(
    *       json.payload.userId,
    *       json.payload.email,
    *     );
@@ -382,7 +382,7 @@ export abstract class BaseEvent {
    *
    * @example
    * ```typescript
-   * const event = new UserCreatedEvent('123', 'user@example.com');
+   * const event = UserCreatedEvent.make('123', 'user@example.com');
    * console.log(event.toString());
    * // '[UserCreatedEvent] (abc-123) occurred at 2024-01-01T00:00:00.000Z'
    * ```

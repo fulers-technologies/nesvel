@@ -319,7 +319,7 @@ describe('BaseFactory', () => {
   let factory: TestUserFactory;
 
   beforeEach(() => {
-    factory = new TestUserFactory({} as EntityManager);
+    factory = TestUserFactory.make({} as EntityManager);
   });
 
   /**
@@ -463,8 +463,8 @@ describe('BaseFactory', () => {
      */
     it('should maintain state isolation between instances', async () => {
       // Arrange
-      const factory1 = new TestUserFactory({} as EntityManager);
-      const factory2 = new TestUserFactory({} as EntityManager);
+      const factory1 = TestUserFactory.make({} as EntityManager);
+      const factory2 = TestUserFactory.make({} as EntityManager);
 
       // Act
       const adminUser = await factory1.admin().make();
@@ -792,7 +792,7 @@ describe('BaseFactory', () => {
      */
     it('should maintain immutability in method chaining', async () => {
       // Arrange
-      const baseFactory = new TestUserFactory({} as EntityManager);
+      const baseFactory = TestUserFactory.make({} as EntityManager);
 
       // Act
       const adminFactory = baseFactory.admin();

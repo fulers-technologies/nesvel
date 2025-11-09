@@ -95,7 +95,7 @@ export abstract class BaseEntity extends MikroBaseEntity {
   static make<T extends BaseEntity>(this: Constructor<T>, data?: Partial<T>): T {
     // Create a new instance using the entity's constructor
     // 'this' refers to the entity class itself (e.g., User, Post, etc.)
-    const instance = new this();
+    const instance = this.make();
 
     // If initial data is provided, assign it to the instance
     // This uses Object.assign for shallow property copying

@@ -11,7 +11,7 @@ import { Knex } from 'knex';
  * ```typescript
  * // In a migration
  * this.createTable('users', (table) => {
- *   const blueprint = new Blueprint(table);
+ *   const blueprint = Blueprint.make(table);
  *   blueprint.id();
  *   blueprint.string('email').unique().notNullable();
  *   blueprint.string('password');

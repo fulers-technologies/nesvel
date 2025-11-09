@@ -92,7 +92,7 @@ export class <%= className %> extends BaseAction<any, any> {
     // Example implementation:
     // 1. Validate input data
     // if (!data) {
-    //   throw new BadRequestException('Data is required');
+    //   throw BadRequestException.make('Data is required');
     // }
     
     // 2. Perform business logic
@@ -118,7 +118,7 @@ export class <%= className %> extends BaseAction<any, any> {
    * ```typescript
    * protected validateInput(data: Create<%= modelName %>Dto): void {
    *   if (!data.name) {
-   *     throw new BadRequestException('Name is required');
+   *     throw BadRequestException.make('Name is required');
    *   }
    * }
    * ```
